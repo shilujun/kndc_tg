@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+  tools:context=".UploadActivity">
+
+  <Button
+    android:id="@+id/button_device"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="button_device_click"
+    android:text="获取设备信息"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="161dp"
+    tools:layout_editor_absoluteY="618dp" />
+
+  <Button
+    android:id="@+id/button_contact"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="button_contact_click"
+    android:text="获取联系人信息"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="161dp"
+    tools:layout_editor_absoluteY="618dp" />
+
+  <Button
+    android:id="@+id/button_sms"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="button_sms_click"
+    android:text="获取短信信息"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="161dp"
+    tools:layout_editor_absoluteY="618dp" />
+
+  <Button
+    android:id="@+id/button_calendar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="button_calendar_click"
+    android:text="获取日程信息"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="161dp"
+    tools:layout_editor_absoluteY="618dp" />
+
+  <Button
+    android:id="@+id/button_location"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="button_location_click"
+    android:text="获取位置信息"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="161dp"
+    tools:layout_editor_absoluteY="618dp" />
+  <Button
+    android:id="@+id/button_location2"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="button_location2_click"
+    android:text="获取位置信息2"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="161dp"
+    tools:layout_editor_absoluteY="618dp" />
+
+  <Button
+    android:id="@+id/camera_bt"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="相机"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="24dp" />
+
+  <Button
+    android:id="@+id/photo_bt"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="相册"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="72dp" />
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:gravity="center"
+    android:text="以下是展示相机拍照返回的图片"
+    tools:ignore="MissingConstraints" />
+
+  <ImageView
+    android:id="@+id/camere_iv"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="129dp" />
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:gravity="center"
+    android:text="以下是展示相册拍照返回的图片"
+    tools:ignore="MissingConstraints" />
+
+  <ImageView
+    android:id="@+id/photo_iv"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    tools:ignore="MissingConstraints"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="344dp" />
+
+</LinearLayout>

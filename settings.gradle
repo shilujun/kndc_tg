@@ -1,0 +1,3 @@
+rootProject.name = "kndc_tg"
+include ':app'
+include ':common'

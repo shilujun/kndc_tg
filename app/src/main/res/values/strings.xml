@@ -1,0 +1,34 @@
+<resources>
+  <string name="app_name">kndc_tg</string>
+  <string name="title_activity_demo">Demo</string>
+  <!-- Strings used for fragments for navigation -->
+  <string name="first_fragment_label">First Fragment</string>
+  <string name="second_fragment_label">Second Fragment</string>
+  <string name="next">Next</string>
+  <string name="previous">Previous</string>
+
+  <string name="hello_first_fragment">Hello first fragment</string>
+  <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+  <string name="default_no_sonic">Load Without Sonic</string>
+  <string name="sonic">Load With Sonic</string>
+  <string name="sonic_preload">DO Sonic Preload</string>
+  <string name="sonic_offline">Load Sonic With Offline Cache</string>
+  <string name="sonic_no_eTag">Load Sonic With No ETag</string>
+  <string name="reset_clear">Clean Up Cache</string>
+  <string name="set_custom_url">设置自定义URL</string>
+  <string name="close">关闭</string>
+  <string name="http_prefix">http://</string>
+  <string name="finish">完成</string>
+  <string name="illegal_url">不合法的URL</string>
+  <string name="edit">编辑</string>
+  <string name="title_activity_login">LoginActivity</string>
+  <string name="prompt_email">Email</string>
+  <string name="prompt_password">Password</string>
+  <string name="action_sign_in">Sign in or register</string>
+  <string name="action_sign_in_short">Sign in</string>
+  <string name="welcome">"Welcome !"</string>
+  <string name="invalid_username">Not a valid username</string>
+  <string name="invalid_password">Password must be >5 characters</string>
+  <string name="login_failed">"Login failed"</string>
+  <string name="title_activity_webview">WebviewActivity</string>
+</resources>
