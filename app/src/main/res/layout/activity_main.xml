@@ -57,6 +57,30 @@
         android:text="@string/default_no_sonic" />
 
       <Button
+        android:id="@+id/btn_local"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="本地调试" />
+
+      <Button
+        android:id="@+id/btn_insert"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="写入数据" />
+
+      <Button
+        android:id="@+id/btn_query"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="获取数据" />
+
+      <Button
         android:id="@+id/btn_sonic"
         style="@style/SonicButton"
         android:layout_width="match_parent"

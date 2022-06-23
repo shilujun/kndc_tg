@@ -1,12 +1,9 @@
 package com.cashhub.cash.app;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -16,10 +13,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import com.cashhub.cash.app.db.ConfigDaoStore;
+import com.cashhub.cash.app.db.DaoUtilsStore;
+import com.cashhub.cash.app.model.Config;
 import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicEngine;
 import com.tencent.sonic.sdk.SonicSessionConfig;
 import android.os.Bundle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends BaseActivity {
 
@@ -75,6 +78,31 @@ public class MainActivity extends BaseActivity {
         // preload session
         boolean preloadSuccess = SonicEngine.getInstance().preCreateSession(DEMO_URL, sessionConfigBuilder.build());
         Toast.makeText(getApplicationContext(), preloadSuccess ? "Preload start up success!" : "Preload start up fail!", Toast.LENGTH_LONG).show();
+      }
+    });
+    // sonic mode load btn
+    Button btnLocal = (Button) findViewById(R.id.btn_local);
+    btnLocal.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        DEMO_URL = "http://johnnyshi.com/test.html";
+        startBrowserActivity(MODE_SONIC);
+      }
+    });
+
+    Button btnInsert = (Button) findViewById(R.id.btn_insert);
+    btnInsert.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        dataOpt(0);
+      }
+    });
+
+    Button btnQuery = (Button) findViewById(R.id.btn_query);
+    btnQuery.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        dataOpt(1);
       }
     });
 
@@ -159,7 +187,7 @@ public class MainActivity extends BaseActivity {
     intent.putExtra(BrowserActivity.PARAM_URL, DEMO_URL);
     intent.putExtra(BrowserActivity.PARAM_MODE, mode);
     intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
-    startActivityForResult(intent, -1);
+    startActivity(intent);
   }
 
 
@@ -176,5 +204,57 @@ public class MainActivity extends BaseActivity {
     Intent intent = new Intent();
     intent.setClassName(this, "com.cashhub.cash.app.WebviewActivity");
     startActivity(intent);
+  }
+
+  public void dataOpt(int type) {
+    if(type == 1) {
+      List<Config> configList = getDaoConfig().queryBuilder().build().list();
+      if(configList == null || configList.isEmpty()) {
+        Log.d(TAG, "dataOpt: configList is null or empty");
+      }
+
+      for ( Config config: configList ) {
+        Log.d(TAG,
+            "dataOpt, config id:" + config.getId() + ", configKey:" + config.getConfigKey() + ", "
+                + "configValue:" + config.getConfigValue());
+      }
+    } else {
+//      DaoUtilsStore.getInstance().getConfigDaoUtils().deleteAll();
+      getDaoConfig().deleteAll();
+
+      List<Config> configList = new ArrayList<>();
+      for (int i = 0; i < 10; i++) {
+        Config config = new Config();
+        config.setId((long) i);
+        config.setConfigKey("test_" + i);
+        // 随机生成汉语名称
+        config.setConfigValue(generateRandomStr(10));
+
+        configList.add(config);
+        Log.d(TAG, "dataOpt, config insert:" + i);
+      }
+      getDaoConfig().insertInTx(configList);
+    }
+  }
+
+  /**
+   * 获取随机字符串
+   */
+  private String generateRandomStr(int length) {
+    ArrayList<String> strList = new ArrayList<String>();
+    Random random = new Random();
+
+    //将0-9的数字加入集合
+    for (int i = 0; i < 10; i++) {
+      strList.add(i + "");
+    }
+
+    StringBuffer sb = new StringBuffer();
+    int size = strList.size();
+    for (int i = 0; i < length; i++) {
+      String randomStr = strList.get(random.nextInt(size));
+      sb.append(randomStr);
+    }
+    return sb.toString();
   }
 }

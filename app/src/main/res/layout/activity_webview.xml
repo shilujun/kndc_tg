@@ -4,11 +4,35 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".WebviewActivity">
+  tools:context=".WebviewActivity"
+  android:orientation="vertical">
 
   <WebView
     android:id="@+id/wv_webview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="600dp"
+    android:layout_marginStart="0dp"
+    android:layout_marginTop="0dp"/>
+  <Button
+    android:id="@+id/buttonSync"
+    android:textAllCaps="false"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginStart="53dp"
+    android:layout_marginBottom="8dp"
+    android:text="buttonSync" />
+
+  <Button
+    android:id="@+id/buttonAsync"
+    android:textAllCaps="false"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginStart="53dp"
+    android:layout_marginBottom="8dp"
+    android:text="buttonAsync" />
 
 </LinearLayout>

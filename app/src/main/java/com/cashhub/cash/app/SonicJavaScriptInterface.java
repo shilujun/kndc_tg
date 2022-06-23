@@ -1,10 +1,14 @@
 package com.cashhub.cash.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
+import android.webkit.WebView;
+import android.widget.Toast;
 import com.tencent.sonic.sdk.SonicDiffDataCallback;
 
 import org.json.JSONObject;
@@ -14,18 +18,26 @@ import org.json.JSONObject;
  */
 
 public class SonicJavaScriptInterface {
+  private static final String TAG = "JavaScriptMethods";
 
-  private final SonicSessionClientImpl sessionClient;
+  private Context mContext;
+  private WebView mWebView;
 
-  private final Intent intent;
+  private final SonicSessionClientImpl mSessionClient;
+
+  private final Intent mIntent;
 
   public static final String PARAM_CLICK_TIME = "clickTime";
 
   public static final String PARAM_LOAD_URL_TIME = "loadUrlTime";
 
-  public SonicJavaScriptInterface(SonicSessionClientImpl sessionClient, Intent intent) {
-    this.sessionClient = sessionClient;
-    this.intent = intent;
+  public SonicJavaScriptInterface(Context context, WebView webView,
+      SonicSessionClientImpl sessionClient,
+      Intent intent) {
+    this.mContext = context;
+    this.mWebView = webView;
+    this.mSessionClient = sessionClient;
+    this.mIntent = intent;
   }
 
   @JavascriptInterface
@@ -36,15 +48,15 @@ public class SonicJavaScriptInterface {
 
   @JavascriptInterface
   public void getDiffData2(final String jsCallbackFunc) {
-    if (null != sessionClient) {
-      sessionClient.getDiffData(new SonicDiffDataCallback() {
+    if (null != mSessionClient) {
+      mSessionClient.getDiffData(new SonicDiffDataCallback() {
         @Override
         public void callback(final String resultData) {
           Runnable callbackRunnable = new Runnable() {
             @Override
             public void run() {
               String jsCode = "javascript:" + jsCallbackFunc + "('"+ toJsString(resultData) + "')";
-              sessionClient.getWebView().loadUrl(jsCode);
+              mSessionClient.getWebView().loadUrl(jsCode);
             }
           };
           if (Looper.getMainLooper() == Looper.myLooper()) {
@@ -59,8 +71,8 @@ public class SonicJavaScriptInterface {
 
   @JavascriptInterface
   public String getPerformance() {
-    long clickTime = intent.getLongExtra(PARAM_CLICK_TIME, -1);
-    long loadUrlTime = intent.getLongExtra(PARAM_LOAD_URL_TIME, -1);
+    long clickTime = mIntent.getLongExtra(PARAM_CLICK_TIME, -1);
+    long loadUrlTime = mIntent.getLongExtra(PARAM_LOAD_URL_TIME, -1);
     try {
       JSONObject result = new JSONObject();
       result.put(PARAM_CLICK_TIME, clickTime);

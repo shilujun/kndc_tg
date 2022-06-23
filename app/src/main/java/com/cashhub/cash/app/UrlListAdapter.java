@@ -22,6 +22,7 @@ public class UrlListAdapter extends BaseAdapter {
     public static final int MODE_NORMAL = 1;
     public static final int MODE_EDIT = 2;
 
+//    private static final String DEFAULT_URL = "https://web.cashhubloan.com/#/pages/index/index?loan_data=";
     private static final String DEFAULT_URL = "https://www.baidu.com/";
 
     private ArrayList<String> urls;

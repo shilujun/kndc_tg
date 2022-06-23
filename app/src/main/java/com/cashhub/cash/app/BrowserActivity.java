@@ -4,10 +4,17 @@ package com.cashhub.cash.app;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -46,8 +53,20 @@ public class BrowserActivity extends BaseActivity {
   public final static String PARAM_URL = "param_url";
 
   public final static String PARAM_MODE = "param_mode";
+  private static final String TAG = "BrowserActivity";
 
   private SonicSession sonicSession;
+  WebView mWebView;
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (mWebView != null && keyCode == KeyEvent.KEYCODE_BACK && mWebView.canGoBack()) {
+      mWebView.goBack();
+      return true;
+    }
+
+    return super.onKeyDown(keyCode, event);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -108,70 +127,114 @@ public class BrowserActivity extends BaseActivity {
     // runtime、init configs....
     setContentView(R.layout.activity_browser);
 
-    Button btnFab = (Button) findViewById(R.id.btn_refresh);
-    btnFab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        if (sonicSession != null) {
-          sonicSession.refresh();
-        }
-      }
-    });
+//    Button btnFab = (Button) findViewById(R.id.btn_refresh);
+//    btnFab.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View view) {
+//        if (sonicSession != null) {
+//          sonicSession.refresh();
+//        }
+//      }
+//    });
 
-    // init webview
-    WebView webView = (WebView) findViewById(R.id.webview);
-    webView.setWebViewClient(new WebViewClient() {
+    // init webView
+    mWebView = (WebView) findViewById(R.id.web_view);
+    mWebView.setWebViewClient(new WebViewClient() {
       @Override
       public void onPageFinished(WebView view, String url) {
+        Log.d(TAG, "mWebView onPageFinished");
         super.onPageFinished(view, url);
         if (sonicSession != null) {
           sonicSession.getSessionClient().pageFinish(url);
         }
       }
 
-      @TargetApi(21)
       @Override
-      public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        return shouldInterceptRequest(view, request.getUrl().toString());
+      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        String url = request.getUrl().toString();
+
+        if(url.startsWith("http:") || url.startsWith("https:") ) {
+          view.loadUrl(url);
+          return false;
+        }else{
+          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+          startActivity(intent);
+          return true;
+        }
+      }
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        //设定加载开始的操作
+        Log.d(TAG, "mWebView onPageStarted");
       }
 
       @Override
-      public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+      public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
         if (sonicSession != null) {
-          return (WebResourceResponse) sonicSession.getSessionClient().requestResource(url);
+          return (WebResourceResponse) sonicSession.getSessionClient().requestResource(request.getUrl().toString());
         }
         return null;
       }
+
+      @Override
+      public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        /* 不要使用super，否则有些手机访问不了，因为包含了一条 handler.cancel()
+                   super.onReceivedSslError(view, handler, error);
+                   接受所有网站的证书，忽略SSL错误，执行访问网页 */
+        handler.proceed();
+      }
     });
 
-    WebSettings webSettings = webView.getSettings();
+    //防止遇到重定向
+    mWebView.setOnKeyListener(new View.OnKeyListener() {
+      @Override
+      public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+          if (keyCode == KeyEvent.KEYCODE_BACK && mWebView.canGoBack()) {
+            mWebView.goBack();
+            return true;
+          }
+        }
+
+        return false;
+      }
+    });
+
+    WebSettings webSettings = mWebView.getSettings();
 
     // add java script interface
     // note:if api level lower than 17(android 4.2), addJavascriptInterface has security
     // issue, please use x5 or see https://developer.android.com/reference/android/webkit/
     // WebView.html#addJavascriptInterface(java.lang.Object, java.lang.String)
-    webSettings.setJavaScriptEnabled(true);
-    webView.removeJavascriptInterface("searchBoxJavaBridge_");
+    mWebView.removeJavascriptInterface("searchBoxJavaBridge_");
     intent.putExtra(SonicJavaScriptInterface.PARAM_LOAD_URL_TIME, System.currentTimeMillis());
-    webView.addJavascriptInterface(new SonicJavaScriptInterface(sonicSessionClient, intent), "sonic");
+    mWebView.addJavascriptInterface(new SonicJavaScriptInterface(this, mWebView, sonicSessionClient,
+        intent), "jsInterface");
 
     // init webview settings
+    webSettings.setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+    webSettings.setBlockNetworkImage(false);
     webSettings.setAllowContentAccess(true);
     webSettings.setDatabaseEnabled(true);
     webSettings.setDomStorageEnabled(true);
     webSettings.setAppCacheEnabled(true);
-    webSettings.setSavePassword(false);
     webSettings.setSaveFormData(false);
     webSettings.setUseWideViewPort(true);
     webSettings.setLoadWithOverviewMode(true);
+    webSettings.setJavaScriptEnabled(true);
+    webSettings.setAllowFileAccess(true); //设置可以访问文件
+    webSettings.setJavaScriptCanOpenWindowsAutomatically(true); //支持通过JS打开新窗口
+    webSettings.setLoadsImagesAutomatically(true); //支持自动加载图片
 
 
     // webview is ready now, just tell session client to bind
     if (sonicSessionClient != null) {
-      sonicSessionClient.bindWebView(webView);
+      Log.d(TAG, "webView is load by sonic mode");
+      sonicSessionClient.bindWebView(mWebView);
       sonicSessionClient.clientReady();
     } else { // default mode
-      webView.loadUrl(url);
+      Log.d(TAG, "webView is load by default mode");
+      mWebView.loadUrl(url);
     }
   }
 
@@ -185,6 +248,13 @@ public class BrowserActivity extends BaseActivity {
     if (null != sonicSession) {
       sonicSession.destroy();
       sonicSession = null;
+    }
+    if (null != mWebView) {
+      mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+      mWebView.clearHistory(); ((ViewGroup)
+      mWebView.getParent()).removeView(mWebView);
+      mWebView.destroy();
+      mWebView = null;
     }
     super.onDestroy();
   }

@@ -5,18 +5,37 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   tools:context=".BrowserActivity"
-  android:orientation="horizontal">
+  android:orientation="vertical">
   <WebView
-  android:id="@+id/webview"
+  android:id="@+id/web_view"
   android:layout_width="match_parent"
   android:layout_height="match_parent" />
 
   <Button
-    android:id="@+id/btn_refresh"
+    android:id="@+id/android_call_js"
+    android:textAllCaps="false"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom|end"
-    android:layout_margin="16dp"
-    app:srcCompat="@android:drawable/ic_menu_rotate" />
+    android:layout_marginStart="53dp"
+    android:layout_marginBottom="8dp"
+    android:text="android调用JS方法" />
+
+  <Button
+    android:id="@+id/buttonAsync"
+    android:textAllCaps="false"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="53dp"
+    android:layout_marginBottom="8dp"
+    android:text="buttonAsync" />
+
+
+  <!--  <Button-->
+<!--    android:id="@+id/btn_refresh"-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_gravity="bottom|end"-->
+<!--    android:layout_margin="16dp"-->
+<!--    app:srcCompat="@android:drawable/ic_menu_rotate" />-->
 
 </LinearLayout>
