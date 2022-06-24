@@ -7,7 +7,6 @@ import com.cashhub.cash.app.greendao.ConfigDao;
 import com.cashhub.cash.app.greendao.DaoMaster;
 import com.cashhub.cash.app.greendao.DaoSession;
 import com.cashhub.cash.app.greendao.ReportInfoDao;
-import com.cashhub.cash.app.model.Config;
 
 public class BaseActivity extends AppCompatActivity {
 

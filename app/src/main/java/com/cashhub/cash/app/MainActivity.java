@@ -16,6 +16,9 @@ import androidx.annotation.RequiresApi;
 import com.cashhub.cash.app.db.ConfigDaoStore;
 import com.cashhub.cash.app.db.DaoUtilsStore;
 import com.cashhub.cash.app.model.Config;
+import com.cashhub.cash.common.utils.CommonUtil;
+import com.cashhub.cash.common.utils.DeviceUtils;
+import com.cashhub.cash.common.utils.StatusBarUtils;
 import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicEngine;
 import com.tencent.sonic.sdk.SonicSessionConfig;
@@ -48,6 +51,9 @@ public class MainActivity extends BaseActivity {
         WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
     setContentView(R.layout.activity_main);
+
+    Log.d(TAG, "onCreate, DeviceId:" + DeviceUtils.getDeviceId(this));
+    Log.d(TAG, "onCreate, StatusBarHeight:" + StatusBarUtils.getStatusBarHeight(this));
 
     // clean up cache btn
     Button btnReset = (Button) findViewById(R.id.btn_reset);
