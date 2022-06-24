@@ -9,9 +9,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 public class StatusBarUtils {
   /** oppo coloros 5.1系统该flag标记状态栏字符变深 */
   private static final int SYSTEM_UI_FLAG_OP_STATUS_BAR_TINT = 0x00000010;

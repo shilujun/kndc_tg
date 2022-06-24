@@ -16,10 +16,11 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.Window;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class CommonUtil {
 
@@ -119,7 +120,7 @@ public class CommonUtil {
   }
 
   /**
-   * 获取标题栏高度
+   * 获取标题栏高度 TODO
    * @param context
    * @return
    */
@@ -295,6 +296,18 @@ public class CommonUtil {
         return true;
       }
     }
+  }
+
+  public static long getStartTimeOfDay(long now, String timeZone) {
+    String tz = TextUtils.isEmpty(timeZone) ? "GMT+8" : timeZone;
+    TimeZone curTimeZone = TimeZone.getTimeZone(tz);
+    Calendar calendar = Calendar.getInstance(curTimeZone);
+    calendar.setTimeInMillis(now);
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    return calendar.getTimeInMillis();
   }
 }
 

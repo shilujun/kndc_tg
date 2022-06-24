@@ -1,7 +1,6 @@
 package com.cashhub.cash.app.db;
 
 import android.app.Application;
-import com.cashhub.cash.app.BuildConfig;
 import com.cashhub.cash.app.greendao.DaoMaster;
 import com.cashhub.cash.app.greendao.DaoSession;
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -26,10 +25,6 @@ public class DaoManager {
    */
   public static DaoManager getInstance() {
     return manager;
-  }
-
-  private DaoManager() {
-    setDebug();
   }
 
   public void init(Application application) {
@@ -58,16 +53,6 @@ public class DaoManager {
       mDaoSession = mDaoMaster.newSession();
     }
     return mDaoSession;
-  }
-
-  /**
-   * 打开输出日志，默认关闭
-   */
-  public void setDebug() {
-    if (BuildConfig.DEBUG) {
-      QueryBuilder.LOG_SQL = true;
-      QueryBuilder.LOG_VALUES = true;
-    }
   }
 
   /**

