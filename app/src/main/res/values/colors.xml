@@ -19,4 +19,6 @@
   <color name="text_color">#1482fd</color>
   <color name="button_background">#049DFF</color>
   <color name="button_text">#FFFFFF</color>
+  <color name="login_title_bar_color">#049DFF</color>
+  <color name="login_remark">#00000000</color>
 </resources>

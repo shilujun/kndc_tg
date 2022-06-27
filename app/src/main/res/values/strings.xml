@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">kndc_tg</string>
+  <string name="app_name">loanSuper</string>
   <string name="title_activity_demo">Demo</string>
   <!-- Strings used for fragments for navigation -->
   <string name="first_fragment_label">First Fragment</string>

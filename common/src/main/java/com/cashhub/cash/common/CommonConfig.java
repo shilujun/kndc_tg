@@ -1,6 +1,9 @@
 package com.cashhub.cash.common;
 
 public class CommonConfig {
+  //TOKEN数据
+  public static String CONFIG_USER_TOKEN = "config_user_token";
+
   //短信最新上传时间
   public static String CONFIG_SMS_TIME = "config_sms_time";
   //设备信息最新上传时间

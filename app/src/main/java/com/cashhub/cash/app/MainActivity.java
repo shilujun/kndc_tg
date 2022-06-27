@@ -1,9 +1,15 @@
 package com.cashhub.cash.app;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -12,11 +18,15 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.FileProvider;
+import com.blankj.utilcode.util.ImageUtils;
 import com.cashhub.cash.app.db.ConfigDaoStore;
 import com.cashhub.cash.app.db.DaoUtilsStore;
 import com.cashhub.cash.app.model.Config;
 import com.cashhub.cash.common.Host;
+import com.cashhub.cash.common.ImageUpload;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 import com.cashhub.cash.common.utils.StatusBarUtils;
@@ -24,6 +34,10 @@ import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicEngine;
 import com.tencent.sonic.sdk.SonicSessionConfig;
 import android.os.Bundle;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -41,6 +55,10 @@ public class MainActivity extends BaseActivity {
   private static final int PERMISSION_REQUEST_CODE_STORAGE = 1;
 
   private String DEMO_URL;
+
+  public static final int TAKE_PHOTO = 101;
+  public static final int TAKE_CAMARA = 100;
+  private Uri mImageUri;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +90,24 @@ public class MainActivity extends BaseActivity {
       @Override
       public void onClick(View view) {
         startBrowserActivity(MODE_DEFAULT);
+      }
+    });
+
+    //camera btn
+    Button btnCamera = (Button) findViewById(R.id.btn_camera);
+    btnCamera.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        openCameraOrGallery("camera");
+      }
+    });
+
+    //gallery btn
+    Button btnGallery = (Button) findViewById(R.id.btn_gallery);
+    btnGallery.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        openCameraOrGallery("gallery");
       }
     });
 
@@ -190,6 +226,52 @@ public class MainActivity extends BaseActivity {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    switch (requestCode) {
+      case TAKE_PHOTO:
+        if (resultCode == RESULT_OK) {
+          try {
+            //将拍摄的照片显示出来
+            Bitmap bitmap = data.getParcelableExtra("data");
+            //bitmap = ImageUtils.compressByScale(bitmap, 0.5f, 0.5f);
+            byte[] bitmapB = ImageUtils.compressByQuality(bitmap, 30);
+            bitmap = ImageUtils.bytes2Bitmap(bitmapB);
+//            camereIv.setImageBitmap(bitmap);  //TODO
+
+            ImageUpload imageUpload = new ImageUpload();
+            imageUpload.saveImageToGallery(MainActivity.this, bitmap);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+        break;
+      case TAKE_CAMARA:
+        if (resultCode == RESULT_OK) {
+          try {
+            //将相册的照片显示出来
+            Uri uri_photo = data.getData();
+            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri_photo));
+            //bitmap = ImageUtils.compressByScale(bitmap, 0.5f, 0.5f);
+            byte[] bitmapB = ImageUtils.compressByQuality(bitmap, 30);
+            bitmap = ImageUtils.bytes2Bitmap(bitmapB);
+//            photoIv.setImageBitmap(bitmap); //TODO
+            //EncodeUtils.base64Decode();
+//                        String a = EncodeUtils.base64Encode2String(ImageUtils.bitmap2Bytes(bitmap));
+//                        MainActivity.i(TAG, a);
+            ImageUpload imageUpload = new ImageUpload();
+            imageUpload.saveImageToGallery(MainActivity.this, bitmap);
+          } catch (FileNotFoundException e) {
+            e.printStackTrace();
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   private void startBrowserActivity(int mode) {
     Intent intent = new Intent(this, BrowserActivity.class);
     intent.putExtra(BrowserActivity.PARAM_URL, DEMO_URL);
@@ -206,12 +288,42 @@ public class MainActivity extends BaseActivity {
     startActivity(intent);
   }
 
-
   @RequiresApi(api = Build.VERSION_CODES.M)
   public void btn_web_view(View view) {
     Intent intent = new Intent();
     intent.setClassName(this, "com.cashhub.cash.app.WebviewActivity");
     startActivity(intent);
+  }
+
+
+  @RequiresApi(api = Build.VERSION_CODES.M)
+  public void openCameraOrGallery(String type) {
+    if(type == null || type.isEmpty()) {
+      return;
+    }
+    if("camera".equals(type)) {
+      toCamera();
+    } else if("gallery".equals(type)) {
+      toPicture();
+    } else {
+      return;
+    }
+  }
+
+  //跳转相册
+  private void toPicture() {
+    Intent intent = new Intent(Intent.ACTION_PICK);  //跳转到 ACTION_IMAGE_CAPTURE
+    intent.setType("image/*");
+    startActivityForResult(intent, TAKE_CAMARA);
+    Log.i(TAG, "跳转相册成功");
+  }
+
+  //跳转相机
+  private void toCamera() {
+    //将button的点击事件改成startActivityForResult启动相机
+    Intent camera = new Intent();
+    camera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+    startActivityForResult(camera, TAKE_PHOTO);
   }
 
   public void dataOpt(int type) {

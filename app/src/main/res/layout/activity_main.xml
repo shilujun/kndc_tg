@@ -20,7 +20,7 @@
       android:layout_width="wrap_content"
       android:layout_height="0dp"
       android:scaleType="centerInside"
-      android:src="@drawable/slogan" />
+      android:src="@drawable/sonic_button_round_mask" />
 
     <LinearLayout
       android:id="@+id/content"
@@ -81,6 +81,24 @@
         android:text="获取数据" />
 
       <Button
+        android:id="@+id/btn_camera"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:onClick="btn_web_view"
+        android:text="打开相机" />
+
+      <Button
+        android:id="@+id/btn_gallery"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:onClick="btn_web_view"
+        android:text="打开相册" />
+
+      <Button
         android:id="@+id/btn_sonic"
         style="@style/SonicButton"
         android:layout_width="match_parent"
@@ -101,7 +119,7 @@
         android:id="@+id/btn_sonic_with_offline"
         style="@style/SonicButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.02"
         android:text="@string/sonic_offline"
         />
@@ -110,7 +128,7 @@
         android:id="@+id/btn_reset"
         style="@style/SonicButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.02"
         android:text="@string/reset_clear"
         />
