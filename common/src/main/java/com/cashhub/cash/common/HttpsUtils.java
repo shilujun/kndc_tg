@@ -1,5 +1,6 @@
 package com.cashhub.cash.common;
 
+import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -11,6 +12,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -18,8 +22,14 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.greenrobot.eventbus.EventBus;
 
 public class HttpsUtils {
+
+    private static final String TAG = "HttpsUtils";
     public static class SSLParams {
         public SSLSocketFactory sSLSocketFactory;
         public X509TrustManager trustManager;
@@ -158,6 +168,86 @@ public class HttpsUtils {
         @Override
         public X509Certificate[] getAcceptedIssuers() {
             return new X509Certificate[0];
+        }
+    }
+
+    public static void sendRequest(final String url, final Request request, final String type) {
+        //发起请求
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sendNetRequest(url, request, type);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private static void sendNetRequest(final String url, final Request request, String type) {
+        Response response = null;
+        String bodyStr = "";
+
+        Pattern p = Pattern.compile("((https)://)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = p.matcher(url);
+        boolean isMatcher = matcher.find();
+        if (isMatcher) {
+            Log.d(TAG, "sendNetRequest https");
+            try {
+                HttpsUtils.SSLParams sslParams1 = HttpsUtils.getSslSocketFactory();
+                OkHttpClient.Builder  builder=new  OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .sslSocketFactory(sslParams1.sSLSocketFactory, sslParams1.trustManager)//添加信任证书
+                    .hostnameVerifier((hostname, session) -> true) //忽略host验证
+                    .followRedirects(false);  //禁制OkHttp的重定向操作，我们自己处理重定向
+
+                OkHttpClient client =builder.build();
+                response = client.newCall(request).execute();
+
+                if(response == null || response.code() != 200) {
+                    Log.d(TAG, "sendNetRequest response is Null or code not 200" + response.code() + " " + response.message());
+                    response.body().close();
+                    return;
+                }
+                bodyStr = response.body().string();
+                Log.d(TAG, "sendNetRequest bodyStr: " + bodyStr);
+            } catch (Exception e) {
+                Log.d(TAG, "sendNetRequest onFailure " + e.getMessage());
+                return;
+            }
+
+        } else {
+            Log.d(TAG, "sendNetRequest device http");
+
+            try {
+                OkHttpClient okHttpClient = new OkHttpClient();
+                response = okHttpClient.newCall(request).execute();
+
+                if(response == null || response.code() != 200) {
+                    Log.d(TAG, "sendNetRequest response is Null or code not 200");
+                    response.body().close();
+                    return;
+                }
+                bodyStr = response.body().string();
+
+                Log.d(TAG, "sendNetRequest bodyStr: " + bodyStr);
+            } catch (Exception e) {
+                Log.d(TAG, "sendNetRequest onFailure " + e.getMessage());
+            }
+        }
+
+        if (type == null || type.isEmpty()) {
+            return;
+        }
+        KndcEvent kndcEvent = new KndcEvent();
+        kndcEvent.setEventName(type);
+        if(KndcEvent.LOGIN.equals(type)) {
+            EventBus.getDefault().post(kndcEvent);
+        } else if(KndcEvent.LOGOUT.equals(type)) {
+            EventBus.getDefault().post(kndcEvent);
         }
     }
 }

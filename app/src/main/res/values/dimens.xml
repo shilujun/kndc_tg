@@ -8,4 +8,6 @@
   <dimen name="fab_margin">16dp</dimen>
   <dimen name="login_title_bar_height">40dp</dimen>
   <dimen name="login_remark_height">68dp</dimen>
+  <dimen name="xlength_130">130dp</dimen>
+  <dimen name="xlength_110">110dp</dimen>
 </resources>

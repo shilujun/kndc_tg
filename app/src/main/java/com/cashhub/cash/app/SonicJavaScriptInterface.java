@@ -8,13 +8,15 @@ import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import android.webkit.WebView;
-import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
+import com.cashhub.cash.common.CommonApi;
+import com.cashhub.cash.common.KndcEvent;
+import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.UploadData;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
-import com.cashhub.cash.common.utils.StatusBarUtils;
 import com.tencent.sonic.sdk.SonicDiffDataCallback;
+import org.greenrobot.eventbus.EventBus;
 
 
 /**
@@ -37,6 +39,8 @@ public class SonicJavaScriptInterface {
 
   private UploadData mUploadData;
 
+  private CommonApi mCommonApi;
+
   public SonicJavaScriptInterface(Context context, WebView webView,
       SonicSessionClientImpl sessionClient,
       Intent intent) {
@@ -51,6 +55,9 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public void openCamera() {
+    KndcEvent kndcEvent = new KndcEvent();
+    kndcEvent.setEventName(KndcEvent.OPEN_CAMARA);
+    EventBus.getDefault().post(kndcEvent);
   }
 
   /**
@@ -58,6 +65,9 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public void openGallery() {
+    KndcEvent kndcEvent = new KndcEvent();
+    kndcEvent.setEventName(KndcEvent.OPEN_IMAGE_CAPTURE);
+    EventBus.getDefault().post(kndcEvent);
   }
 
   /**
@@ -65,7 +75,7 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public String getUserToken() {
-    return DeviceUtils.getDeviceId(mContext);
+    return KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
   }
 
   /**
@@ -96,7 +106,16 @@ public class SonicJavaScriptInterface {
    * 数据上报/埋点功能调用
    */
   @JavascriptInterface
-  public void reportInfo() {
+  public void trackData(JSONObject requestJson, String token) {
+    try {
+      //初始化数据
+      if (mCommonApi == null) {
+        mCommonApi = new CommonApi();
+      }
+      mCommonApi.trackData(mContext, requestJson, token);
+    } catch (Exception e) {
+      Log.d(TAG, e.getMessage());
+    }
   }
 
   /**
@@ -105,18 +124,15 @@ public class SonicJavaScriptInterface {
   @JavascriptInterface
   public void getAndSendDevice(JSONObject systemInfo, String token, String domain,
     long timeStamp, String deviceKey) {
-    new Thread(() -> {
-        try {
-            //初始化数据
-            if (this.mUploadData == null) {
-                this.mUploadData = new UploadData(mContext);
-            }
-
-            this.mUploadData.getAndSendDevice(systemInfo, token, domain, timeStamp, deviceKey);
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-        }
-    }).start();//启动线程
+    try {
+      //初始化数据
+      if (this.mUploadData == null) {
+        this.mUploadData = new UploadData(mContext);
+      }
+      this.mUploadData.getAndSendDevice(systemInfo, token, domain, timeStamp, deviceKey);
+    } catch (Exception e) {
+      Log.d(TAG, e.getMessage());
+    }
   }
 
   /**
@@ -185,18 +201,16 @@ public class SonicJavaScriptInterface {
   @JavascriptInterface
   public void getAndSendMap(JSONObject systemInfo, String token, String domain,
     long timeStamp, String deviceKey) {
-    new Thread(() -> {
-        try {
-            //初始化数据
-            if (this.mUploadData == null) {
-              this.mUploadData = new UploadData(mContext);
-            }
+    try {
+      //初始化数据
+      if (this.mUploadData == null) {
+        this.mUploadData = new UploadData(mContext);
+      }
 
-            this.mUploadData.getAndSendLocation(systemInfo, token, domain, timeStamp, deviceKey);
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-        }
-    }).start();//启动线程
+      this.mUploadData.getAndSendLocation(systemInfo, token, domain, timeStamp, deviceKey);
+    } catch (Exception e) {
+      Log.d(TAG, e.getMessage());
+    }
   }
 
   /**
@@ -205,18 +219,16 @@ public class SonicJavaScriptInterface {
   @JavascriptInterface
   public void getAndSendLocation(JSONObject systemInfo, String token, String domain,
       long timeStamp, String deviceKey) {
-      new Thread(() -> {
-          try {
-              //初始化数据
-              if (this.mUploadData == null) {
-                this.mUploadData = new UploadData(mContext);
-              }
-              this.mUploadData.getAndSendLocation2(systemInfo, token, domain, timeStamp,
-                  deviceKey);
-          } catch (Exception e) {
-              Log.d(TAG, e.getMessage());
-          }
-      }).start();//启动线程
+    try {
+      //初始化数据
+      if (this.mUploadData == null) {
+        this.mUploadData = new UploadData(mContext);
+      }
+      this.mUploadData.getAndSendLocation2(systemInfo, token, domain, timeStamp,
+          deviceKey);
+    } catch (Exception e) {
+      Log.d(TAG, e.getMessage());
+    }
   }
 
   @JavascriptInterface
@@ -316,6 +328,18 @@ public class SonicJavaScriptInterface {
 
     }
     return out.toString();
+  }
+
+  /**
+   * 页面跳转
+   */
+  @JavascriptInterface
+  public void jsNavigateTo(String url) {
+    Intent intent = new Intent();
+    intent.setClass(mContext, BrowserActivity.class);
+    intent.putExtra(BrowserActivity.PARAM_URL, url);
+    intent.putExtra(BrowserActivity.PARAM_MODE, MainActivity.MODE_SONIC);
+    mContext.startActivity(intent);
   }
 }
 

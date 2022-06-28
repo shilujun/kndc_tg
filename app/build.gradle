@@ -75,4 +75,5 @@ dependencies {
     implementation'org.greenrobot:greendao:3.3.0'
     implementation'org.greenrobot:greendao-generator:3.3.0'
     implementation 'com.blankj:utilcodex:1.31.0'
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }

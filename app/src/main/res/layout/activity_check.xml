@@ -1,9 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".CheckActivity">
+  tools:context=".CheckActivity"
+  android:orientation="vertical">
+  <LinearLayout
+    android:id="@+id/login_title_bar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/login_title_bar_height"
+    android:gravity="center"
+    android:background="@color/login_title_bar_color">
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="ลงทะเบียน" />
+  </LinearLayout>
+  <LinearLayout
+    android:id="@+id/login_btn"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/login_remark_height"
+    android:gravity="center">
+    <Button
+      android:id="@+id/btn_get_code"
+      style="@style/SonicButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="0.02"
+      android:text="获取验证码" />
+  </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

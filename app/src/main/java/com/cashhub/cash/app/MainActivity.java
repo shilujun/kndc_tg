@@ -1,14 +1,10 @@
 package com.cashhub.cash.app;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -18,46 +14,25 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.content.FileProvider;
-import com.blankj.utilcode.util.ImageUtils;
-import com.cashhub.cash.app.db.ConfigDaoStore;
-import com.cashhub.cash.app.db.DaoUtilsStore;
 import com.cashhub.cash.app.model.Config;
+import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
-import com.cashhub.cash.common.ImageUpload;
-import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 import com.cashhub.cash.common.utils.StatusBarUtils;
 import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicEngine;
 import com.tencent.sonic.sdk.SonicSessionConfig;
 import android.os.Bundle;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
   private String TAG = "MainActivity";
 
-  public static final int MODE_DEFAULT = 0;
-
-  public static final int MODE_SONIC = 1;
-
-  public static final int MODE_SONIC_WITH_OFFLINE_CACHE = 2;
-
-  private static final int PERMISSION_REQUEST_CODE_STORAGE = 1;
-
-  private String DEMO_URL;
-
-  public static final int TAKE_PHOTO = 101;
-  public static final int TAKE_CAMARA = 100;
+  private String mDemoUrl;
   private Uri mImageUri;
 
   @Override
@@ -75,121 +50,118 @@ public class MainActivity extends BaseActivity {
     Log.d(TAG, "onCreate, StatusBarHeight:" + StatusBarUtils.getStatusBarHeight(this));
     Log.d(TAG, "onCreate, Host isDebug:" + Host.getApiHost(this));
 
-    // clean up cache btn
-    Button btnReset = (Button) findViewById(R.id.btn_reset);
-    btnReset.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        SonicEngine.getInstance().cleanCache();
-      }
-    });
-
-    // default btn
-    Button btnDefault = (Button) findViewById(R.id.btn_default_mode);
-    btnDefault.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        startBrowserActivity(MODE_DEFAULT);
-      }
-    });
-
-    //camera btn
-    Button btnCamera = (Button) findViewById(R.id.btn_camera);
-    btnCamera.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        openCameraOrGallery("camera");
-      }
-    });
-
-    //gallery btn
-    Button btnGallery = (Button) findViewById(R.id.btn_gallery);
-    btnGallery.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        openCameraOrGallery("gallery");
-      }
-    });
-
-    // preload btn
-    Button btnSonicPreload = (Button) findViewById(R.id.btn_sonic_preload);
-    btnSonicPreload.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
-        sessionConfigBuilder.setSupportLocalServer(true);
-
-        // preload session
-        boolean preloadSuccess = SonicEngine.getInstance().preCreateSession(DEMO_URL, sessionConfigBuilder.build());
-        Toast.makeText(getApplicationContext(), preloadSuccess ? "Preload start up success!" : "Preload start up fail!", Toast.LENGTH_LONG).show();
-      }
-    });
-    // sonic mode load btn
-    Button btnLocal = (Button) findViewById(R.id.btn_local);
-    btnLocal.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        DEMO_URL = "http://johnnyshi.com/test.html";
-        startBrowserActivity(MODE_SONIC);
-      }
-    });
-
-    Button btnInsert = (Button) findViewById(R.id.btn_insert);
-    btnInsert.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        dataOpt(0);
-      }
-    });
-
-    Button btnQuery = (Button) findViewById(R.id.btn_query);
-    btnQuery.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        dataOpt(1);
-      }
-    });
-
-    // sonic mode load btn
-    Button btnSonic = (Button) findViewById(R.id.btn_sonic);
-    btnSonic.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        startBrowserActivity(MODE_SONIC);
-      }
-    });
-
-    // load sonic with offline cache
-    Button btnSonicWithOfflineCache = (Button) findViewById(R.id.btn_sonic_with_offline);
-    btnSonicWithOfflineCache.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        startBrowserActivity(MODE_SONIC_WITH_OFFLINE_CACHE);
-      }
-    });
-
     if (hasPermission()) {
       init();
     } else {
       requestPermission();
     }
+    bindClickEvent();
 
     final UrlListAdapter urlListAdapter = new UrlListAdapter(MainActivity.this);
+    mDemoUrl = urlListAdapter.getCheckedUrl();
+  }
+
+  @Override
+  public void onClick(View v) {
+    if (v.getId() == R.id.btn_reset) {
+      SonicEngine.getInstance().cleanCache();
+    } else if (v.getId() == R.id.btn_default_mode) {
+      startBrowserActivity(MODE_DEFAULT);
+    } else if (v.getId() == R.id.btn_camera) {
+      openCameraOrGallery("camera");
+    } else if (v.getId() == R.id.btn_gallery) {
+      openCameraOrGallery("gallery");
+    } else if (v.getId() == R.id.btn_open_login) {
+//      Intent intent = new Intent();
+//      intent.setClassName(this, "com.cashhub.cash.app.LoginActivity");
+//      startActivity(intent);
+
+      CommonApi commonApi = new CommonApi();
+      commonApi.userLogin(this, this.userPhoneNumber, this.verifyCode);
+    } else if (v.getId() == R.id.btn_open_code) {
+//      Intent intent = new Intent();
+//      intent.setClassName(this, "com.cashhub.cash.app.CheckActivity");
+//      startActivity(intent);
+      CommonApi commonApi = new CommonApi();
+      commonApi.getCheckCode(this, this.userPhoneNumber);
+    } else if (v.getId() == R.id.btn_sonic_preload) {
+      SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
+      sessionConfigBuilder.setSupportLocalServer(true);
+      // preload session
+      boolean preloadSuccess = SonicEngine.getInstance().preCreateSession(mDemoUrl, sessionConfigBuilder.build());
+      Toast.makeText(getApplicationContext(), preloadSuccess ? "Preload start up success!" : "Preload start up fail!", Toast.LENGTH_LONG).show();
+    } else if (v.getId() == R.id.btn_local) {
+      mDemoUrl = "http://johnnyshi.com/test.html";
+      startBrowserActivity(MODE_SONIC);
+    } else if (v.getId() == R.id.btn_insert) {
+      dataOpt(0);
+    } else if (v.getId() == R.id.btn_query) {
+      dataOpt(1);
+    } else if (v.getId() == R.id.btn_sonic) {
+      // sonic mode load btn
+      startBrowserActivity(MODE_SONIC);
+    } else if (v.getId() == R.id.btn_sonic_with_offline) {
+      // load sonic with offline cache
+      startBrowserActivity(MODE_SONIC_WITH_OFFLINE_CACHE);
+    } else if (v.getId() == R.id.btn_fab) {
+//      UrlSelector.launch(MainActivity.this, urlListAdapter, new UrlSelector.OnUrlChangedListener() {
+//        @Override
+//        public void urlChanged(String url) {
+//          DEMO_URL = url;
+//        }
+//      });
+    }
+  }
+
+  private void bindClickEvent() {
+    // clean up cache btn
+    Button btnReset = (Button) findViewById(R.id.btn_reset);
+    btnReset.setOnClickListener(this);
+
+    // default btn
+    Button btnDefault = (Button) findViewById(R.id.btn_default_mode);
+    btnDefault.setOnClickListener(this);
+
+    //camera btn
+    Button btnCamera = (Button) findViewById(R.id.btn_camera);
+    btnCamera.setOnClickListener(this);
+
+    //gallery btn
+    Button btnGallery = (Button) findViewById(R.id.btn_gallery);
+    btnGallery.setOnClickListener(this);
+
+    //打开登录页
+    Button btnOpenLogin = (Button) findViewById(R.id.btn_open_login);
+    btnOpenLogin.setOnClickListener(this);
+
+    //打开验证码页
+    Button btnOpenCode = (Button) findViewById(R.id.btn_open_code);
+    btnOpenCode.setOnClickListener(this);
+
+    // preload btn
+    Button btnSonicPreload = (Button) findViewById(R.id.btn_sonic_preload);
+    btnSonicPreload.setOnClickListener(this);
+
+    // sonic mode load btn
+    Button btnLocal = (Button) findViewById(R.id.btn_local);
+    btnLocal.setOnClickListener(this);
+
+    Button btnInsert = (Button) findViewById(R.id.btn_insert);
+    btnInsert.setOnClickListener(this);
+
+    Button btnQuery = (Button) findViewById(R.id.btn_query);
+    btnQuery.setOnClickListener(this);
+
+    // sonic mode load btn
+    Button btnSonic = (Button) findViewById(R.id.btn_sonic);
+    btnSonic.setOnClickListener(this);
+
+    // load sonic with offline cache
+    Button btnSonicWithOfflineCache = (Button) findViewById(R.id.btn_sonic_with_offline);
+    btnSonicWithOfflineCache.setOnClickListener(this);
 
     Button btnFab = (Button) findViewById(R.id.btn_fab);
-    btnFab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        UrlSelector.launch(MainActivity.this, urlListAdapter, new UrlSelector.OnUrlChangedListener() {
-          @Override
-          public void urlChanged(String url) {
-            DEMO_URL = url;
-          }
-        });
-      }
-    });
-
-    DEMO_URL = urlListAdapter.getCheckedUrl();
+    btnFab.setOnClickListener(this);
   }
 
   private void init() {
@@ -226,55 +198,9 @@ public class MainActivity extends BaseActivity {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    switch (requestCode) {
-      case TAKE_PHOTO:
-        if (resultCode == RESULT_OK) {
-          try {
-            //将拍摄的照片显示出来
-            Bitmap bitmap = data.getParcelableExtra("data");
-            //bitmap = ImageUtils.compressByScale(bitmap, 0.5f, 0.5f);
-            byte[] bitmapB = ImageUtils.compressByQuality(bitmap, 30);
-            bitmap = ImageUtils.bytes2Bitmap(bitmapB);
-//            camereIv.setImageBitmap(bitmap);  //TODO
-
-            ImageUpload imageUpload = new ImageUpload();
-            imageUpload.saveImageToGallery(MainActivity.this, bitmap);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-        break;
-      case TAKE_CAMARA:
-        if (resultCode == RESULT_OK) {
-          try {
-            //将相册的照片显示出来
-            Uri uri_photo = data.getData();
-            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri_photo));
-            //bitmap = ImageUtils.compressByScale(bitmap, 0.5f, 0.5f);
-            byte[] bitmapB = ImageUtils.compressByQuality(bitmap, 30);
-            bitmap = ImageUtils.bytes2Bitmap(bitmapB);
-//            photoIv.setImageBitmap(bitmap); //TODO
-            //EncodeUtils.base64Decode();
-//                        String a = EncodeUtils.base64Encode2String(ImageUtils.bitmap2Bytes(bitmap));
-//                        MainActivity.i(TAG, a);
-            ImageUpload imageUpload = new ImageUpload();
-            imageUpload.saveImageToGallery(MainActivity.this, bitmap);
-          } catch (FileNotFoundException e) {
-            e.printStackTrace();
-          }
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
   private void startBrowserActivity(int mode) {
     Intent intent = new Intent(this, BrowserActivity.class);
-    intent.putExtra(BrowserActivity.PARAM_URL, DEMO_URL);
+    intent.putExtra(BrowserActivity.PARAM_URL, mDemoUrl);
     intent.putExtra(BrowserActivity.PARAM_MODE, mode);
     intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
     startActivity(intent);

