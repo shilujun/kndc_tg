@@ -1,6 +1,8 @@
 package com.cashhub.cash.app.pages;
 
 import android.content.Intent;
+import android.view.Window;
+import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,8 +13,8 @@ public class SplashActivity extends BaseActivity {
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
-    setFullScreen(this);
     super.onCreate(savedInstanceState);
+    setFullScreen(this);
 
     if (isLauncherStart()) {
       return;
