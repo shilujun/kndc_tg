@@ -13,6 +13,15 @@ public class CommonApi {
 
   private static final String TAG = "CommonApi";
 
+  private static CommonApi mInstance;
+
+  public static synchronized CommonApi getInstance() {
+    if (mInstance == null) {
+      mInstance = new CommonApi();
+    }
+    return mInstance;
+  }
+
   /**
    * 获取验证码
    */

@@ -79,6 +79,17 @@ public class CommonUtil {
   }
 
   /**
+   * 判断是否是一个合法的越南手机号
+   */
+  public static boolean isVietnamMobile(String mobiles) {
+    String telRegex = "^0[689]\\d{8}$";
+    if(TextUtils.isEmpty(mobiles)) {
+      return false;
+    }
+    return mobiles.matches(telRegex);
+  }
+
+  /**
    * 判断是否是一个合法的手机号
    */
   public static boolean isMobileNO(String mobiles) {

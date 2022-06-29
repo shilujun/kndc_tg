@@ -67,18 +67,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     } else if (v.getId() == R.id.btn_gallery) {
       openCameraOrGallery("gallery");
     } else if (v.getId() == R.id.btn_open_login) {
-//      Intent intent = new Intent();
-//      intent.setClassName(this, "com.cashhub.cash.app.LoginActivity");
-//      startActivity(intent);
+      Intent intent = new Intent();
+      intent.setClassName(this, "com.cashhub.cash.app.LoginActivity");
+      startActivity(intent);
 
-      CommonApi commonApi = new CommonApi();
-      commonApi.userLogin(this, this.userPhoneNumber, this.verifyCode);
+//      CommonApi commonApi = new CommonApi();
+//      commonApi.userLogin(this, this.userPhoneNumber, this.verifyCode);
     } else if (v.getId() == R.id.btn_open_code) {
-//      Intent intent = new Intent();
-//      intent.setClassName(this, "com.cashhub.cash.app.CheckActivity");
-//      startActivity(intent);
-      CommonApi commonApi = new CommonApi();
-      commonApi.getCheckCode(this, this.userPhoneNumber);
+      Intent intent = new Intent();
+      intent.setClassName(this, "com.cashhub.cash.app.CheckActivity");
+      startActivity(intent);
+//      CommonApi commonApi = new CommonApi();
+//      commonApi.getCheckCode(this, this.userPhoneNumber);
     } else if (v.getId() == R.id.btn_sonic_preload) {
       SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
       sessionConfigBuilder.setSupportLocalServer(true);

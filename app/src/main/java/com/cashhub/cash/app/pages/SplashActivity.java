@@ -19,12 +19,12 @@ public class SplashActivity extends BaseActivity {
     if (isLauncherStart()) {
       return;
     }
-    //TODO 调试使用  需要去除
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+//    //TODO 调试使用  需要去除
+//    try {
+//      Thread.sleep(5000);
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
 
     Intent intent = new Intent();
     intent.setClass(SplashActivity.this, MainActivity.class);
