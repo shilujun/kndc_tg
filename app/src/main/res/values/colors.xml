@@ -23,4 +23,9 @@
   <color name="button_text">#FFFFFF</color>
   <color name="login_title_bar_color">#049DFF</color>
   <color name="login_remark">#00000000</color>
+  <color name="light_blue_400">#FF29B6F6</color>
+  <color name="light_blue_600">#FF039BE5</color>
+  <color name="gray_400">#FFBDBDBD</color>
+  <color name="gray_600">#FF757575</color>
+  <color name="common_blue_0090FF">#0090FF</color>
 </resources>

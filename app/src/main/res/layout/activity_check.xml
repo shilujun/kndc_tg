@@ -1,34 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".CheckActivity"
-  android:orientation="vertical">
+  android:orientation="vertical"
+  android:gravity="center_horizontal"
+  tools:context=".LoginActivity">
   <LinearLayout
-    android:id="@+id/login_title_bar"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/login_title_bar_height"
-    android:gravity="center"
-    android:background="@color/login_title_bar_color">
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="ลงทะเบียน" />
-  </LinearLayout>
-  <LinearLayout
-    android:id="@+id/login_btn"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/login_remark_height"
-    android:gravity="center">
-    <Button
-      android:id="@+id/btn_get_code"
-      style="@style/SonicButton"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_weight="0.02"
-      android:text="获取验证码" />
-  </LinearLayout>
+      android:layout_height="@dimen/login_title_bar_height"
+      android:gravity="center"
+      android:background="@color/color_2681E3">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_centerInParent="true"
+        android:text="ลงทะเบียน" />
+    </LinearLayout>
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/login_remark_height">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_margin="@dimen/normal_margin"
+        android:textColor="#333333"
+        android:text="ยินดีต้อนรับ" />
+    </LinearLayout>
+    <com.cashhub.cash.app.widget.SecurityCodeView
+      android:id="@+id/scv_verify_code"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
 
-</LinearLayout>
+    </com.cashhub.cash.app.widget.SecurityCodeView>
+    <LinearLayout
+      android:id="@+id/lyt_login"
+      android:layout_width="match_parent"
+      android:background="@drawable/button_round_bg"
+      android:layout_height="@dimen/login_remark_height"
+      android:gravity="center">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textFontWeight="@integer/m3_sys_motion_duration_900"
+        android:inputType="phone"
+        android:text="ส่ง" />
+    </LinearLayout>
+  </LinearLayout>
+  <RelativeLayout
+    android:id="@+id/rlt_code"
+    android:layout_marginBottom="68dp"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:gravity="center"
+    android:layout_alignParentBottom="true">
+    <LinearLayout
+      android:layout_width="116dp"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:background="@drawable/customer_service_bg">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="3dp"
+        android:gravity="center_vertical"
+        android:textSize="11sp"
+        android:textFontWeight="@integer/m3_sys_motion_duration_900"
+        android:text="บริการออนไลน์" />
+    </LinearLayout>
+  </RelativeLayout>
+</RelativeLayout>

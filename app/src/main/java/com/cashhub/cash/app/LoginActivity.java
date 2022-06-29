@@ -3,6 +3,7 @@ package com.cashhub.cash.app;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -88,6 +89,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
     CommonApi.getInstance().getCheckCode(this, phoneNum);
     Intent intent = new Intent();
+    intent.putExtra(CheckActivity.LOGIN_PHONE_NUM, phoneNum);
     intent.setClassName(this, "com.cashhub.cash.app.CheckActivity");
     startActivity(intent);
   }

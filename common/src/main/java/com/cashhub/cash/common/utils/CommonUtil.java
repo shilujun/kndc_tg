@@ -9,13 +9,16 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.Window;
+import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -136,8 +139,7 @@ public class CommonUtil {
    * @return
    */
   public static int getTitleBarHeight(Context context) {
-    Rect rectangle= new Rect();
-    return  40;
+    return  0;
   }
 
   /**
