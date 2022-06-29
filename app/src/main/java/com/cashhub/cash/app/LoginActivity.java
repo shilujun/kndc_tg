@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import java.util.HashMap;
+import android.widget.LinearLayout;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
@@ -15,14 +15,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
 
-    Button btnLogin = findViewById(R.id.btn_login);
-    btnLogin.setOnClickListener(this);
+    LinearLayout lytVerifyCode = findViewById(R.id.lyt_verify_code);
+    lytVerifyCode.setOnClickListener(this);
   }
 
   @Override
   public void onClick(View v) {
-    if (v.getId() == R.id.btn_login) {
-      Log.d(TAG,"buttonSync onClick");
+    if (v.getId() == R.id.lyt_verify_code) {
+      Log.d(TAG,"lytVerifyCode onClick");
     }
   }
 }

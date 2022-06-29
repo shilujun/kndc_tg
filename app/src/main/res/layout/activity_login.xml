@@ -7,19 +7,20 @@
   android:orientation="vertical"
   tools:context=".LoginActivity">
   <LinearLayout
-    android:id="@+id/login_title_bar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/login_title_bar_height"
     android:gravity="center"
-    android:background="@color/login_title_bar_color">
+    android:background="@color/color_2681E3">
     <TextView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:textSize="32px"
+      android:textStyle="bold"
+      android:textColor="#fff"
       android:layout_centerInParent="true"
       android:text="ลงทะเบียน" />
   </LinearLayout>
   <LinearLayout
-    android:id="@+id/login_remark"
     android:layout_below="@+id/login_title_bar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/login_remark_height"
@@ -32,16 +33,128 @@
       android:text="ยินดีต้อนรับ!" />
   </LinearLayout>
   <LinearLayout
-    android:id="@+id/lyt_login"
+    android:layout_below="@+id/login_title_bar"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/login_remark_height"
-    android:gravity="center">
-    <Button
-      android:id="@+id/btn_login"
-      style="@style/SonicButton"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:orientation="horizontal">
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textFontWeight="@integer/m3_sys_motion_duration_900"
+        android:layout_margin="@dimen/normal_margin"
+        android:text="ยินดีต้อนรับ!" />
+    </LinearLayout>
+    <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_weight="0.02"
-      android:text="登录" />
+      android:orientation="vertical">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textFontWeight="@integer/m3_sys_motion_duration_900"
+          android:layout_margin="@dimen/normal_margin"
+          android:text="ยินดีต้อนรับ!" />
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textFontWeight="@integer/m3_sys_motion_duration_900"
+          android:layout_margin="@dimen/normal_margin"
+          android:text="ยินดีต้อนรับ!" />
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textFontWeight="@integer/m3_sys_motion_duration_900"
+          android:layout_margin="@dimen/normal_margin"
+          android:text="ยินดีต้อนรับ!" />
+      </LinearLayout>
+    </LinearLayout>
+
+  </LinearLayout>
+  <LinearLayout
+    android:layout_below="@+id/login_title_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:orientation="horizontal">
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent">
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textFontWeight="@integer/m3_sys_motion_duration_900"
+        android:layout_margin="@dimen/normal_margin"
+        android:text="ยินดีต้อนรับ!" />
+    </LinearLayout>
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textFontWeight="@integer/m3_sys_motion_duration_900"
+          android:layout_margin="@dimen/normal_margin"
+          android:text="ยินดีต้อนรับ!" />
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textFontWeight="@integer/m3_sys_motion_duration_900"
+          android:layout_margin="@dimen/normal_margin"
+          android:text="ยินดีต้อนรับ!" />
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textFontWeight="@integer/m3_sys_motion_duration_900"
+          android:layout_margin="@dimen/normal_margin"
+          android:text="ยินดีต้อนรับ!" />
+      </LinearLayout>
+    </LinearLayout>
+
+  </LinearLayout>
+  <LinearLayout
+    android:id="@+id/lyt_verify_code"
+    android:layout_width="match_parent"
+    android:background="@drawable/button_round_bg"
+    android:layout_height="@dimen/login_remark_height"
+    android:gravity="center">
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textFontWeight="@integer/m3_sys_motion_duration_900"
+      android:layout_margin="@dimen/normal_margin"
+      android:text="ยินดีต้อนรับ!" />
   </LinearLayout>
 </LinearLayout>
