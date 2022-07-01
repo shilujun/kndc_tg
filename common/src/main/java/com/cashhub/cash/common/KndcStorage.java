@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class KndcStorage {
   public static String USER_TOKEN = "user_token";
+  public static String USER_PHONE = "user_phone";
 
   private Map<String, String> mDataMap = new HashMap<>();
 

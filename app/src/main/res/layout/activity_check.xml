@@ -44,6 +44,18 @@
 
     </com.cashhub.cash.app.widget.SecurityCodeView>
     <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/login_remark_height"
+      android:gravity="center">
+      <TextView
+        android:id="@+id/txt_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textFontWeight="@integer/m3_sys_motion_duration_900"
+        android:inputType="phone"
+        android:text="" />
+    </LinearLayout>
+    <LinearLayout
       android:id="@+id/lyt_login"
       android:layout_width="match_parent"
       android:background="@drawable/button_round_bg"
@@ -80,4 +92,15 @@
         android:text="บริการออนไลน์" />
     </LinearLayout>
   </RelativeLayout>
+  <FrameLayout
+    android:id="@+id/fl_bg"
+    android:visibility="gone"
+    android:background="#000000"
+    android:alpha="0.6"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
+  <com.cashhub.cash.app.widget.PopWinBottomLayout
+    android:id="@+id/pop_win_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
 </RelativeLayout>

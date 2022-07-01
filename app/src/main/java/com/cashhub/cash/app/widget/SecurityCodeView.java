@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.cashhub.cash.app.R;
 
 /**
- * Created by xiaviv on 16/9/27.
+ * Created on 2022.06.28.
  */
 
 public class SecurityCodeView extends RelativeLayout {
