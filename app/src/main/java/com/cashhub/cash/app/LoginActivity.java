@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -19,7 +20,7 @@ import com.cashhub.cash.common.utils.CommonUtil;
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
   private static final String TAG = "LoginActivity";
-  private LinearLayout lytVerifyCode;
+  private LinearLayout lltVerifyCode;
   private EditText editPhoneTxt;
   private ImageView ivClear;
   private ImageView ivError;
@@ -27,14 +28,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   private ImageView ivCustomerService;
   private CheckBox chxProtocol;
   private TextView tvTips;
+  private TextView tvProtocol;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
 
-    lytVerifyCode = findViewById(R.id.lyt_verify_code);
-    lytVerifyCode.setOnClickListener(this);
+    lltVerifyCode = findViewById(R.id.llt_verify_code);
+    lltVerifyCode.setOnClickListener(this);
 
     editPhoneTxt = findViewById(R.id.edit_phone_num);
 
@@ -45,6 +47,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     ivCustomerService = findViewById(R.id.iv_customer_service);
     ivCustomerService.setOnClickListener(this);
 
+    tvProtocol = findViewById(R.id.txt_protocol);
+    tvProtocol.setMovementMethod(LinkMovementMethod.getInstance());
+
     ivError = findViewById(R.id.iv_error);
     chxProtocol = findViewById(R.id.chx_protocol);
     tvTips = findViewById(R.id.tv_tips);
@@ -54,7 +59,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   @Override
   public void onClick(View v) {
     int id = v.getId();
-    if (id == R.id.lyt_verify_code) {
+    if (id == R.id.llt_verify_code) {
       if(!chxProtocol.isChecked()) {
         chxProtocol.didTouchFocusSelect();
         return;
@@ -74,6 +79,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       editPhoneTxt.setText("");
     } else if(id == R.id.iv_customer_service) {
       //人工客服
+      Intent intent = new Intent(this, BrowserActivity.class);
+      intent.putExtra(BrowserActivity.PARAM_URL, "https://www.baidu.com");
+      intent.putExtra(BrowserActivity.PARAM_MODE, 1);
+      intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
+      startActivity(intent);
     }
   }
 
@@ -82,17 +92,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     Log.d(TAG,"verifyCodeSubmit phoneNum:" + phoneNum);
     if(!CommonUtil.isVietnamMobile(phoneNum)) {
       Log.d(TAG,"is Not phone num");
-      if(ivError != null) {
-        ivError.setVisibility(View.VISIBLE);
-      }
-
-      if(tvTips != null) {
-        tvTips.setTextColor(getResources().getColor(R.color.colorRed, this.getTheme()));
-      }
-
-      if(ivGap != null) {
-        ivGap.setImageDrawable(getDrawable(R.drawable.bg_color_ff1111));
-      }
+      ivError.setVisibility(View.VISIBLE);
+      tvTips.setTextColor(getResources().getColor(R.color.colorRed, this.getTheme()));
+      ivGap.setImageDrawable(getDrawable(R.drawable.bg_color_ff1111));
+      lltVerifyCode.setBackground(getDrawable(R.drawable.button_round_bg_unable));
       return;
     }
     CommonApi.getInstance().getCheckCode(this, phoneNum);
@@ -105,17 +108,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   //重置View
   private void viewReset() {
     Log.d(TAG,"verifyCodeSubmit");
-    if(ivError != null) {
-      ivError.setVisibility(View.GONE);
-    }
-
-    if(tvTips != null) {
-      tvTips.setTextColor(getResources().getColor(R.color.btn_light, this.getTheme()));
-    }
-
-    if(ivGap != null) {
-      ivGap.setImageDrawable(getDrawable(R.drawable.bg_color));
-    }
+    ivError.setVisibility(View.GONE);
+    tvTips.setTextColor(getResources().getColor(R.color.btn_light, this.getTheme()));
+    ivGap.setImageDrawable(getDrawable(R.drawable.bg_color));
+    lltVerifyCode.setBackground(getDrawable(R.drawable.button_round_bg));
   }
 
   //EditText 失去焦点
