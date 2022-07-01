@@ -13,7 +13,7 @@
     android:orientation="vertical">
     <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/login_title_bar_height"
+      android:layout_height="@dimen/dp_68"
       android:gravity="center"
       android:background="@color/color_2681E3">
       <TextView
@@ -27,28 +27,28 @@
     </LinearLayout>
     <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/login_remark_height">
+      android:layout_height="@dimen/dp_68">
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_margin="@dimen/normal_margin"
+        android:layout_margin="@dimen/common_margin"
         android:textColor="#333333"
         android:text="ยินดีต้อนรับ" />
     </LinearLayout>
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_margin="@dimen/normal_margin"
+      android:layout_margin="@dimen/common_margin"
       android:background="@color/transparent"
       android:orientation="horizontal">
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textFontWeight="@integer/m3_sys_motion_duration_900"
-        android:layout_marginRight="@dimen/normal_margin"
-        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginRight="@dimen/common_margin"
+        android:layout_marginTop="@dimen/common_margin"
         android:text="+66" />
       <LinearLayout
         android:layout_width="match_parent"
@@ -113,12 +113,12 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:background="@color/transparent"
-      android:layout_margin="@dimen/normal_margin"
+      android:layout_margin="@dimen/common_margin"
       android:orientation="horizontal">
       <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/normal_margin">
+        android:layout_marginRight="@dimen/common_margin">
         <CheckBox
           android:id="@+id/chx_protocol"
           android:layout_width="24dp"
@@ -141,7 +141,7 @@
       android:id="@+id/lyt_verify_code"
       android:layout_width="match_parent"
       android:background="@drawable/button_round_bg"
-      android:layout_height="@dimen/login_remark_height"
+      android:layout_height="@dimen/dp_68"
       android:gravity="center">
       <TextView
         android:layout_width="wrap_content"

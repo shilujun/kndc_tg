@@ -16,8 +16,8 @@
     android:textAllCaps="false"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="53dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginStart="@dimen/dp_53"
+    android:layout_marginBottom="@dimen/dp_8"
     android:text="android调用JS方法" />
 
   <Button
@@ -25,17 +25,17 @@
     android:textAllCaps="false"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="53dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginStart="@dimen/dp_53"
+    android:layout_marginBottom="@dimen/dp_8"
     android:text="buttonAsync" />
 
 
-  <!--  <Button-->
+<!--    <Button-->
 <!--    android:id="@+id/btn_refresh"-->
 <!--    android:layout_width="wrap_content"-->
 <!--    android:layout_height="wrap_content"-->
 <!--    android:layout_gravity="bottom|end"-->
-<!--    android:layout_margin="16dp"-->
+<!--    android:layout_margin="@dimen/common_margin"-->
 <!--    app:srcCompat="@android:drawable/ic_menu_rotate" />-->
 
 </LinearLayout>

@@ -13,7 +13,7 @@
     android:orientation="vertical">
     <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/login_title_bar_height"
+      android:layout_height="@dimen/dp_68"
       android:gravity="center"
       android:background="@color/color_2681E3">
       <TextView
@@ -28,20 +28,20 @@
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_margin="@dimen/normal_margin"
+      android:layout_margin="@dimen/common_margin"
       android:orientation="vertical">
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginTop="@dimen/common_margin"
         android:textColor="#333333"
         android:text="โปรดกรอกรหัส OTP" />
 
       <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginTop="@dimen/common_margin"
         android:layout_height="wrap_content">
         <TextView
           android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
     </com.cashhub.cash.app.widget.SecurityCodeView>
     <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/login_remark_height"
+      android:layout_height="@dimen/dp_68"
       android:gravity="center">
       <TextView
         android:id="@+id/txt_timer"
@@ -79,11 +79,11 @@
         android:text="" />
       <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/login_remark_height">
+        android:layout_height="@dimen/dp_68">
         <LinearLayout
           android:id="@+id/lyt_login"
           android:layout_width="wrap_content"
-          android:layout_height="@dimen/login_remark_height"
+          android:layout_height="@dimen/dp_68"
           android:layout_weight="1"
           android:gravity="center_vertical">
           <TextView
@@ -103,7 +103,7 @@
         <LinearLayout
           android:id="@+id/llt_not_get_code"
           android:gravity="center_vertical"
-          android:layout_marginRight="@dimen/normal_margin"
+          android:layout_marginRight="@dimen/dp_68"
           android:layout_width="wrap_content"
           android:layout_height="match_parent">
           <TextView

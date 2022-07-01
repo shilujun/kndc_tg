@@ -17,8 +17,8 @@
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="@dimen/dp_0"
+        android:layout_weight="@dimen/dp_1"
         android:choiceMode="singleChoice" />
 
     <LinearLayout
@@ -27,12 +27,12 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:padding="@dimen/dp_10"
         android:visibility="gone">
 
         <EditText
             android:id="@+id/text_new_url"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/http_prefix" />
