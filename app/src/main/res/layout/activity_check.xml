@@ -27,21 +27,44 @@
     </LinearLayout>
     <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/login_remark_height">
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/normal_margin"
+      android:orientation="vertical">
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_margin="@dimen/normal_margin"
+        android:layout_marginTop="@dimen/normal_margin"
         android:textColor="#333333"
-        android:text="ยินดีต้อนรับ" />
+        android:text="โปรดกรอกรหัส OTP" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_height="wrap_content">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textStyle="bold"
+          android:textSize="20sp"
+          android:textColor="#333333"
+          android:text="ที่ส่งไปยังหมายเลข +91 " />
+        <TextView
+          android:id="@+id/txtPhoneNum"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textStyle="bold"
+          android:textSize="20sp"
+          android:layout_marginLeft="4dp"
+          android:textColor="#333333"
+          android:text="" />
+      </LinearLayout>
     </LinearLayout>
     <com.cashhub.cash.app.widget.SecurityCodeView
       android:id="@+id/scv_verify_code"
       android:layout_width="match_parent"
       android:layout_height="match_parent">
-
     </com.cashhub.cash.app.widget.SecurityCodeView>
     <LinearLayout
       android:layout_width="match_parent"
@@ -54,19 +77,43 @@
         android:textFontWeight="@integer/m3_sys_motion_duration_900"
         android:inputType="phone"
         android:text="" />
-    </LinearLayout>
-    <LinearLayout
-      android:id="@+id/lyt_login"
-      android:layout_width="match_parent"
-      android:background="@drawable/button_round_bg"
-      android:layout_height="@dimen/login_remark_height"
-      android:gravity="center">
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textFontWeight="@integer/m3_sys_motion_duration_900"
-        android:inputType="phone"
-        android:text="ส่ง" />
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/login_remark_height">
+        <LinearLayout
+          android:id="@+id/lyt_login"
+          android:layout_width="wrap_content"
+          android:layout_height="@dimen/login_remark_height"
+          android:layout_weight="1"
+          android:gravity="center_vertical">
+          <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textFontWeight="@integer/m3_sys_motion_duration_900"
+            android:inputType="phone"
+            android:text="ส่งรหัสอีกครั้ง" />
+          <TextView
+            android:id="@id/txt_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textFontWeight="@integer/m3_sys_motion_duration_900"
+            android:inputType="phone"
+            android:text="ส่งรหัสอีกครั้ง" />
+        </LinearLayout>
+        <LinearLayout
+          android:id="@+id/llt_not_get_code"
+          android:gravity="center_vertical"
+          android:layout_marginRight="@dimen/normal_margin"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent">
+          <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textFontWeight="@integer/m3_sys_motion_duration_900"
+            android:inputType="phone"
+            android:text="ไม่สามารถรับรหัสยืนยัน?" />
+        </LinearLayout>
+      </LinearLayout>
     </LinearLayout>
   </LinearLayout>
   <RelativeLayout
