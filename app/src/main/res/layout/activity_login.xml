@@ -132,8 +132,7 @@
         android:id="@+id/txt_protocol"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:text="ฉันยอมรับข้อกำหนด "/>
+        android:text="@string/user_protocol" />
     </LinearLayout>
 
     <LinearLayout
