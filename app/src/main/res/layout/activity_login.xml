@@ -153,25 +153,16 @@
   </LinearLayout>
   <RelativeLayout
     android:id="@+id/rlt_code"
-    android:layout_marginBottom="68dp"
+    android:layout_marginBottom="@dimen/dp_48"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="wrap_content"
     android:gravity="center"
     android:layout_alignParentBottom="true">
-    <LinearLayout
-      android:layout_width="116dp"
-      android:layout_height="match_parent"
+    <ImageView
+      android:id="@+id/iv_customer_service"
+      android:layout_width="@dimen/dp_108"
+      android:layout_height="@dimen/dp_32"
       android:gravity="center"
-      android:background="@drawable/customer_service_bg">
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="3dp"
-        android:gravity="center_vertical"
-        android:textSize="11sp"
-        android:textFontWeight="@integer/m3_sys_motion_duration_900"
-        android:text="บริการออนไลน์" />
-    </LinearLayout>
+      android:src="@drawable/customer_service" />
   </RelativeLayout>
 </RelativeLayout>

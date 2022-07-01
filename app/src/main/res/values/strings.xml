@@ -31,4 +31,5 @@
   <string name="invalid_password">Password must be >5 characters</string>
   <string name="login_failed">"Login failed"</string>
   <string name="title_activity_webview">WebviewActivity</string>
+  <string name="code_view_title">รับรหัสยืนยัน</string>
 </resources>

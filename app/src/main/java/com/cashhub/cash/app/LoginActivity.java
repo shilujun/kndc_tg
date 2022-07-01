@@ -24,6 +24,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   private ImageView ivClear;
   private ImageView ivError;
   private ImageView ivGap;
+  private ImageView ivCustomerService;
   private CheckBox chxProtocol;
   private TextView tvTips;
 
@@ -36,9 +37,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     lytVerifyCode.setOnClickListener(this);
 
     editPhoneTxt = findViewById(R.id.edit_phone_num);
+
     ivClear = findViewById(R.id.iv_clear);
     initEditClearListener(editPhoneTxt, ivClear);
     ivClear.setOnClickListener(this);
+
+    ivCustomerService = findViewById(R.id.iv_customer_service);
+    ivCustomerService.setOnClickListener(this);
 
     ivError = findViewById(R.id.iv_error);
     chxProtocol = findViewById(R.id.chx_protocol);
@@ -48,7 +53,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
   @Override
   public void onClick(View v) {
-    if (v.getId() == R.id.lyt_verify_code) {
+    int id = v.getId();
+    if (id == R.id.lyt_verify_code) {
       if(!chxProtocol.isChecked()) {
         chxProtocol.didTouchFocusSelect();
         return;
@@ -59,13 +65,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         return;
       }
       Log.d(TAG,"lytVerifyCode onClick");
-    } else if(v.getId() == R.id.iv_clear) {
+    } else if(id == R.id.iv_clear) {
       Log.d(TAG, "onClick: iv_clear");
       if(editPhoneTxt == null) {
         Log.d(TAG, "onClick: editPhoneTxt is NULL");
         return;
       }
       editPhoneTxt.setText("");
+    } else if(id == R.id.iv_customer_service) {
+      //人工客服
     }
   }
 

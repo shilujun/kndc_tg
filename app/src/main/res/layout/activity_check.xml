@@ -11,20 +11,34 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-    <LinearLayout
+    <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/dp_68"
+      android:layout_height="@dimen/dp_56"
       android:gravity="center"
       android:background="@color/color_2681E3">
+      <LinearLayout
+        android:id="@+id/llt_back"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="match_parent"
+        android:gravity="center">
+        <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:src="@drawable/ic_icon_back"/>
+      </LinearLayout>
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="@dimen/sp_20"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:layout_centerInParent="true"
-        android:text="ลงทะเบียน" />
-    </LinearLayout>
+        android:textColor="@color/white"
+        android:text="@string/code_view_title" />
+      </LinearLayout>
+    </RelativeLayout>
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -33,111 +47,92 @@
       <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:layout_marginTop="@dimen/common_margin"
-        android:textColor="#333333"
+        android:textSize="@dimen/sp_20"
+        android:layout_marginTop="@dimen/dp_8"
+        android:textColor="@color/black"
         android:text="โปรดกรอกรหัส OTP" />
 
       <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/common_margin"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10">
         <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:textStyle="bold"
-          android:textSize="20sp"
-          android:textColor="#333333"
+          android:textSize="@dimen/sp_16"
+          android:textColor="@color/black"
           android:text="ที่ส่งไปยังหมายเลข +91 " />
         <TextView
           android:id="@+id/txtPhoneNum"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:textStyle="bold"
-          android:textSize="20sp"
+          android:textSize="@dimen/sp_16"
           android:layout_marginLeft="4dp"
-          android:textColor="#333333"
+          android:textColor="@color/black"
           android:text="" />
       </LinearLayout>
     </LinearLayout>
     <com.cashhub.cash.app.widget.SecurityCodeView
       android:id="@+id/scv_verify_code"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/common_margin"
+      android:layout_marginLeft="@dimen/common_margin">
     </com.cashhub.cash.app.widget.SecurityCodeView>
     <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="@dimen/dp_68"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/dp_32"
+      android:layout_marginLeft="@dimen/common_margin"
+      android:layout_marginRight="@dimen/common_margin"
       android:gravity="center">
-      <TextView
-        android:id="@+id/txt_timer"
+      <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textFontWeight="@integer/m3_sys_motion_duration_900"
-        android:inputType="phone"
-        android:text="" />
+        android:layout_weight="1"
+        android:gravity="center_vertical">
+        <TextView
+          android:id="@+id/txt_resend_code"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="@dimen/dp_2"
+          android:textSize="@dimen/sp_14"
+          android:text="ส่งรหัสอีกครั้ง" />
+        <TextView
+          android:id="@+id/txt_timer"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="@dimen/sp_14"
+          android:textColor="@color/color_2681E3"
+          android:text="" />
+      </LinearLayout>
       <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_68">
-        <LinearLayout
-          android:id="@+id/lyt_login"
+        android:id="@+id/llt_can_not_get_code"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <TextView
           android:layout_width="wrap_content"
-          android:layout_height="@dimen/dp_68"
-          android:layout_weight="1"
-          android:gravity="center_vertical">
-          <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textFontWeight="@integer/m3_sys_motion_duration_900"
-            android:inputType="phone"
-            android:text="ส่งรหัสอีกครั้ง" />
-          <TextView
-            android:id="@id/txt_timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textFontWeight="@integer/m3_sys_motion_duration_900"
-            android:inputType="phone"
-            android:text="ส่งรหัสอีกครั้ง" />
-        </LinearLayout>
-        <LinearLayout
-          android:id="@+id/llt_not_get_code"
-          android:gravity="center_vertical"
-          android:layout_marginRight="@dimen/dp_68"
-          android:layout_width="wrap_content"
-          android:layout_height="match_parent">
-          <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textFontWeight="@integer/m3_sys_motion_duration_900"
-            android:inputType="phone"
-            android:text="ไม่สามารถรับรหัสยืนยัน?" />
-        </LinearLayout>
+          android:layout_height="wrap_content"
+          android:textSize="@dimen/sp_14"
+          android:textColor="@color/color_2681E3"
+          android:text="@string/can_not_get_code" />
       </LinearLayout>
     </LinearLayout>
   </LinearLayout>
   <RelativeLayout
     android:id="@+id/rlt_code"
-    android:layout_marginBottom="68dp"
+    android:layout_marginBottom="@dimen/dp_48"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="wrap_content"
     android:gravity="center"
     android:layout_alignParentBottom="true">
-    <LinearLayout
-      android:layout_width="116dp"
-      android:layout_height="match_parent"
+    <ImageView
+      android:id="@+id/iv_customer_service"
+      android:layout_width="@dimen/dp_108"
+      android:layout_height="@dimen/dp_32"
       android:gravity="center"
-      android:background="@drawable/customer_service_bg">
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="3dp"
-        android:gravity="center_vertical"
-        android:textSize="11sp"
-        android:textFontWeight="@integer/m3_sys_motion_duration_900"
-        android:text="บริการออนไลน์" />
-    </LinearLayout>
+      android:src="@drawable/customer_service" />
   </RelativeLayout>
   <FrameLayout
     android:id="@+id/fl_bg"

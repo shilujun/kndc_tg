@@ -1,6 +1,5 @@
 package com.cashhub.cash.app.widget;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -78,7 +78,9 @@ public class PopWinBottomLayout extends LinearLayout implements View.OnClickList
     //设置宽和高
     window.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
 //    window.setWidth(WinManagerUtil.getWidth((Activity) mContext));
-    window.setWidth(500);
+
+    WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+    window.setWidth(wm.getDefaultDisplay().getWidth());
     //点击弹窗外是否可消失
     window.setOutsideTouchable(true);
   }

@@ -9,7 +9,8 @@
     <item name="android:gravity">center</item>
     <item name="android:background">@drawable/bg_user_verify_code_grey</item>
     <item name="android:textColor">@color/common_blue_0090FF</item>
-    <item name="android:textSize">24sp</item>
+    <item name="android:textSize">20sp</item>
     <item name="android:textStyle">bold</item>
   </style>
+  <string name="can_not_get_code"><u>ไม่สามารถรับรหัสยืนยัน?</u></string>
 </resources>
