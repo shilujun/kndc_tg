@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.blankj.utilcode.util.CollectionUtils;
 import com.blankj.utilcode.util.ImageUtils;
 import com.cashhub.cash.app.greendao.ConfigDao;
 import com.cashhub.cash.app.greendao.DaoMaster;
@@ -29,8 +30,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -152,14 +156,13 @@ public class BaseActivity extends AppCompatActivity {
       setUserInfo(phone, userToken, userId, userExpire);
       //等0.5秒待状态同步完成，再进行页面跳转
       try {
-        Thread.sleep(200);
+        Thread.sleep(50);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
       CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
     } else if(KndcEvent.LOGOUT.equals(event.getEventName())) {
-      //TODO
-      Log.d(TAG, "eventName:" + KndcEvent.LOGOUT);
+      clearUserInfo();
     } else if(KndcEvent.OPEN_CAMARA.equals(event.getEventName())) {
       //将button的点击事件改成startActivityForResult启动相机
       Intent camera = new Intent();
@@ -250,15 +253,15 @@ public class BaseActivity extends AppCompatActivity {
     configPhone.setConfigValue(phone);
     configList.add(configPhone);
 
-    Config configUserId = new Config();
-    configUserId.setConfigKey(KndcStorage.USER_ID);
-    configUserId.setConfigValue(userId);
-    configList.add(configUserId);
-
     Config configToken = new Config();
     configToken.setConfigKey(KndcStorage.USER_TOKEN);
     configToken.setConfigValue(token);
     configList.add(configToken);
+
+    Config configUserId = new Config();
+    configUserId.setConfigKey(KndcStorage.USER_ID);
+    configUserId.setConfigValue(userId);
+    configList.add(configUserId);
 
     Config configExpire = new Config();
     configExpire.setConfigKey(KndcStorage.USER_EXPIRE_TIME);
@@ -266,5 +269,33 @@ public class BaseActivity extends AppCompatActivity {
     configList.add(configExpire);
 
     mConfigDao.insertOrReplaceInTx(configList);
+  }
+
+  /**
+   * 退出登录
+   */
+  public void clearUserInfo() {
+    try {
+      KndcStorage.getInstance().setData(KndcStorage.USER_PHONE, "");
+      KndcStorage.getInstance().setData(KndcStorage.USER_ID, "");
+      KndcStorage.getInstance().setData(KndcStorage.USER_TOKEN, "");
+      KndcStorage.getInstance().setData(KndcStorage.USER_EXPIRE_TIME, "");
+
+      //清理数据库信息
+      List<Config> configList =
+          mConfigDao.queryRaw("where CONFIG_KEY in ('user_token', 'user_id', 'user_phone', "
+              + "'user_expire_time')");
+
+      if(!CollectionUtils.isEmpty(configList)) {
+        for (Config config : configList) {
+          Log.d(TAG, config.toString());
+        }
+        mConfigDao.deleteInTx(configList);
+      } else {
+        Log.d(TAG, "configList is Null or Empty!!!");
+      }
+    } catch (Exception e) {
+      Log.d(TAG, e.getMessage());
+    }
   }
 }

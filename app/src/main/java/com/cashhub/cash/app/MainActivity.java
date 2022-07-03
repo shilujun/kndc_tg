@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.tencent.sonic.sdk.SonicSessionConfig;
 import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
@@ -58,6 +60,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     mDemoUrl = urlListAdapter.getCheckedUrl();
   }
 
+  @RequiresApi(api = VERSION_CODES.N)
   @Override
   public void onClick(View v) {
     if (v.getId() == R.id.btn_reset) {
@@ -83,6 +86,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       CommonApi commonApi = new CommonApi();
       JSONObject jsonObject = new JSONObject();
       commonApi.trackData(this, jsonObject, "");
+    } else if (v.getId() == R.id.btn_get_storage_data) {
+      Map<String, String> storageData = KndcStorage.getInstance().getDataMap();
+      if (storageData == null || storageData.isEmpty()) {
+        Log.d(TAG, "storageData is Null ");
+        return;
+      }
+      storageData.forEach((key, value) -> {
+        Log.d(TAG, "storageData Key:" + key + ",value:" + value);
+      });
     } else if (v.getId() == R.id.btn_sonic_preload) {
       SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
       sessionConfigBuilder.setSupportLocalServer(true);
@@ -139,9 +151,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     Button btnTrackData = (Button) findViewById(R.id.btn_track_data);
     btnTrackData.setOnClickListener(this);
 
-    //获取配置数据库数据
-    Button btnGetConfigData = (Button) findViewById(R.id.btn_get_config_data);
-    btnGetConfigData.setOnClickListener(this);
+    //获取缓存数据
+    Button btnGetStorageData = (Button) findViewById(R.id.btn_get_storage_data);
+    btnGetStorageData.setOnClickListener(this);
 
     // preload btn
     Button btnSonicPreload = (Button) findViewById(R.id.btn_sonic_preload);

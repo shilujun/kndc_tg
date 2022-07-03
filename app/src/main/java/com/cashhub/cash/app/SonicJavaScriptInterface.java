@@ -56,8 +56,8 @@ public class SonicJavaScriptInterface {
    * 清理登录信息
    */
   @JavascriptInterface
-  public void clearLoginInfo(String url) {
-    CommonApi.getInstance().clearLoginInfo();
+  public void clearLoginInfo() {
+    CommonApi.getInstance().clearLoginInfo(mContext);
   }
 
 

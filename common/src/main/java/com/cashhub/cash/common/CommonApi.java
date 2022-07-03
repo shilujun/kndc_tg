@@ -115,7 +115,9 @@ public class CommonApi {
   /**
    * 清理登录信息
    */
-  public void clearLoginInfo() {
+  public void clearLoginInfo(Context context) {
+    CommonApi commonApi = new CommonApi();
+    commonApi.userLogout(context, KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN));
   }
 
   /**

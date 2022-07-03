@@ -131,12 +131,12 @@
         android:text="数据上报" />
 
       <Button
-        android:id="@+id/btn_get_config_data"
+        android:id="@+id/btn_get_storage_data"
         style="@style/SonicButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.02"
-        android:text="获取配置数据库数据" />
+        android:text="获取缓存数据" />
 
       <Button
         android:id="@+id/btn_sonic"

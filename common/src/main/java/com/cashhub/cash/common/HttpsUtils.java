@@ -1,5 +1,6 @@
 package com.cashhub.cash.common;
 
+import android.text.TextUtils;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -243,7 +244,7 @@ public class HttpsUtils {
             }
         }
 
-        if (type == null || type.isEmpty()) {
+        if (TextUtils.isEmpty(type)) {
             return;
         }
         if(KndcEvent.LOGIN.equals(type) || KndcEvent.LOGOUT.equals(type)) {

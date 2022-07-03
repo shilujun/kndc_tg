@@ -28,4 +28,7 @@ public class KndcStorage {
     return mDataMap.get(key);
   }
 
+  public Map<String, String> getDataMap() {
+    return mDataMap;
+  }
 }
