@@ -355,11 +355,7 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public void jsNavigateTo(String url) {
-    Intent intent = new Intent();
-    intent.setClass(mContext, BrowserActivity.class);
-    intent.putExtra(BrowserActivity.PARAM_URL, url);
-    intent.putExtra(BrowserActivity.PARAM_MODE, MainActivity.MODE_SONIC);
-    mContext.startActivity(intent);
+    CommonApp.navigateTo(mContext, url);
   }
 }
 
