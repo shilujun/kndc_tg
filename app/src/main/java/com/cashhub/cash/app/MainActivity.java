@@ -15,9 +15,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.app.model.Config;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
+import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.utils.DeviceUtils;
 import com.cashhub.cash.common.utils.StatusBarUtils;
 import com.tencent.sonic.sdk.SonicConfig;
@@ -70,15 +72,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       Intent intent = new Intent();
       intent.setClassName(this, "com.cashhub.cash.app.LoginActivity");
       startActivity(intent);
-
-//      CommonApi commonApi = new CommonApi();
-//      commonApi.userLogin(this, this.userPhoneNumber, this.verifyCode);
+    } else if (v.getId() == R.id.btn_logout) {
+      CommonApi commonApi = new CommonApi();
+      commonApi.userLogout(this, KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN));
     } else if (v.getId() == R.id.btn_open_code) {
       Intent intent = new Intent();
       intent.setClassName(this, "com.cashhub.cash.app.CheckActivity");
       startActivity(intent);
-//      CommonApi commonApi = new CommonApi();
-//      commonApi.getCheckCode(this, this.userPhoneNumber);
+    } else if (v.getId() == R.id.btn_track_data) {
+      CommonApi commonApi = new CommonApi();
+      JSONObject jsonObject = new JSONObject();
+      commonApi.trackData(this, jsonObject, "");
     } else if (v.getId() == R.id.btn_sonic_preload) {
       SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
       sessionConfigBuilder.setSupportLocalServer(true);
@@ -99,12 +103,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       // load sonic with offline cache
       startBrowserActivity(MODE_SONIC_WITH_OFFLINE_CACHE);
     } else if (v.getId() == R.id.btn_fab) {
-//      UrlSelector.launch(MainActivity.this, urlListAdapter, new UrlSelector.OnUrlChangedListener() {
-//        @Override
-//        public void urlChanged(String url) {
-//          DEMO_URL = url;
-//        }
-//      });
     }
   }
 
@@ -129,9 +127,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     Button btnOpenLogin = (Button) findViewById(R.id.btn_open_login);
     btnOpenLogin.setOnClickListener(this);
 
+    //退出登录
+    Button btnLogout = (Button) findViewById(R.id.btn_logout);
+    btnLogout.setOnClickListener(this);
+
     //打开验证码页
     Button btnOpenCode = (Button) findViewById(R.id.btn_open_code);
     btnOpenCode.setOnClickListener(this);
+
+    //数据上报
+    Button btnTrackData = (Button) findViewById(R.id.btn_track_data);
+    btnTrackData.setOnClickListener(this);
+
+    //获取配置数据库数据
+    Button btnGetConfigData = (Button) findViewById(R.id.btn_get_config_data);
+    btnGetConfigData.setOnClickListener(this);
 
     // preload btn
     Button btnSonicPreload = (Button) findViewById(R.id.btn_sonic_preload);
@@ -256,11 +266,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
       for ( Config config: configList ) {
         Log.d(TAG,
-            "dataOpt, config id:" + config.getId() + ", configKey:" + config.getConfigKey() + ", "
-                + "configValue:" + config.getConfigValue());
+            "CONFIG DATA, id:" + config.getId() + ", key:" + config.getConfigKey() +
+                ", value:" + config.getConfigValue());
       }
     } else {
-//      DaoUtilsStore.getInstance().getConfigDaoUtils().deleteAll();
       getDaoConfig().deleteAll();
 
       List<Config> configList = new ArrayList<>();

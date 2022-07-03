@@ -11,6 +11,7 @@ public class CommonApp {
     intent.setClass(context, BrowserActivity.class);
     intent.putExtra(BrowserActivity.PARAM_URL, url);
     intent.putExtra(BrowserActivity.PARAM_MODE, MainActivity.MODE_SONIC);
+    intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
     context.startActivity(intent);
   }
 

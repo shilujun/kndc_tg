@@ -107,6 +107,14 @@
         android:text="打开登录页" />
 
       <Button
+        android:id="@+id/btn_logout"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="退出登录" />
+
+      <Button
         android:id="@+id/btn_open_code"
         style="@style/SonicButton"
         android:layout_width="match_parent"
@@ -115,10 +123,26 @@
         android:text="打开验证码页" />
 
       <Button
-        android:id="@+id/btn_sonic"
+        android:id="@+id/btn_track_data"
         style="@style/SonicButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="数据上报" />
+
+      <Button
+        android:id="@+id/btn_get_config_data"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="获取配置数据库数据" />
+
+      <Button
+        android:id="@+id/btn_sonic"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="0.02"
         android:text="@string/sonic" />
 
@@ -126,7 +150,7 @@
         android:id="@+id/btn_sonic_preload"
         style="@style/SonicButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.02"
         android:text="@string/sonic_preload"
         />

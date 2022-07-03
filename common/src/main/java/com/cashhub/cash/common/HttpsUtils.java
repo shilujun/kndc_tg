@@ -188,7 +188,8 @@ public class HttpsUtils {
         }).start();
     }
 
-    private static void sendNetRequest(final String phone, final String url, final Request request, String type) {
+    private static void sendNetRequest(final String phone, final String url,
+        final Request request, String type) {
         Response response = null;
         String bodyStr = "";
 

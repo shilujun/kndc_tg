@@ -21,6 +21,7 @@ import com.cashhub.cash.app.greendao.DaoSession;
 import com.cashhub.cash.app.greendao.ReportInfoDao;
 import com.cashhub.cash.app.model.Config;
 import com.cashhub.cash.common.CommonResult;
+import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.ImageUpload;
 import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
@@ -127,16 +128,35 @@ public class BaseActivity extends AppCompatActivity {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(KndcEvent event) {
+    Log.d(TAG, "onMessageEvent: " + event.getEventName());
     if(KndcEvent.LOGIN.equals(event.getEventName())) {
-      setUserInfo(event);
+      String phone = event.getPhone();
+      String commonRet = event.getCommonRet();
+      if(TextUtils.isEmpty(phone) || TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>(){}.getType());
+      if (commonResult == null || commonResult.getData() == null) {
+        Log.d(TAG, "common result is null");
+        return;
+      }
+
+      Map<String, String> retData = commonResult.getData();
+
+      //用户登录信息
+      String userToken = retData.get("token");
+      String userId = retData.get("user_uuid");
+      String userExpire = retData.get("expire");
+      setUserInfo(phone, userToken, userId, userExpire);
       //等0.5秒待状态同步完成，再进行页面跳转
-//      try {
-//        Thread.sleep(500);
-//      } catch (InterruptedException e) {
-//        e.printStackTrace();
-//      }
-//      CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
-//      Log.d(TAG, "eventName:" + KndcEvent.LOGIN);
+      try {
+        Thread.sleep(200);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
     } else if(KndcEvent.LOGOUT.equals(event.getEventName())) {
       //TODO
       Log.d(TAG, "eventName:" + KndcEvent.LOGOUT);
@@ -217,26 +237,11 @@ public class BaseActivity extends AppCompatActivity {
   /**
    * 登录后设置用户信息
    */
-  private void setUserInfo(KndcEvent event) {
-    String phone = event.getPhone();
-    String commonRet = event.getCommonRet();
-    if(TextUtils.isEmpty(phone) || TextUtils.isEmpty(commonRet)) {
-      return;
-    }
-    Gson gson = new Gson();
-    CommonResult commonResult = gson.fromJson(commonRet,
-        new TypeToken<CommonResult>(){}.getType());
-    if (commonResult == null || commonResult.getData() == null) {
-      Log.d(TAG, "common result is null");
-      return;
-    }
-
-    Map<String, String> retData = commonResult.getData();
-
+  public void setUserInfo(String phone, String token, String userId, String expire) {
     KndcStorage.getInstance().setData(KndcStorage.USER_PHONE, phone);
-    KndcStorage.getInstance().setData(KndcStorage.USER_ID, retData.get("user_uuid"));
-    KndcStorage.getInstance().setData(KndcStorage.USER_TOKEN, retData.get("token"));
-    KndcStorage.getInstance().setData(KndcStorage.USER_EXPIRE_TIME, retData.get("expire"));
+    KndcStorage.getInstance().setData(KndcStorage.USER_ID, userId);
+    KndcStorage.getInstance().setData(KndcStorage.USER_TOKEN, token);
+    KndcStorage.getInstance().setData(KndcStorage.USER_EXPIRE_TIME, expire);
 
     //登录信息 存入数据库和缓存，启动app的时候载入
     List<Config> configList = new ArrayList<>();
@@ -247,19 +252,19 @@ public class BaseActivity extends AppCompatActivity {
 
     Config configUserId = new Config();
     configUserId.setConfigKey(KndcStorage.USER_ID);
-    configUserId.setConfigValue(retData.get("user_uuid"));
+    configUserId.setConfigValue(userId);
     configList.add(configUserId);
 
     Config configToken = new Config();
     configToken.setConfigKey(KndcStorage.USER_TOKEN);
-    configToken.setConfigValue(retData.get("token"));
+    configToken.setConfigValue(token);
     configList.add(configToken);
 
     Config configExpire = new Config();
     configExpire.setConfigKey(KndcStorage.USER_EXPIRE_TIME);
-    configExpire.setConfigValue(retData.get("expire"));
+    configExpire.setConfigValue(expire);
     configList.add(configExpire);
 
-    mConfigDao.insertInTx(configList);
+    mConfigDao.insertOrReplaceInTx(configList);
   }
 }

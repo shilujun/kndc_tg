@@ -1,7 +1,5 @@
 package com.cashhub.cash.app;
 
-
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,10 +18,12 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.Toast;
+import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tencent.sonic.sdk.SonicCacheInterceptor;
 import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicConstants;
@@ -52,8 +52,6 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 
 public class BrowserActivity extends BaseActivity {
-
-
   public final static String PARAM_URL = "param_url";
 
   public final static String PARAM_MODE = "param_mode";
@@ -256,8 +254,32 @@ public class BrowserActivity extends BaseActivity {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(KndcEvent event) {
-//    if(KndcEvent.LOGIN.equals(event.getEventName())) {
-//    }
+    Log.d(TAG, "onMessageEvent: " + event.getEventName());
+    if(KndcEvent.LOGIN.equals(event.getEventName())) {
+      String phone = event.getPhone();
+      String commonRet = event.getCommonRet();
+      if(TextUtils.isEmpty(phone) || TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>(){}.getType());
+      if (commonResult == null || commonResult.getData() == null) {
+        Log.d(TAG, "common result is null");
+        return;
+      }
+
+      Map<String, String> retData = commonResult.getData();
+
+      //用户登录信息
+      String userToken = retData.get("token");
+      String userId = retData.get("user_uuid");
+      String userExpire = retData.get("expire");
+
+      setUserInfo(phone, userToken, userId, userExpire);
+      mWebView.loadUrl("javascript:syncUserInfo('" + phone + "','" + userToken+ "','" + userId +
+          "','" + userExpire  + "')");
+    }
   }
 
   @Override
