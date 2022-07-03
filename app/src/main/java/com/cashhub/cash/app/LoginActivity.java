@@ -203,8 +203,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     //结束的位置
     end = index + high_light_1.length();
     spannableString.setSpan(new QMUITouchableSpan(this.getResources().getColor(R.color.light_blue_400), this.getResources().getColor(R.color.light_blue_400),
-      this.getResources().getColor(R.color.gray_400),
-      this.getResources().getColor(R.color.gray_400)) {
+      this.getResources().getColor(R.color.transparent),
+      this.getResources().getColor(R.color.transparent)) {
       @Override
       public void onSpanClick(View widget) {
           //点击用户协议的相关操作，可以使用WebView来加载一个网页
@@ -219,7 +219,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       end = index + high_light_2.length();
       spannableString.setSpan(new QMUITouchableSpan(this.getResources().getColor(R.color.light_blue_400),
           this.getResources().getColor(R.color.light_blue_400),
-          this.getResources().getColor(R.color.gray_400), this.getResources().getColor(R.color.gray_400)) {
+          this.getResources().getColor(R.color.transparent), this.getResources().getColor(R.color.transparent)) {
         @Override
         public void onSpanClick(View widget) {
           //点击隐私政策的相关操作，可以使用WebView来加载一个网页
