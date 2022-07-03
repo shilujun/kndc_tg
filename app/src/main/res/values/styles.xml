@@ -13,7 +13,7 @@
     <item name="android:textStyle">bold</item>
   </style>
   <string name="can_not_get_code"><u>ไม่สามารถรับรหัสยืนยัน?</u></string>
-  <string name="user_protocol">ฉันยอมรับข้อกำหนด <a
-    href="https://api.cashhubloan.com/api/union/agreement?code=SnJIQX">ในการให้บริการ</a> และ
-    <a href="https://www.cashhubloan.com/privacy.html">นโยบายความเป็นส่วนตัว</a></string>
+<!--  <string name="user_protocol">ฉันยอมรับข้อกำหนด <a-->
+<!--    href="https://api.cashhubloan.com/api/union/agreement?code=SnJIQX">ในการให้บริการ</a> และ-->
+<!--    <a href="https://www.cashhubloan.com/privacy.html">นโยบายความเป็นส่วนตัว</a></string>-->
 </resources>

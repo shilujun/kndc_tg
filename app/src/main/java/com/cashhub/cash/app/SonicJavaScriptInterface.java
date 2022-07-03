@@ -56,8 +56,19 @@ public class SonicJavaScriptInterface {
    * 清理登录信息
    */
   @JavascriptInterface
-  public void clearLoginInfo() {
+  public void clearLoginInfo(String url) {
     CommonApi.getInstance().clearLoginInfo();
+  }
+
+
+  /**
+   * 上传图片
+   */
+  @JavascriptInterface
+  public void uploadImage(String lineType, String type, String tt) {
+    KndcEvent kndcEvent = new KndcEvent();
+    kndcEvent.setEventName(KndcEvent.OPEN_CAMARA);
+    EventBus.getDefault().post(kndcEvent);
   }
 
   /**
@@ -81,12 +92,12 @@ public class SonicJavaScriptInterface {
   }
 
   /**
-   * 获取用户信息
+   * 获取设备信息
    */
   @JavascriptInterface
-  public JSONObject getUserInfo() {
+  public JSONObject getSystemInfo() {
 
-    return DeviceUtils.getUserInfo(mContext);
+    return DeviceUtils.getSystemInfo(mContext);
   }
 
 
@@ -356,6 +367,14 @@ public class SonicJavaScriptInterface {
   @JavascriptInterface
   public void jsNavigateTo(String url) {
     CommonApp.navigateTo(mContext, url);
+  }
+
+  /**
+   * 打开登录页
+   */
+  @JavascriptInterface
+  public void jsNavigateToLogin() {
+    CommonApp.navigateToLogin(mContext);
   }
 }
 

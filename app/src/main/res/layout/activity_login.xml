@@ -151,12 +151,13 @@
     </LinearLayout>
   </LinearLayout>
   <RelativeLayout
-    android:id="@+id/rlt_code"
+    android:id="@+id/rlt_customer_service"
     android:layout_marginBottom="@dimen/dp_48"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
     android:layout_alignParentBottom="true">
+
     <ImageView
       android:id="@+id/iv_customer_service"
       android:layout_width="@dimen/dp_108"

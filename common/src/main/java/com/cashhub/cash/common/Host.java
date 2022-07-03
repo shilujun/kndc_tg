@@ -8,8 +8,31 @@ public class Host {
   private static final String TAG = "Host";
   private static int sIsDebugMode = -1;
 
-  private static final String HOST_API_OA = "http://apishop.c99349d1eb3d045a4857270fb79311aa0.cn-shanghai.alicontainer.com/api";
-  private static final String HOST_API = "https://api.cashhubloan.com/api";
+  //在线客服
+  public static final String HOST_CUSTOMER_SERVICE = "https://lygapp.s5.udesk.cn/im_client/?web_plugin_id=576&language=th&channel=CashHub";
+  //注册协议
+  public static final String HOST_USER_AGREEMENT = "https://api.cashhubloan"
+      + ".com/api/union/agreement?code=SnJIQX";
+  //隐私政策
+  public static final String HOST_PRIVACY = "https://www.cashhubloan.com/privacy.html";
+  private static final String HOST_API_OA = "http://apishop.c99349d1eb3d045a4857270fb79311aa0.cn-shanghai.alicontainer.com";
+  private static final String HOST_API = "https://api.cashhubloan.com";
+  private static final String HOST_H5_OA = "http://kndc.junya.online";
+  private static final String HOST_H5 = "https://api.cashhubloan.com";
+
+  public static String getH5Host(Context context) {
+    return getCustomH5Host(context);
+  }
+
+  private static String getCustomH5Host(Context context) {
+    String host = HOST_H5;
+    boolean isDebug = isDebugMode(context);
+    Log.d(TAG, "isDebug:" + isDebug);
+    if(isDebug) {
+      host = HOST_H5_OA;
+    }
+    return host;
+  }
 
   public static String getApiHost(Context context) {
     return getCustomApiHost(context);
@@ -17,11 +40,11 @@ public class Host {
 
   private static String getCustomApiHost(Context context) {
     String host = HOST_API;
-//    boolean isDebug = isDebugMode(context);
-//    Log.d(TAG, "isDebug:" + isDebug);
-//    if(isDebug) {
-//      host = HOST_API_OA;
-//    }
+    boolean isDebug = isDebugMode(context);
+    Log.d(TAG, "isDebug:" + isDebug);
+    if(isDebug) {
+      host = HOST_API_OA;
+    }
     return host;
   }
 

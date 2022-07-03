@@ -13,4 +13,13 @@ public class CommonApp {
     intent.putExtra(BrowserActivity.PARAM_MODE, MainActivity.MODE_SONIC);
     context.startActivity(intent);
   }
+
+  /**
+   * 打开登录页
+   */
+  public static void navigateToLogin(Context context) {
+    Intent intent = new Intent();
+    intent.setClass(context, LoginActivity.class);
+    context.startActivity(intent);
+  }
 }

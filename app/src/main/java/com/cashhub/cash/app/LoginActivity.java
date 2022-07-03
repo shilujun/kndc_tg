@@ -1,10 +1,13 @@
 package com.cashhub.cash.app;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -15,12 +18,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.cashhub.cash.common.CommonApi;
+import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
   private static final String TAG = "LoginActivity";
+  private Context mContext;
   private LinearLayout lltVerifyCode;
   private EditText editPhoneTxt;
   private ImageView ivClear;
@@ -35,9 +40,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
-
-    //TODO
-    Log.d(TAG, DeviceUtils.getUserInfo(this).toString());
+    mContext = this;
 
     lltVerifyCode = findViewById(R.id.llt_verify_code);
     lltVerifyCode.setOnClickListener(this);
@@ -53,6 +56,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     tvProtocol = findViewById(R.id.txt_protocol);
     tvProtocol.setMovementMethod(LinkMovementMethod.getInstance());
+    tvProtocol.setText(generateSp(tvProtocol.getText().toString()));
 
     ivError = findViewById(R.id.iv_error);
     chxProtocol = findViewById(R.id.chx_protocol);
@@ -84,7 +88,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     } else if(id == R.id.iv_customer_service) {
       //人工客服
       Intent intent = new Intent(this, BrowserActivity.class);
-      intent.putExtra(BrowserActivity.PARAM_URL, "https://www.baidu.com");
+      intent.putExtra(BrowserActivity.PARAM_URL, Host.HOST_CUSTOMER_SERVICE);
       intent.putExtra(BrowserActivity.PARAM_MODE, 1);
       intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
       startActivity(intent);
@@ -182,4 +186,49 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 //    initEditClearListener(et1, iv1, et2, iv2);
 //    initEditClearListener(et3, iv3);
 //  }
+
+  private SpannableString generateSp(String text) {
+    //定义需要操作的内容
+    String high_light_1 = "ในการให้บริการ"; //用户协议
+    String high_light_2 = "นโยบายความเป็นส่วนตัว"; //隐私政策
+    SpannableString spannableString = new SpannableString(text);
+    //初始位置
+    int start = 0;
+    //结束位置
+    int end;
+    int index;
+    //indexOf(String str, int fromIndex): 返回从 fromIndex 位置开始查找指定字符在字符串中第一次出现处的索引，如果此字符串中没有这样的字符，则返回 -1。
+    //简单来说，(index = text.indexOf(high_light_1, start))   -1这部分代码就是为了查找你的内容里面有没有high_light_1这个值的内容，并确定它的起始位置
+    while ((index = text.indexOf(high_light_1, start)) > -1) {
+    //结束的位置
+    end = index + high_light_1.length();
+    spannableString.setSpan(new QMUITouchableSpan(this.getResources().getColor(R.color.light_blue_400), this.getResources().getColor(R.color.light_blue_400),
+      this.getResources().getColor(R.color.gray_400),
+      this.getResources().getColor(R.color.gray_400)) {
+      @Override
+      public void onSpanClick(View widget) {
+          //点击用户协议的相关操作，可以使用WebView来加载一个网页
+        Log.d(TAG, "onSpanClick: HOST_USER_AGREEMENT!!!");
+          CommonApp.navigateTo(mContext, Host.HOST_USER_AGREEMENT);
+        }
+      }, index, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+      start = end;
+    }
+    start = 0;
+    while ((index = text.indexOf(high_light_2, start)) > -1) {
+      end = index + high_light_2.length();
+      spannableString.setSpan(new QMUITouchableSpan(this.getResources().getColor(R.color.light_blue_400),
+          this.getResources().getColor(R.color.light_blue_400),
+          this.getResources().getColor(R.color.gray_400), this.getResources().getColor(R.color.gray_400)) {
+        @Override
+        public void onSpanClick(View widget) {
+          //点击隐私政策的相关操作，可以使用WebView来加载一个网页
+          CommonApp.navigateTo(mContext, Host.HOST_PRIVACY);
+        }
+      }, index, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+      start = end;
+    }
+    //最后返回SpannableString
+    return spannableString;
+  }
 }

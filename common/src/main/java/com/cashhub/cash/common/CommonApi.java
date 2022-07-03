@@ -34,7 +34,7 @@ public class CommonApi {
       return;
     }
     Log.d(TAG, "phone num is:" + phone);
-    String url = Host.getApiHost(context) + "/v1/util/verify-code";
+    String url = Host.getApiHost(context) + "/api/v1/util/verify-code";
     JSONObject requestJson = new JSONObject();
     requestJson.put("phone", phone);
     requestJson.put("type", 1);
@@ -64,7 +64,7 @@ public class CommonApi {
       return;
     }
 
-    String url = Host.getApiHost(context) + "/v1/user/sms-login";
+    String url = Host.getApiHost(context) + "/api/v1/user/sms-login";
     JSONObject requestJson = new JSONObject();
     requestJson.put("phone", phone);
     requestJson.put("verify_code", verifyCode);
@@ -89,7 +89,7 @@ public class CommonApi {
    * @param token
    */
   public void userLogout(Context context, String token) {
-    String url = Host.getApiHost(context) + "/v1/user/logout";
+    String url = Host.getApiHost(context) + "/api/v1/user/logout";
 
     Request request = new Request.Builder()
         .addHeader("Content-Type", "application/json")
@@ -121,7 +121,7 @@ public class CommonApi {
     if(requestJson == null) {
       return;
     }
-    String url = Host.getApiHost(context) + "/v1/track/data";
+    String url = Host.getApiHost(context) + "/api/v1/track/data";
     RequestBody requestBody = FormBody.create(requestJson.toString(), MediaType.parse("application/json"));
 
     Request request = new Request.Builder()

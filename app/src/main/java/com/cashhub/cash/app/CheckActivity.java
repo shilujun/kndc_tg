@@ -20,6 +20,7 @@ import com.cashhub.cash.app.widget.PopWinBottomLayout;
 import com.cashhub.cash.app.widget.SecurityCodeView;
 import com.cashhub.cash.app.widget.SecurityCodeView.InputCompleteListener;
 import com.cashhub.cash.common.CommonApi;
+import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcStorage;
 
 public class CheckActivity extends BaseActivity implements View.OnClickListener {
@@ -87,6 +88,11 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
       }
     } else if(id == R.id.iv_customer_service) {
       //人工客服
+      Intent intent = new Intent(this, BrowserActivity.class);
+      intent.putExtra(BrowserActivity.PARAM_URL, Host.HOST_CUSTOMER_SERVICE);
+      intent.putExtra(BrowserActivity.PARAM_MODE, 1);
+      intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
+      startActivity(intent);
     }
   }
 

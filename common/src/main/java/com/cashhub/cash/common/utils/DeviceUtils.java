@@ -100,14 +100,13 @@ public class DeviceUtils {
     return jsonObject;
   }
 
-  public static JSONObject getUserInfo(Context context) {
+  public static JSONObject getSystemInfo(Context context) {
 
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("key", KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN));
-    jsonObject.put("user_uuid", KndcStorage.getInstance().getData(KndcStorage.USER_ID));
-    jsonObject.put("expire", KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME));
-    jsonObject.put("phone", KndcStorage.getInstance().getData(KndcStorage.USER_PHONE));
-
+//    jsonObject.put("key", KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN));
+//    jsonObject.put("user_uuid", KndcStorage.getInstance().getData(KndcStorage.USER_ID));
+//    jsonObject.put("expire", KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME));
+//    jsonObject.put("phone", KndcStorage.getInstance().getData(KndcStorage.USER_PHONE));
     jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
     jsonObject.put("version", DeviceUtils.getVerName(context));
     jsonObject.put("appid", DeviceUtils.getVersionCode(context));

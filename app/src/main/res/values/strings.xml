@@ -32,4 +32,5 @@
   <string name="login_failed">"Login failed"</string>
   <string name="title_activity_webview">WebviewActivity</string>
   <string name="code_view_title">รับรหัสยืนยัน</string>
+  <string name="user_protocol">ฉันยอมรับข้อกำหนด ในการให้บริการ และ นโยบายความเป็นส่วนตัว</string>
 </resources>

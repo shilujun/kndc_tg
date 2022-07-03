@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.cashhub.cash.app.BaseActivity;
 import com.cashhub.cash.app.CommonApp;
 import com.cashhub.cash.app.MainActivity;
+import com.cashhub.cash.common.Host;
 
 public class SplashActivity extends BaseActivity {
 
@@ -30,7 +31,7 @@ public class SplashActivity extends BaseActivity {
 //    Intent intent = new Intent();
 //    intent.setClass(SplashActivity.this, MainActivity.class);
 //    startActivity(intent);
-    CommonApp.navigateTo(this, "https://web.cashhubloan.com/#/pages/index/index");
+    CommonApp.navigateTo(this, Host.getH5Host(this) + "/#/pages/index/index");
     finish();
     return;
   }

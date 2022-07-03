@@ -121,7 +121,7 @@
     </LinearLayout>
   </LinearLayout>
   <RelativeLayout
-    android:id="@+id/rlt_code"
+    android:id="@+id/rlt_customer_service"
     android:layout_marginBottom="@dimen/dp_48"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
