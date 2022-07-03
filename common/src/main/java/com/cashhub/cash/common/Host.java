@@ -20,8 +20,8 @@ public class Host {
   private static final String HOST_H5_OA = "http://kndc.junya.online";
   private static final String HOST_H5 = "https://api.cashhubloan.com";
 
-  public static String getH5Host(Context context) {
-    return getCustomH5Host(context);
+  public static String getH5Host(Context context, String url) {
+    return getCustomH5Host(context)  + url;
   }
 
   private static String getCustomH5Host(Context context) {

@@ -4,21 +4,24 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.view.View;
+import com.cashhub.cash.common.KndcEvent;
 import com.housenkui.sdbridgejava.WebViewJavascriptBridge;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class WebviewActivity extends BaseActivity implements View.OnClickListener {
 
@@ -32,6 +35,7 @@ public class WebviewActivity extends BaseActivity implements View.OnClickListene
 
     setContentView(R.layout.activity_webview);
     setupView();
+    EventBus.getDefault().register(this);
 //    //获得控件
 //    WebView webView = (WebView) findViewById(R.id.wv_webview);
 //    //访问网页

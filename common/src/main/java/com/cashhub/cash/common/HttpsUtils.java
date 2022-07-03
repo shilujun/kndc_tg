@@ -1,6 +1,8 @@
 package com.cashhub.cash.common;
 
 import android.util.Log;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -171,13 +173,14 @@ public class HttpsUtils {
         }
     }
 
-    public static void sendRequest(final String url, final Request request, final String type) {
+    public static void sendRequest(final String phone, final String url, final Request request,
+        final String type) {
         //发起请求
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    sendNetRequest(url, request, type);
+                    sendNetRequest(phone, url, request, type);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -185,7 +188,7 @@ public class HttpsUtils {
         }).start();
     }
 
-    private static void sendNetRequest(final String url, final Request request, String type) {
+    private static void sendNetRequest(final String phone, final String url, final Request request, String type) {
         Response response = null;
         String bodyStr = "";
 
@@ -242,11 +245,11 @@ public class HttpsUtils {
         if (type == null || type.isEmpty()) {
             return;
         }
-        KndcEvent kndcEvent = new KndcEvent();
-        kndcEvent.setEventName(type);
-        if(KndcEvent.LOGIN.equals(type)) {
-            EventBus.getDefault().post(kndcEvent);
-        } else if(KndcEvent.LOGOUT.equals(type)) {
+        if(KndcEvent.LOGIN.equals(type) || KndcEvent.LOGOUT.equals(type)) {
+            KndcEvent kndcEvent = new KndcEvent();
+            kndcEvent.setEventName(type);
+            kndcEvent.setPhone(phone);
+            kndcEvent.setCommonRet(bodyStr);
             EventBus.getDefault().post(kndcEvent);
         }
     }

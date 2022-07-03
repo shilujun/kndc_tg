@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
@@ -20,9 +19,17 @@ import com.cashhub.cash.app.greendao.ConfigDao;
 import com.cashhub.cash.app.greendao.DaoMaster;
 import com.cashhub.cash.app.greendao.DaoSession;
 import com.cashhub.cash.app.greendao.ReportInfoDao;
+import com.cashhub.cash.app.model.Config;
+import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.ImageUpload;
 import com.cashhub.cash.common.KndcEvent;
+import com.cashhub.cash.common.KndcStorage;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -58,13 +65,8 @@ public class BaseActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setFullScreen(this);
-    DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, DATABASE_NAME);
-    SQLiteDatabase database = helper.getWritableDatabase();
-    DaoMaster daoMaster = new DaoMaster(database);
-    mDaoSession = daoMaster.newSession();
 
-    mConfigDao = mDaoSession.getConfigDao();
-    mReportInfoDao = mDaoSession.getReportInfoDao();
+    initData();
 
     EventBus.getDefault().register(this);
   }
@@ -126,8 +128,15 @@ public class BaseActivity extends AppCompatActivity {
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(KndcEvent event) {
     if(KndcEvent.LOGIN.equals(event.getEventName())) {
-      //TODO
-      Log.d(TAG, "eventName:" + KndcEvent.LOGIN);
+      setUserInfo(event);
+      //等0.5秒待状态同步完成，再进行页面跳转
+//      try {
+//        Thread.sleep(500);
+//      } catch (InterruptedException e) {
+//        e.printStackTrace();
+//      }
+//      CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
+//      Log.d(TAG, "eventName:" + KndcEvent.LOGIN);
     } else if(KndcEvent.LOGOUT.equals(event.getEventName())) {
       //TODO
       Log.d(TAG, "eventName:" + KndcEvent.LOGOUT);
@@ -180,5 +189,77 @@ public class BaseActivity extends AppCompatActivity {
 //    window.setStatusBarColor(Color.TRANSPARENT);
     //导航栏颜色也可以正常设置
     //window.setNavigationBarColor(Color.TRANSPARENT)
+  }
+
+  /**
+   * 初始化启动数据
+   */
+  private void initData() {
+    DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, DATABASE_NAME);
+    SQLiteDatabase database = helper.getWritableDatabase();
+    DaoMaster daoMaster = new DaoMaster(database);
+    mDaoSession = daoMaster.newSession();
+
+    mConfigDao = mDaoSession.getConfigDao();
+    mReportInfoDao = mDaoSession.getReportInfoDao();
+
+    //配置信息载入初始化
+    List<Config> configList = getDaoConfig().queryBuilder().build().list();
+    if(configList == null || configList.isEmpty()) {
+      Log.d(TAG, "dataOpt: configList is null or empty");
+    } else {
+      for ( Config config: configList ) {
+        KndcStorage.getInstance().setData(config.getConfigKey(), config.getConfigValue());
+      }
+    }
+  }
+
+  /**
+   * 登录后设置用户信息
+   */
+  private void setUserInfo(KndcEvent event) {
+    String phone = event.getPhone();
+    String commonRet = event.getCommonRet();
+    if(TextUtils.isEmpty(phone) || TextUtils.isEmpty(commonRet)) {
+      return;
+    }
+    Gson gson = new Gson();
+    CommonResult commonResult = gson.fromJson(commonRet,
+        new TypeToken<CommonResult>(){}.getType());
+    if (commonResult == null || commonResult.getData() == null) {
+      Log.d(TAG, "common result is null");
+      return;
+    }
+
+    Map<String, String> retData = commonResult.getData();
+
+    KndcStorage.getInstance().setData(KndcStorage.USER_PHONE, phone);
+    KndcStorage.getInstance().setData(KndcStorage.USER_ID, retData.get("user_uuid"));
+    KndcStorage.getInstance().setData(KndcStorage.USER_TOKEN, retData.get("token"));
+    KndcStorage.getInstance().setData(KndcStorage.USER_EXPIRE_TIME, retData.get("expire"));
+
+    //登录信息 存入数据库和缓存，启动app的时候载入
+    List<Config> configList = new ArrayList<>();
+    Config configPhone = new Config();
+    configPhone.setConfigKey(KndcStorage.USER_PHONE);
+    configPhone.setConfigValue(phone);
+    configList.add(configPhone);
+
+    Config configUserId = new Config();
+    configUserId.setConfigKey(KndcStorage.USER_ID);
+    configUserId.setConfigValue(retData.get("user_uuid"));
+    configList.add(configUserId);
+
+    Config configToken = new Config();
+    configToken.setConfigKey(KndcStorage.USER_TOKEN);
+    configToken.setConfigValue(retData.get("token"));
+    configList.add(configToken);
+
+    Config configExpire = new Config();
+    configExpire.setConfigKey(KndcStorage.USER_EXPIRE_TIME);
+    configExpire.setConfigValue(retData.get("expire"));
+    configList.add(configExpire);
+
+    mConfigDao.insertInTx(configList);
   }
 }

@@ -22,6 +22,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.Toast;
+import com.cashhub.cash.common.KndcEvent;
+import com.cashhub.cash.common.KndcStorage;
 import com.tencent.sonic.sdk.SonicCacheInterceptor;
 import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicConstants;
@@ -37,6 +39,8 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  *  A demo browser activity
@@ -236,6 +240,24 @@ public class BrowserActivity extends BaseActivity {
       Log.d(TAG, "webView is load by default mode");
       mWebView.loadUrl(url);
     }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    //用户登录信息
+    String userPhone = KndcStorage.getInstance().getData(KndcStorage.USER_PHONE);
+    String userToken = KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
+    String userID = KndcStorage.getInstance().getData(KndcStorage.USER_ID);
+    String userExpire = KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME);
+    mWebView.loadUrl("javascript:syncUserInfo('" + userPhone + "','" + userToken+ "','" + userID +
+        "','" + userExpire  + "')");
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onMessageEvent(KndcEvent event) {
+//    if(KndcEvent.LOGIN.equals(event.getEventName())) {
+//    }
   }
 
   @Override

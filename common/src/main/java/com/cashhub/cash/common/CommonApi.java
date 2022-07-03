@@ -3,6 +3,7 @@ package com.cashhub.cash.common;
 import android.content.Context;
 import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
+import com.cashhub.cash.common.utils.DeviceUtils;
 import com.cashhub.cash.common.utils.Md5Util;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -49,7 +50,7 @@ public class CommonApi {
 
     Log.d(TAG, "getCheckCode url: " + url);
 
-    HttpsUtils.sendRequest(url, request, "");
+    HttpsUtils.sendRequest(phone, url, request, "");
   }
 
   /**
@@ -68,7 +69,7 @@ public class CommonApi {
     JSONObject requestJson = new JSONObject();
     requestJson.put("phone", phone);
     requestJson.put("verify_code", verifyCode);
-    requestJson.put("device_key", 1);
+    requestJson.put("device_key", DeviceUtils.getDeviceId(context));
     requestJson.put("channel_code", "");
     RequestBody requestBody = FormBody.create(requestJson.toString(), MediaType.parse("application/json"));
 
@@ -80,7 +81,7 @@ public class CommonApi {
 
     Log.d(TAG, "userLogin url: " + url);
 
-    HttpsUtils.sendRequest(url, request, KndcEvent.LOGIN);
+    HttpsUtils.sendRequest(phone, url, request, KndcEvent.LOGIN);
   }
 
   /**
@@ -102,7 +103,7 @@ public class CommonApi {
 
 
 
-    HttpsUtils.sendRequest(url, request, KndcEvent.LOGOUT);
+    HttpsUtils.sendRequest("", url, request, KndcEvent.LOGOUT);
   }
 
   /**
@@ -133,6 +134,6 @@ public class CommonApi {
 
     Log.d(TAG, "postOssSign device url: " + url);
 
-    HttpsUtils.sendRequest(url, request, "");
+    HttpsUtils.sendRequest("", url, request, "");
   }
 }

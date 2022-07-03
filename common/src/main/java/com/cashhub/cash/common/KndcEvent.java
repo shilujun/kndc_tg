@@ -9,6 +9,8 @@ public class KndcEvent {
   private String mToken = "";
   private String mDeviceId = "";
   private String mVerifyCode = "";
+  private String mPhone = "";
+  private String mCommonRet = "";
 
   public KndcEvent() {
   }
@@ -29,6 +31,14 @@ public class KndcEvent {
     return mVerifyCode;
   }
 
+  public String getPhone() {
+    return mPhone;
+  }
+
+  public String getCommonRet() {
+    return mCommonRet;
+  }
+
   public void setEventName(String eventName) {
     this.mEventName = eventName;
   }
@@ -43,5 +53,13 @@ public class KndcEvent {
 
   public void setVerifyCode(String verifyCode) {
     this.mVerifyCode = verifyCode;
+  }
+
+  public void setPhone(String phone) {
+    this.mPhone = phone;
+  }
+
+  public void setCommonRet(String commonRet) {
+    this.mCommonRet = commonRet;
   }
 }

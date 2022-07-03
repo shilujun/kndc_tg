@@ -1,8 +1,11 @@
 package com.cashhub.cash.common;
 
+import java.util.Map;
+
 public class CommonResult {
   private int code = 0;
   private String msg = "";
+  private Map<String, String> data;
 
   public int getCode() {
     return code;
@@ -18,5 +21,13 @@ public class CommonResult {
 
   public void setMsg(String msg) {
     this.msg = msg;
+  }
+
+  public Map<String, String> getData() {
+    return this.data;
+  }
+
+  public void setData(Map<String, String> data) {
+    this.data = data;
   }
 }
