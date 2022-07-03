@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.utils.CommonUtil;
+import com.cashhub.cash.common.utils.DeviceUtils;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
@@ -34,6 +35,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
+
+    //TODO
+    Log.d(TAG, DeviceUtils.getUserInfo(this).toString());
 
     lltVerifyCode = findViewById(R.id.llt_verify_code);
     lltVerifyCode.setOnClickListener(this);

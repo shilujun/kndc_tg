@@ -9,7 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
-import com.blankj.utilcode.util.ImageUtils;
+import com.cashhub.cash.common.utils.ImageUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -20,7 +20,9 @@ public class ImageUpload {
   /**
    * 保存图片
    */
-  public void saveImageToGallery(Context context, Bitmap bmp) {
+  public void saveImageToGallery(Context context, Bitmap inBitmap) {
+    //首先压缩图片到置指定打下之下
+    Bitmap bmp = ImageUtils.compressImage(inBitmap, 24, false);
     Log.d(TAG, "saveImageToGallery Start!!!");
     // 首先保存图片 创建文件夹
     File appDir = new File(Environment.getExternalStorageDirectory(), "oasystem");

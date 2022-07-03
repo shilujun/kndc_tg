@@ -63,6 +63,7 @@ public class CommonApi {
       comRet.setMsg("参数错误");
       return;
     }
+
     String url = Host.getApiHost(context) + "/v1/user/sms-login";
     JSONObject requestJson = new JSONObject();
     requestJson.put("phone", phone);
@@ -102,6 +103,12 @@ public class CommonApi {
 
 
     HttpsUtils.sendRequest(url, request, KndcEvent.LOGOUT);
+  }
+
+  /**
+   * 清理登录信息
+   */
+  public void clearLoginInfo() {
   }
 
   /**

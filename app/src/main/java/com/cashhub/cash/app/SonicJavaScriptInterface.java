@@ -15,6 +15,7 @@ import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.UploadData;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
+import com.google.gson.JsonArray;
 import com.tencent.sonic.sdk.SonicDiffDataCallback;
 import org.greenrobot.eventbus.EventBus;
 
@@ -50,6 +51,15 @@ public class SonicJavaScriptInterface {
     this.mIntent = intent;
   }
 
+
+  /**
+   * 清理登录信息
+   */
+  @JavascriptInterface
+  public void clearLoginInfo() {
+    CommonApi.getInstance().clearLoginInfo();
+  }
+
   /**
    * 打开相机
    */
@@ -69,6 +79,16 @@ public class SonicJavaScriptInterface {
     kndcEvent.setEventName(KndcEvent.OPEN_IMAGE_CAPTURE);
     EventBus.getDefault().post(kndcEvent);
   }
+
+  /**
+   * 获取用户信息
+   */
+  @JavascriptInterface
+  public JSONObject getUserInfo() {
+
+    return DeviceUtils.getUserInfo(mContext);
+  }
+
 
   /**
    * 获取用户Token
