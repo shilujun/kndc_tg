@@ -62,6 +62,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     chxProtocol = findViewById(R.id.chx_protocol);
     tvTips = findViewById(R.id.tv_tips);
     ivGap = findViewById(R.id.iv_gap);
+
+    //弹出数字键盘
+    waitPopNumKeyboard(editPhoneTxt);
   }
 
   @Override

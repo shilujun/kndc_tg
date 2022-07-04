@@ -15,6 +15,9 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +43,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -441,5 +446,25 @@ public class BaseActivity extends AppCompatActivity {
    */
   public void showToastLong(String message) {
     Toast.makeText(this,message, Toast.LENGTH_LONG).show();
+  }
+
+
+
+  //等待弹出数字键盘
+  public void waitPopNumKeyboard(EditText inputText) {
+    if(inputText == null) {
+      return;
+    }
+    inputText.setFocusable(true);
+    inputText.setFocusableInTouchMode(true);
+    inputText.requestFocus();
+    Timer timer = new Timer();//开启一个时间等待任务
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        InputMethodManager imm = (InputMethodManager)inputText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);//得到系统的输入方法服务
+        imm.showSoftInput(inputText, 0);
+      }
+    }, 300);
   }
 }

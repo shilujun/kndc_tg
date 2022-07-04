@@ -11,7 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,6 +24,8 @@ import com.cashhub.cash.app.widget.SecurityCodeView.InputCompleteListener;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcStorage;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CheckActivity extends BaseActivity implements View.OnClickListener {
 
@@ -69,6 +73,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     TextView txtPhoneNum = findViewById(R.id.txtPhoneNum);
     txtPhoneNum.setText(mPhoneNum);
 
+    //弹出数字键盘
+    waitPopNumKeyboard(scvVerifyCode.findViewById(R.id.item_edittext));
     timer.start();
   }
 
