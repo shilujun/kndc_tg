@@ -53,6 +53,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.greenrobot.eventbus.EventBus;
 
 public class CommonApi {
 
@@ -242,12 +243,14 @@ public class CommonApi {
     }
     try {
       //图片文件名称
-      String fileName = "living_ocr_" + System.currentTimeMillis() + ".png";
+      String fileName = "living_ocr_" + System.currentTimeMillis() + ".jpg";
       String filePath = "";
 
-          //处理文件
-      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-      bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+      //处理文件
+      bitmap = ImageUtils.compressImage(bitmap, 800, true);
+//      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+
       if (Build.BRAND.equals("Xiaomi")) { // 小米手机
         filePath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/";
       } else { // Meizu 、Oppo
@@ -256,7 +259,7 @@ public class CommonApi {
       File file = new File(filePath + fileName);
       try {
         FileOutputStream fos = new FileOutputStream(file);
-        bitmap.compress(CompressFormat.PNG, 100, fos);
+        bitmap.compress(CompressFormat.JPEG, 100, fos);
         fos.flush();
         fos.close();
       } catch (Exception e) {
@@ -287,6 +290,7 @@ public class CommonApi {
       new Thread(new Runnable() {
         @Override
         public void run() {
+          String uploadImageUrl = "";
           try {
             Response response = null;
             String bodyStr = "";
@@ -310,7 +314,7 @@ public class CommonApi {
               return ;
             }
 
-            String uploadImageUrl = url + "/" + dir + fileName;
+            uploadImageUrl = url + "/" + dir + fileName;
             bodyStr = response.body().string();
             Log.d(TAG, "sendNetRequest bodyStr: " + bodyStr);
             Log.d(TAG, "sendNetRequest uploadImageUrl: " + uploadImageUrl);
@@ -318,6 +322,14 @@ public class CommonApi {
             Log.d(TAG, "sendNetRequest onFailure " + e.getMessage());
             return ;
           }
+          KndcEvent kndcEvent = new KndcEvent();
+          kndcEvent.setEventName(KndcEvent.UPLOAD_REPORT_SUCCESS);
+          if(TextUtils.isEmpty(uploadImageUrl)) {
+            //上传失败
+          } else {
+            //上传成功
+          }
+          EventBus.getDefault().post(kndcEvent);
         }
       }).start();
     } catch (Exception e) {

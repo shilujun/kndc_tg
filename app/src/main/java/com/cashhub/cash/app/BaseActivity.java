@@ -417,20 +417,6 @@ public class BaseActivity extends AppCompatActivity {
       return;
     }
 
-    // Bitmap bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
-    //第一步:将Bitmap压缩至字节数组输出流ByteArrayOutputStream
-//    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//    bitmap = ImageUtils.compressImage(bitmap, 800, true);
-//    bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
-//    //第二步:利用Base64将字节数组输出流中的数据转换成字符串String
-//    byte[] byteArray = byteArrayOutputStream.toByteArray();
-//    String imageString = new String(Base64.encodeToString(byteArray, Base64.DEFAULT));
-//    //第三步:将String保持至SharedPreferences
-//    SharedPreferences sharedPreferences = getSharedPreferences("testSP", Context.MODE_PRIVATE);
-//    SharedPreferences.Editor editor = sharedPreferences.edit();
-//    editor.putString("image", imageString);
-//    editor.commit();
-
     CommonApi.getInstance().uploadImage(this, retData, bitmap);
   }
 
