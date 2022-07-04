@@ -8,10 +8,14 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.KndcStorage;
 
 public class DeviceUtils {
+
+  private static final String TAG = "DeviceUtils";
+
   /**
    * 获取设备号
    * @param context
@@ -114,6 +118,8 @@ public class DeviceUtils {
     jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
     jsonObject.put("windowHeight", DeviceUtils.getDisplayHeight(context));
     jsonObject.put("systemInfo", DeviceUtils.getSystemInfo());
+
+    Log.d(TAG, "getSystemInfo: " + jsonObject.toString());
 
     return jsonObject;
   }

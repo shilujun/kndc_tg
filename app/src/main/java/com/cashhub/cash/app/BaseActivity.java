@@ -1,7 +1,9 @@
 package com.cashhub.cash.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,25 +11,29 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.CollectionUtils;
-import com.blankj.utilcode.util.ImageUtils;
 import com.cashhub.cash.app.greendao.ConfigDao;
 import com.cashhub.cash.app.greendao.DaoMaster;
 import com.cashhub.cash.app.greendao.DaoSession;
 import com.cashhub.cash.app.greendao.ReportInfoDao;
 import com.cashhub.cash.app.model.Config;
+import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.ImageUpload;
 import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.utils.ImageUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +49,11 @@ public class BaseActivity extends AppCompatActivity {
 
   private static final String TAG = "BaseActivity";
 
+
+  public static final String LINE_TYPE = "line_type";
+  public static final String UPLOAD_TYPE = "upload_type";
+  public static final String IMAGE_PATH = "image_path";
+
   public static final int MODE_DEFAULT = 0;
 
   public static final int MODE_SONIC = 1;
@@ -51,6 +62,8 @@ public class BaseActivity extends AppCompatActivity {
 
   public static final int PERMISSION_REQUEST_CODE_STORAGE = 1;
 
+  public static final int IMAGE_MAX_SIZE = 800;
+
   public static final int TAKE_PHOTO = 101;
   public static final int TAKE_CAMARA = 100;
 
@@ -58,7 +71,6 @@ public class BaseActivity extends AppCompatActivity {
   public DaoSession mDaoSession;
   public ConfigDao mConfigDao;
   public ReportInfoDao mReportInfoDao;
-
   public String mUserToken = "";
 
   public String userPhoneCode = "";
@@ -87,42 +99,44 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
+    String lineType = KndcStorage.getInstance().getData(LINE_TYPE);
+    String uploadType = KndcStorage.getInstance().getData(UPLOAD_TYPE);
+    Log.d(TAG, "onActivityResult requestCode: " + requestCode);
+    Log.d(TAG, "onActivityResult lineType: " + lineType);
+    Log.d(TAG, "onActivityResult uploadType: " + uploadType);
     switch (requestCode) {
       case TAKE_PHOTO:
         if (resultCode == RESULT_OK) {
           try {
-            //将拍摄的照片显示出来
+            //将拍摄的照片上传
             Bitmap bitmap = data.getParcelableExtra("data");
-            //bitmap = ImageUtils.compressByScale(bitmap, 0.5f, 0.5f);
-            byte[] bitmapB = ImageUtils.compressByQuality(bitmap, 30);
-            bitmap = ImageUtils.bytes2Bitmap(bitmapB);
-//            camereIv.setImageBitmap(bitmap);  //TODO
-
-            ImageUpload imageUpload = new ImageUpload();
-            imageUpload.saveImageToGallery(BaseActivity.this, bitmap);
+//            String imagePath = ImageUpload.getInstance().saveImageToGallery(this, bitmap);
+//            KndcStorage.getInstance().setData(IMAGE_PATH, imagePath);
+            CommonApi.getInstance().getPolicySign(this, lineType, uploadType, bitmap);
           } catch (Exception e) {
+            openErrorPage(lineType);
             e.printStackTrace();
           }
+        } else {
+          openErrorPage(lineType);
         }
         break;
       case TAKE_CAMARA:
         if (resultCode == RESULT_OK) {
           try {
-            //将相册的照片显示出来
+            //将相册的照片上传
             Uri uri_photo = data.getData();
             Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri_photo));
-            //bitmap = ImageUtils.compressByScale(bitmap, 0.5f, 0.5f);
-            byte[] bitmapB = ImageUtils.compressByQuality(bitmap, 30);
-            bitmap = ImageUtils.bytes2Bitmap(bitmapB);
-//            photoIv.setImageBitmap(bitmap); //TODO
-            //EncodeUtils.base64Decode();
-//                        String a = EncodeUtils.base64Encode2String(ImageUtils.bitmap2Bytes(bitmap));
-//                        MainActivity.i(TAG, a);
-            ImageUpload imageUpload = new ImageUpload();
-            imageUpload.saveImageToGallery(BaseActivity.this, bitmap);
+//            String imagePath = ImageUpload.getInstance().saveImageToGallery(this, bitmap);
+//            KndcStorage.getInstance().setData(IMAGE_PATH, imagePath);
+            CommonApi.getInstance().getPolicySign(this, lineType, uploadType, bitmap);
           } catch (FileNotFoundException e) {
+            openErrorPage(lineType);
             e.printStackTrace();
           }
+        } else {
+          openErrorPage(lineType);
         }
         break;
       default:
@@ -133,6 +147,9 @@ public class BaseActivity extends AppCompatActivity {
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(KndcEvent event) {
     Log.d(TAG, "onMessageEvent: " + event.getEventName());
+    String lineType = KndcStorage.getInstance().getData(LINE_TYPE);
+    String uploadType = KndcStorage.getInstance().getData(UPLOAD_TYPE);
+
     if(KndcEvent.LOGIN.equals(event.getEventName())) {
       String phone = event.getPhone();
       String commonRet = event.getCommonRet();
@@ -163,17 +180,64 @@ public class BaseActivity extends AppCompatActivity {
       CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
     } else if(KndcEvent.LOGOUT.equals(event.getEventName())) {
       clearUserInfo();
-    } else if(KndcEvent.OPEN_CAMARA.equals(event.getEventName())) {
-      //将button的点击事件改成startActivityForResult启动相机
-      Intent camera = new Intent();
-      camera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-      startActivityForResult(camera, TAKE_PHOTO);
-      Log.i(TAG, "打开相机成功");
-    } else if(KndcEvent.OPEN_IMAGE_CAPTURE.equals(event.getEventName())) {
-      Intent intent = new Intent(Intent.ACTION_PICK);  //跳转到 ACTION_IMAGE_CAPTURE
-      intent.setType("image/*");
-      startActivityForResult(intent, TAKE_CAMARA);
-      Log.i(TAG, "跳转相册成功");
+    } else if(KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
+      uploadImage(event);
+    } else if(KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
+      String commonRet = event.getCommonRet();
+      if(TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>(){}.getType());
+      if (commonResult == null || commonResult.getData() == null) {
+        Log.d(TAG, "common result is null");
+        return;
+      }
+
+      Map<String, String> retData = commonResult.getData();
+      //TODO
+      CommonApi.getInstance().uploadSuccessReportData(this, mUserToken, retData.get("downloadUrl"), lineType);
+    } else if(KndcEvent.UPLOAD_REPORT_SUCCESS.equals(event.getEventName())) {
+      String commonRet = event.getCommonRet();
+      if(TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>(){}.getType());
+      if (commonResult == null || commonResult.getData() == null) {
+        showToastLong("返回内容为NULL");
+        return;
+      }
+      Map<String, String> retData = commonResult.getData();
+      String gotoUrl = "";
+      if("ocr".equals(lineType) && commonResult.getCode() == 0 && retData != null &&
+          "Y".equals(retData.get("status"))) {
+        showToastLong(commonResult.getMsg());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("/#/pagesB/pages/card_auth/suc_card?sign_url=");
+        stringBuilder.append(Host.getApiHost(this));
+        stringBuilder.append("/api/v1/ocr/image-info");
+        stringBuilder.append("&upload_type=");
+        stringBuilder.append(uploadType);
+        stringBuilder.append("&card_data=");
+        stringBuilder.append(retData.toString());
+        gotoUrl = Host.getH5Host(this, stringBuilder.toString());
+      } else if("".equals(lineType) && commonResult.getCode() == 0) {
+        showToastLong(commonResult.getMsg());
+        gotoUrl = Host.getH5Host(this, "/#/pagesB/pages/face_recog/face_result?result=success");
+      } else {
+        showToastLong(commonResult.getMsg());
+        if("ocr".equals(lineType)) {
+          gotoUrl = Host.getH5Host(this, "/#/pagesB/pages/card_auth/err_card");
+        } else {
+          gotoUrl = Host.getH5Host(this, "/#/pagesB/pages/face_recog/face_result?result=error");
+        }
+      }
+      if(!TextUtils.isEmpty(gotoUrl)) {
+
+      }
     }
   }
 
@@ -237,6 +301,26 @@ public class BaseActivity extends AppCompatActivity {
     }
   }
 
+  //跳转相册
+  public void openPicture(String lineType, String uploadType) {
+    KndcStorage.getInstance().setData(LINE_TYPE, lineType);
+    KndcStorage.getInstance().setData(UPLOAD_TYPE, uploadType);
+    Intent intent = new Intent(Intent.ACTION_PICK);  //跳转到 ACTION_IMAGE_CAPTURE
+    intent.setType("image/*");
+    startActivityForResult(intent, TAKE_CAMARA);
+    Log.i(TAG, "跳转相册成功");
+  }
+
+  //跳转相机
+  public void openCamera(String lineType, String uploadType) {
+    //将button的点击事件改成startActivityForResult启动相机
+    KndcStorage.getInstance().setData(LINE_TYPE, lineType);
+    KndcStorage.getInstance().setData(UPLOAD_TYPE, uploadType);
+    Intent intent = new Intent();
+    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+    startActivityForResult(intent, TAKE_PHOTO);
+  }
+
   /**
    * 登录后设置用户信息
    */
@@ -297,5 +381,79 @@ public class BaseActivity extends AppCompatActivity {
     } catch (Exception e) {
       Log.d(TAG, e.getMessage());
     }
+  }
+
+  /**
+   * 上传图片
+   */
+  private void uploadImage(KndcEvent event) {
+    String commonRet = event.getCommonRet();
+    if(TextUtils.isEmpty(commonRet)) {
+      showToastLong("获取上传地址失败");
+      return;
+    }
+    Gson gson = new Gson();
+    CommonResult commonResult = gson.fromJson(commonRet,
+        new TypeToken<CommonResult>(){}.getType());
+    if (commonResult == null) {
+      showToastLong("获取上传地址失败");
+      return;
+    }
+
+    if(commonResult.getCode() != 0) {
+      showToastLong(commonResult.getMsg());
+      return;
+    }
+
+    Map<String, String> retData = commonResult.getData();
+    if (retData == null) {
+      showToastLong("返回内容为NULL");
+      return;
+    }
+
+    Bitmap bitmap = event.getBitmap();
+    if(null == bitmap) {
+      showToastLong("数据为NULL");
+      return;
+    }
+
+    // Bitmap bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+    //第一步:将Bitmap压缩至字节数组输出流ByteArrayOutputStream
+//    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//    bitmap = ImageUtils.compressImage(bitmap, 800, true);
+//    bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
+//    //第二步:利用Base64将字节数组输出流中的数据转换成字符串String
+//    byte[] byteArray = byteArrayOutputStream.toByteArray();
+//    String imageString = new String(Base64.encodeToString(byteArray, Base64.DEFAULT));
+//    //第三步:将String保持至SharedPreferences
+//    SharedPreferences sharedPreferences = getSharedPreferences("testSP", Context.MODE_PRIVATE);
+//    SharedPreferences.Editor editor = sharedPreferences.edit();
+//    editor.putString("image", imageString);
+//    editor.commit();
+
+    CommonApi.getInstance().uploadImage(this, retData, bitmap);
+  }
+
+  /**
+   * 跳转到错误页
+   * @param lineType 值有ocr和living，ocr为身份证上传页面，living为人脸识别页面
+   */
+  private void openErrorPage(String lineType) {
+    if(TextUtils.isEmpty(lineType)) {
+      return;
+    }
+    if(lineType.equals("ocr")) {
+      CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pagesB/pages/card_auth/err_card"));
+    } else if(lineType.equals("living")) {
+      CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pagesB/pages/face_recog/face_result"));
+    }
+  }
+
+  /**
+   * 显示提示信息
+   * @param message
+   */
+  public void showToastLong(String message) {
+    Toast.makeText(this,message, Toast.LENGTH_LONG).show();
   }
 }

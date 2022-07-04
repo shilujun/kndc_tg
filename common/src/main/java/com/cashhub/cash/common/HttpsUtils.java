@@ -1,5 +1,6 @@
 package com.cashhub.cash.common;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.gson.Gson;
@@ -15,6 +16,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -175,13 +178,13 @@ public class HttpsUtils {
     }
 
     public static void sendRequest(final String phone, final String url, final Request request,
-        final String type) {
+        final String type, final Bitmap bitmap) {
         //发起请求
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    sendNetRequest(phone, url, request, type);
+                    sendNetRequest(phone, url, request, type, bitmap);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -189,8 +192,8 @@ public class HttpsUtils {
         }).start();
     }
 
-    private static void sendNetRequest(final String phone, final String url,
-        final Request request, String type) {
+    private static String sendNetRequest(final String phone, final String url,
+        final Request request, String type, final Bitmap bitmap) {
         Response response = null;
         String bodyStr = "";
 
@@ -209,19 +212,21 @@ public class HttpsUtils {
                     .hostnameVerifier((hostname, session) -> true) //忽略host验证
                     .followRedirects(false);  //禁制OkHttp的重定向操作，我们自己处理重定向
 
-                OkHttpClient client =builder.build();
+                OkHttpClient client = builder.build();
                 response = client.newCall(request).execute();
 
                 if(response == null || response.code() != 200) {
-                    Log.d(TAG, "sendNetRequest response is Null or code not 200" + response.code() + " " + response.message());
+                    Log.d(TAG,
+                        "sendNetRequest response is Null or code not 200  " + response.code() +
+                            " " + response.message());
                     response.body().close();
-                    return;
+                    return bodyStr;
                 }
                 bodyStr = response.body().string();
                 Log.d(TAG, "sendNetRequest bodyStr: " + bodyStr);
             } catch (Exception e) {
                 Log.d(TAG, "sendNetRequest onFailure " + e.getMessage());
-                return;
+                return bodyStr;
             }
 
         } else {
@@ -234,7 +239,7 @@ public class HttpsUtils {
                 if(response == null || response.code() != 200) {
                     Log.d(TAG, "sendNetRequest response is Null or code not 200");
                     response.body().close();
-                    return;
+                    return bodyStr;
                 }
                 bodyStr = response.body().string();
 
@@ -245,14 +250,24 @@ public class HttpsUtils {
         }
 
         if (TextUtils.isEmpty(type)) {
-            return;
+            return bodyStr;
         }
-        if(KndcEvent.LOGIN.equals(type) || KndcEvent.LOGOUT.equals(type)) {
+        List<String> stringList = new ArrayList<>();
+        stringList.add(KndcEvent.LOGIN);
+        stringList.add(KndcEvent.LOGOUT);
+        stringList.add(KndcEvent.GET_POLICY_SIGN);
+        stringList.add(KndcEvent.UPLOAD_IMAGE_SUCCESS);
+        stringList.add(KndcEvent.UPLOAD_REPORT_SUCCESS);
+        if(stringList.contains(type)) {
             KndcEvent kndcEvent = new KndcEvent();
             kndcEvent.setEventName(type);
             kndcEvent.setPhone(phone);
             kndcEvent.setCommonRet(bodyStr);
+            if(KndcEvent.GET_POLICY_SIGN.equals(type)) {
+                kndcEvent.setBitmap(bitmap);
+            }
             EventBus.getDefault().post(kndcEvent);
         }
+        return bodyStr;
     }
 }

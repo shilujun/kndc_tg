@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.app.model.Config;
@@ -45,9 +46,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     setContentView(R.layout.activity_main);
 
-    Log.d(TAG, "onCreate, DeviceId:" + DeviceUtils.getDeviceId(this));
-    Log.d(TAG, "onCreate, StatusBarHeight:" + StatusBarUtils.getStatusBarHeight(this));
-    Log.d(TAG, "onCreate, Host isDebug:" + Host.getApiHost(this));
+    Log.d(TAG, "onCreate, getSystemInfo:" + DeviceUtils.getSystemInfo(this));
 
     if (hasPermission()) {
       init();
@@ -68,9 +67,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     } else if (v.getId() == R.id.btn_default_mode) {
       startBrowserActivity(MODE_DEFAULT);
     } else if (v.getId() == R.id.btn_camera) {
-      openCameraOrGallery("camera");
+      openCamera("living", "1");
     } else if (v.getId() == R.id.btn_gallery) {
-      openCameraOrGallery("gallery");
+      openPicture("ocr", "3");
     } else if (v.getId() == R.id.btn_open_login) {
       Intent intent = new Intent();
       intent.setClassName(this, "com.cashhub.cash.app.LoginActivity");
@@ -215,6 +214,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    Log.d(TAG, "onActivityResult, requestCode:" + requestCode + ",resultCode:" + resultCode);
+  }
+
   private void startBrowserActivity(int mode) {
     Intent intent = new Intent(this, BrowserActivity.class);
     intent.putExtra(BrowserActivity.PARAM_URL, mDemoUrl);
@@ -236,37 +241,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     Intent intent = new Intent();
     intent.setClassName(this, "com.cashhub.cash.app.WebviewActivity");
     startActivity(intent);
-  }
-
-
-  @RequiresApi(api = Build.VERSION_CODES.M)
-  public void openCameraOrGallery(String type) {
-    if(type == null || type.isEmpty()) {
-      return;
-    }
-    if("camera".equals(type)) {
-      toCamera();
-    } else if("gallery".equals(type)) {
-      toPicture();
-    } else {
-      return;
-    }
-  }
-
-  //跳转相册
-  private void toPicture() {
-    Intent intent = new Intent(Intent.ACTION_PICK);  //跳转到 ACTION_IMAGE_CAPTURE
-    intent.setType("image/*");
-    startActivityForResult(intent, TAKE_CAMARA);
-    Log.i(TAG, "跳转相册成功");
-  }
-
-  //跳转相机
-  private void toCamera() {
-    //将button的点击事件改成startActivityForResult启动相机
-    Intent camera = new Intent();
-    camera.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-    startActivityForResult(camera, TAKE_PHOTO);
   }
 
   public void dataOpt(int type) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 
@@ -15,10 +16,8 @@ import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.UploadData;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
-import com.google.gson.JsonArray;
 import com.tencent.sonic.sdk.SonicDiffDataCallback;
 import org.greenrobot.eventbus.EventBus;
-
 
 /**
  * Sonic javaScript Interface (Android API Level >= 17)
@@ -63,31 +62,23 @@ public class SonicJavaScriptInterface {
 
   /**
    * 上传图片
+   * @param lineType 值有ocr和living，ocr为身份证上传页面，living为人脸识别页面
+   * @param uploadType 值有1，2，3。这个值由h5传过来，上传完图片再传回去
+   * @param type 值有album和camera，album为相册，camera为相机
    */
   @JavascriptInterface
-  public void uploadImage(String lineType, String type, String tt) {
+  public void uploadImage(String lineType, String uploadType, String type) {
+    //参数校验
+    if(TextUtils.isEmpty(lineType) || TextUtils.isEmpty(uploadType) || TextUtils.isEmpty(type)) {
+      return;
+    }
+    if(!type.equals("album") && !type.equals("camera")) {
+      return;
+    }
     KndcEvent kndcEvent = new KndcEvent();
-    kndcEvent.setEventName(KndcEvent.OPEN_CAMARA);
-    EventBus.getDefault().post(kndcEvent);
-  }
-
-  /**
-   * 打开相机
-   */
-  @JavascriptInterface
-  public void openCamera() {
-    KndcEvent kndcEvent = new KndcEvent();
-    kndcEvent.setEventName(KndcEvent.OPEN_CAMARA);
-    EventBus.getDefault().post(kndcEvent);
-  }
-
-  /**
-   * 打开图库
-   */
-  @JavascriptInterface
-  public void openGallery() {
-    KndcEvent kndcEvent = new KndcEvent();
-    kndcEvent.setEventName(KndcEvent.OPEN_IMAGE_CAPTURE);
+    kndcEvent.setEventName((type.equals("camera")) ? KndcEvent.OPEN_CAMARA : KndcEvent.OPEN_IMAGE_CAPTURE);
+    kndcEvent.setLineType(lineType);
+    kndcEvent.setUploadType(uploadType);
     EventBus.getDefault().post(kndcEvent);
   }
 
@@ -96,7 +87,6 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public JSONObject getSystemInfo() {
-
     return DeviceUtils.getSystemInfo(mContext);
   }
 

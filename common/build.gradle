@@ -15,7 +15,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -23,13 +23,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-//    greendao {
-//        schemaVersion 1 //数据库的版本
-//        daoPackage 'com.cashhub.cash.common.greendao'//greendao 自动生成的辅助类
-//        targetGenDir 'src/main/java'//固定目录
-//        generateTests false //设置为true以自动生成单元测试。
-//        targetGenDirTests 'src/main/java/com/cashhub/cash/common/greendao/test'
-//    }
 }
 
 dependencies {
@@ -44,4 +37,5 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
 //    implementation'org.greenrobot:greendao:3.2.2'
 //    implementation'org.greenrobot:greendao-generator:3.2.2'
+    implementation 'com.aliyun.dpa:oss-android-sdk:2.9.11'
 }

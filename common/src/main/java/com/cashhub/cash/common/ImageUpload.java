@@ -3,7 +3,6 @@ package com.cashhub.cash.common;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -13,16 +12,27 @@ import com.cashhub.cash.common.utils.ImageUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Map;
 
 public class ImageUpload {
 
   private static final String TAG = "ImageUpload";
+
+  private static ImageUpload mInstance;
+
+  public static synchronized ImageUpload getInstance() {
+    if (mInstance == null) {
+      mInstance = new ImageUpload();
+    }
+    return mInstance;
+  }
+
   /**
    * 保存图片
    */
-  public void saveImageToGallery(Context context, Bitmap inBitmap) {
+  public String saveImageToGallery(Context context, Bitmap inBitmap) {
     //首先压缩图片到置指定打下之下
-    Bitmap bmp = ImageUtils.compressImage(inBitmap, 24, false);
+    Bitmap bmp = ImageUtils.compressImage(inBitmap, 800, false);
     Log.d(TAG, "saveImageToGallery Start!!!");
     // 首先保存图片 创建文件夹
     File appDir = new File(Environment.getExternalStorageDirectory(), "oasystem");
@@ -30,11 +40,11 @@ public class ImageUpload {
       Log.d(TAG, "创建");
       if (!appDir.mkdir()) {
         Log.e("文件路径", "创建文件夹失败");
-        return;
+        return "";
       }
     }
     //图片文件名称
-    String fileName = "allen_haha_"+System.currentTimeMillis() + ".jpg";
+    String fileName = "living_ocr_.png";
     File file = new File(appDir, fileName);
     try {
       FileOutputStream fos = new FileOutputStream(file);
@@ -54,11 +64,12 @@ public class ImageUpload {
       e.printStackTrace();
     }
     // 最后通知图库更新
-    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-    Uri uri = Uri.fromFile(file);
-    intent.setData(uri);
-    context.sendBroadcast(intent);
-    Toast.makeText(context,"保存成功！",Toast.LENGTH_SHORT).show();
+//    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//    Uri uri = Uri.fromFile(file);
+//    intent.setData(uri);
+//    context.sendBroadcast(intent);
+
+    return file.getPath();
   }
 
 }

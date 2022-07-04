@@ -77,4 +77,5 @@ dependencies {
     implementation 'com.blankj:utilcodex:1.31.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'com.aliyun.dpa:oss-android-sdk:2.9.11'
 }
