@@ -168,14 +168,13 @@ public class CommonApi {
    * 埋点
    * @param context
    * @param requestJson
-   * @param token
    */
-  public void trackData(Context context, JSONObject requestJson, String token) {
+  public void trackData(Context context, String requestJson) {
     if(requestJson == null) {
       return;
     }
     String url = Host.getApiHost(context) + "/api/v1/track/data";
-    RequestBody requestBody = FormBody.create(requestJson.toString(), MediaType.parse("application/json"));
+    RequestBody requestBody = FormBody.create(requestJson, MediaType.parse("application/json"));
 
     Request request = new Request.Builder()
         .addHeader("Content-Type", "application/json")

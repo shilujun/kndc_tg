@@ -1,5 +1,6 @@
 package com.cashhub.cash.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -280,6 +281,16 @@ public class BrowserActivity extends BaseActivity {
       setUserInfo(phone, userToken, userId, userExpire);
       mWebView.loadUrl("javascript:syncUserInfo('" + phone + "','" + userToken+ "','" + userId +
           "','" + userExpire  + "')");
+    } else if(KndcEvent.WEB_OPEN_NEW_LINK.equals(event.getEventName())) {
+      String url = event.getUrl();
+      if(TextUtils.isEmpty(url)) {
+        return;
+      }
+      if(sonicSession != null) {
+//        sonicSession.srcUrl = url;
+        sonicSession.getSessionClient().loadUrl(url, new Bundle());
+//        sonicSession.refresh();
+      }
     }
   }
 

@@ -20,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.Window;
 import androidx.annotation.RequiresApi;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -144,6 +145,67 @@ public class CommonUtil {
   }
 
   /**
+   * 判断底部是否有虚拟导航栏 （true：虚拟导航栏，false：物理导航栏）
+   */
+  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+  public static boolean checkDeviceHasNavigationBar(Context activity) {
+    // 魅族M460A不能控制底部虚拟导航栏
+    if (Build.VERSION.SDK_INT < 19 || Build.MODEL.contains("M460A")) {
+      return false;
+    }
+
+    // 通过判断设备是否有菜单键(不是虚拟键,是手机屏幕外的物理按键)来确定是否有navigation bar
+    boolean hasMenuKey = ViewConfiguration.get(activity).hasPermanentMenuKey();
+    if (!hasMenuKey) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 获取Activity的ClassName
+   */
+  public static String getActivityClassName(Activity activity) {
+    return activity.getClass().getName();
+  }
+
+  /**
+   * 关闭应用
+   */
+  public static void closeApp() {
+    System.exit(0);
+  }
+
+  /**
+   * 获取系统语言
+   */
+  public static String getLanguage() {
+    String l = Locale.getDefault().getCountry().toLowerCase();
+    if ("tw".equals(l) || "hk".equals(l)) {
+      return "tw";
+    } else {
+      return "cn";
+    }
+  }
+
+  /**
+   * 获取状态栏高度
+   *该方法获取需要在onWindowFocusChanged方法回调之后
+   * @param context
+   * @return
+   */
+  public static int getStatusBarHeightDp(Context context) {
+    int statusBarHeight = getStatusBarByResId(context);
+    if (statusBarHeight <= 0) {
+      statusBarHeight = getStatusBarByReflex(context);
+    }
+    if(statusBarHeight > 0) {
+      statusBarHeight = px2dip(context, statusBarHeight);
+    }
+    return statusBarHeight;
+  }
+
+  /**
    * 获取状态栏高度
    *该方法获取需要在onWindowFocusChanged方法回调之后
    * @param context
@@ -204,84 +266,6 @@ public class CommonUtil {
       e.printStackTrace();
     }
     return statusBarHeight;
-  }
-
-
-//  /**
-////   * 获取手机状态栏高度
-////   */
-//  public static int getStatusBarHeight(Context context) {
-//    Class<?> c = null;
-//    Object obj = null;
-//    Field field = null;
-//    int x = 0, statusBarHeight = 38;//通常这个值会是38
-//    try {
-//      c = Class.forName("com.android.internal.R$dimen");
-//      obj = c.newInstance();
-//      field = c.getField("status_bar_height");
-//      x = Integer.parseInt(field.get(obj).toString());
-//      Log.d(TAG, "getStatusBarHeight x:" + x);
-//      statusBarHeight = context.getResources().getDimensionPixelSize(x);
-//    } catch (Exception e) {
-//      Log.d(TAG, "getStatusBarHeight error message:" + e.getMessage());
-//    }
-//    return statusBarHeight;
-//  }
-//
-//  /**
-//   * 获取手机状态栏高度
-//   */
-//  public static int getStatusBarHeight2(Context context) {
-//    int statusBarHeight = 38;
-//    int resId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-//    if (resId > 0) {
-//      statusBarHeight = context.getResources().getDimensionPixelSize(resId);
-//    }
-//    return statusBarHeight;
-//  }
-
-  /**
-   * 判断底部是否有虚拟导航栏 （true：虚拟导航栏，false：物理导航栏）
-   */
-  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-  public static boolean checkDeviceHasNavigationBar(Context activity) {
-    // 魅族M460A不能控制底部虚拟导航栏
-    if (Build.VERSION.SDK_INT < 19 || Build.MODEL.contains("M460A")) {
-      return false;
-    }
-
-    // 通过判断设备是否有菜单键(不是虚拟键,是手机屏幕外的物理按键)来确定是否有navigation bar
-    boolean hasMenuKey = ViewConfiguration.get(activity).hasPermanentMenuKey();
-    if (!hasMenuKey) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * 获取Activity的ClassName
-   */
-  public static String getActivityClassName(Activity activity) {
-    return activity.getClass().getName();
-  }
-
-  /**
-   * 关闭应用
-   */
-  public static void closeApp() {
-    System.exit(0);
-  }
-
-  /**
-   * 获取系统语言
-   */
-  public static String getLanguage() {
-    String l = Locale.getDefault().getCountry().toLowerCase();
-    if ("tw".equals(l) || "hk".equals(l)) {
-      return "tw";
-    } else {
-      return "cn";
-    }
   }
 
   public static int getNavigationBarHeight(Activity activity) {

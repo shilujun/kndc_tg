@@ -14,6 +14,7 @@ public class KndcEvent {
   public static String GET_POLICY_SIGN = "get_policy_sign";
   public static String UPLOAD_IMAGE_SUCCESS = "upload_image_success";
   public static String UPLOAD_REPORT_SUCCESS = "upload_report_success";
+  public static String WEB_OPEN_NEW_LINK = "web_open_new_link";
   private String mEventName = "";
   private String mToken = "";
   private String mDeviceId = "";
@@ -23,6 +24,7 @@ public class KndcEvent {
   private String mLineType = "";
   private String mUploadType = "";
   private Bitmap mBitmap;
+  private String url;
 
   public KndcEvent() {
   }
@@ -63,6 +65,10 @@ public class KndcEvent {
     return mBitmap;
   }
 
+  public String getUrl() {
+    return url;
+  }
+
   public void setEventName(String eventName) {
     this.mEventName = eventName;
   }
@@ -97,5 +103,9 @@ public class KndcEvent {
 
   public void setBitmap(Bitmap bitmap) {
     this.mBitmap = bitmap;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 }

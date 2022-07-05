@@ -90,8 +90,9 @@ public class SonicJavaScriptInterface {
    * 获取设备信息
    */
   @JavascriptInterface
-  public JSONObject getSystemInfo() {
-    return DeviceUtils.getSystemInfo(mContext);
+  public String getSystemInfo() {
+    JSONObject systemInfo = DeviceUtils.getSystemInfo(mContext);
+    return systemInfo.toString();
   }
 
 
@@ -131,13 +132,14 @@ public class SonicJavaScriptInterface {
    * 数据上报/埋点功能调用
    */
   @JavascriptInterface
-  public void trackData(JSONObject requestJson, String token) {
+  public void trackData(String requestJson) {
+    Log.d(TAG, "params:" + requestJson);
     try {
       //初始化数据
       if (mCommonApi == null) {
         mCommonApi = new CommonApi();
       }
-      mCommonApi.trackData(mContext, requestJson, token);
+      mCommonApi.trackData(mContext, requestJson);
     } catch (Exception e) {
       Log.d(TAG, e.getMessage());
     }
@@ -360,7 +362,7 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public void jsNavigateTo(String url) {
-    CommonApp.navigateTo(mContext, url);
+    CommonApp.navigateToInWebView(url);
   }
 
   /**

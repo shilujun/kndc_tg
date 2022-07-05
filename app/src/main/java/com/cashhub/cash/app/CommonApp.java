@@ -2,7 +2,10 @@ package com.cashhub.cash.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
+import com.cashhub.cash.common.KndcEvent;
+import org.greenrobot.eventbus.EventBus;
 
 public class CommonApp {
 
@@ -15,6 +18,12 @@ public class CommonApp {
     intent.putExtra(BrowserActivity.PARAM_MODE, MainActivity.MODE_SONIC);
     intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
     context.startActivity(intent);
+  }
+  public static void navigateToInWebView(String url) {
+    KndcEvent kndcEvent = new KndcEvent();
+    kndcEvent.setEventName(KndcEvent.WEB_OPEN_NEW_LINK);
+    kndcEvent.setUrl(url);
+    EventBus.getDefault().post(kndcEvent);
   }
 
   /**

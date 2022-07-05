@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.net.Uri;
@@ -104,18 +105,6 @@ public class BaseActivity extends AppCompatActivity {
 
     //检查权限
     waitCheckPermission();
-
-//    PermissonUtil.checkPermission(this, new PermissionListener() {
-//      @Override
-//      public void havePermission() {
-//        Toast.makeText(getApplicationContext(), "获取成功", Toast.LENGTH_SHORT).show();
-//      }
-//
-//      @Override
-//      public void requestPermissionFail() {
-//        Toast.makeText(getApplicationContext(), "获取失败", Toast.LENGTH_SHORT).show();
-//      }
-//    }, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE);
   }
 
   @Override
@@ -312,14 +301,14 @@ public class BaseActivity extends AppCompatActivity {
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
         WindowManager.LayoutParams.FLAG_FULLSCREEN);
     //5.x开始需要把颜色设置透明，否则导航栏会呈现系统默认的浅灰色
-//    Window window = activity.getWindow();
-//    View decorView = window.getDecorView();
-//    //两个 flag 要结合使用，表示让应用的主体内容占用系统状态栏的空间
-//    int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-//    decorView.setSystemUiVisibility(option);
-//    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//    window.setStatusBarColor(Color.TRANSPARENT);
+    Window window = activity.getWindow();
+    View decorView = window.getDecorView();
+    //两个 flag 要结合使用，表示让应用的主体内容占用系统状态栏的空间
+    int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+    decorView.setSystemUiVisibility(option);
+    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+    window.setStatusBarColor(Color.TRANSPARENT);
     //导航栏颜色也可以正常设置
     //window.setNavigationBarColor(Color.TRANSPARENT)
   }

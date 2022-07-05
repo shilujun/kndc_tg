@@ -22,6 +22,7 @@ import com.cashhub.cash.app.model.Config;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 import com.cashhub.cash.common.utils.StatusBarUtils;
 import com.tencent.sonic.sdk.SonicConfig;
@@ -46,9 +47,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     setContentView(R.layout.activity_main);
 
-    Log.d(TAG, "onCreate, getSystemInfo:" + DeviceUtils.getSystemInfo(this));
-
-
     bindClickEvent();
 
     final UrlListAdapter urlListAdapter = new UrlListAdapter(MainActivity.this);
@@ -62,6 +60,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       SonicEngine.getInstance().cleanCache();
     } else if (v.getId() == R.id.btn_default_mode) {
       startBrowserActivity(MODE_DEFAULT);
+    } else if (v.getId() == R.id.btn_device_info) {
+      getDeviceInfo();
     } else if (v.getId() == R.id.btn_camera) {
       KndcStorage.getInstance().setData(BaseActivity.LINE_TYPE, "living");
       KndcStorage.getInstance().setData(BaseActivity.UPLOAD_TYPE, "1");
@@ -83,8 +83,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       startActivity(intent);
     } else if (v.getId() == R.id.btn_track_data) {
       CommonApi commonApi = new CommonApi();
-      JSONObject jsonObject = new JSONObject();
-      commonApi.trackData(this, jsonObject, "");
+      commonApi.trackData(this, "");
     } else if (v.getId() == R.id.btn_get_storage_data) {
       Map<String, String> storageData = KndcStorage.getInstance().getDataMap();
       if (storageData == null || storageData.isEmpty()) {
@@ -125,6 +124,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     // default btn
     Button btnDefault = (Button) findViewById(R.id.btn_default_mode);
     btnDefault.setOnClickListener(this);
+
+    // device btn
+    Button btnDeviceInfo = (Button) findViewById(R.id.btn_device_info);
+    btnDeviceInfo.setOnClickListener(this);
 
     //camera btn
     Button btnCamera = (Button) findViewById(R.id.btn_camera);
@@ -271,5 +274,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       sb.append(randomStr);
     }
     return sb.toString();
+  }
+
+  private void getDeviceInfo() {
+    Log.d(TAG, "开始获取设备信息======");
+
+    Log.d(TAG, "系统信息:");
+    Log.d(TAG, String.valueOf(DeviceUtils.getSystemInfo()));
+
+//    Log.d(TAG, "SystemInfo:");
+//    Log.d(TAG, String.valueOf(DeviceUtils.getSystemInfo(this)));
+
+    Log.d(TAG, "状态栏高度:");
+    Log.d(TAG, String.valueOf(CommonUtil.getStatusBarHeight(this)));
+
+    Log.d(TAG, "状态栏高度Dp:");
+    Log.d(TAG, String.valueOf(CommonUtil.getStatusBarHeightDp(this)));
+
+    Log.d(TAG, "显示高度:");
+    Log.d(TAG, String.valueOf(DeviceUtils.getDisplayHeight(this)));
+
+    Log.d(TAG, "DeviceId:");
+    Log.d(TAG, DeviceUtils.getDeviceId(this));
+    Log.d(TAG, "version:");
+    Log.d(TAG, DeviceUtils.getVerName(this));
+    Log.d(TAG, "appid:");
+    Log.d(TAG, String.valueOf(DeviceUtils.getVersionCode(this)));
+    Log.d(TAG, "titleBarHeight:");
+    Log.d(TAG, String.valueOf(CommonUtil.getTitleBarHeight(this)));
+    Log.d(TAG, "version:");
+    Log.d(TAG, DeviceUtils.getVerName(this));
+    Log.d(TAG, "结束获取设备信息======");
   }
 }

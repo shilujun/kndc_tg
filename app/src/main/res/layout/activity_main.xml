@@ -52,9 +52,17 @@
         android:id="@+id/btn_default_mode"
         style="@style/SonicButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.02"
         android:text="@string/default_no_sonic" />
+
+      <Button
+        android:id="@+id/btn_device_info"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="获取设备信息" />
 
       <Button
         android:id="@+id/btn_local"

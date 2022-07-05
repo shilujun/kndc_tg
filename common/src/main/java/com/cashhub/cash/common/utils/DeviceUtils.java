@@ -112,12 +112,12 @@ public class DeviceUtils {
 //    jsonObject.put("expire", KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME));
 //    jsonObject.put("phone", KndcStorage.getInstance().getData(KndcStorage.USER_PHONE));
     jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
-    jsonObject.put("version", DeviceUtils.getVerName(context));
-    jsonObject.put("appid", DeviceUtils.getVersionCode(context));
-    jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeight(context));
+//    jsonObject.put("version", DeviceUtils.getVerName(context));
+//    jsonObject.put("appid", DeviceUtils.getVersionCode(context));
+    jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
     jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
-    jsonObject.put("windowHeight", DeviceUtils.getDisplayHeight(context));
-    jsonObject.put("systemInfo", DeviceUtils.getSystemInfo());
+//    jsonObject.put("windowHeight", DeviceUtils.getDisplayHeight(context));
+//    jsonObject.put("systemInfo", DeviceUtils.getSystemInfo());
 
     Log.d(TAG, "getSystemInfo: " + jsonObject.toString());
 
