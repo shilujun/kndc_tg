@@ -22,22 +22,23 @@ public class SplashActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     Log.d(TAG, "onCreate, SplashActivity");
 //    //TODO 调试使用  需要去除
+
+    if (isLauncherStart()) {
+      return;
+    }
+    setFullScreen(this);
     try {
       Thread.sleep(300);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
-    Intent intent = new Intent();
-    intent.setClass(SplashActivity.this, MainActivity.class);
-    startActivity(intent);
+//    Intent intent = new Intent();
+//    intent.setClass(SplashActivity.this, MainActivity.class);
+//    startActivity(intent);
 //    CommonApp.navigateTo(this, "http://johnnyshi.com/test.html");
-//    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
-
-    if (isLauncherStart()) {
-      return;
-    }
-    setFullScreen(this);
+    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
+    finish();
   }
 
   @Override
