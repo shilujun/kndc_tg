@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -17,6 +18,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.core.app.NavUtils;
 import com.blankj.utilcode.util.Utils;
 import com.cashhub.cash.app.widget.PopWinBottomLayout;
 import com.cashhub.cash.app.widget.SecurityCodeView;
@@ -83,12 +86,22 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     int id = v.getId();
     if(id == R.id.llt_back) {
       //后退按钮点击
+      Intent intent = new Intent();
+      intent.setClassName(this, "LoginActivity");
+      startActivity(intent);
+      this.finish();
     } else if(id == R.id.llt_can_not_get_code) {
       //收不到验证
       if(popWinBottomLayout != null) {
         if (popWinBottomLayout.getPopWinStatus()) {
           popWinBottomLayout.hidePopView();
         } else {
+          //第一步先收起键盘
+          InputMethodManager manager = (InputMethodManager) getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+          if (manager != null) {
+            manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+          }
           popWinBottomLayout.showPopView();
         }
       }

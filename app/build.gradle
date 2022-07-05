@@ -78,4 +78,5 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.aliyun.dpa:oss-android-sdk:2.9.11'
+//    implementation 'com.github.tyhjh:PermissionUtil:v1.0.7'
 }

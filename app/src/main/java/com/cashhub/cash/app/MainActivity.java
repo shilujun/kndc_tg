@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -15,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import com.alibaba.fastjson.JSONObject;
@@ -48,11 +48,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     Log.d(TAG, "onCreate, getSystemInfo:" + DeviceUtils.getSystemInfo(this));
 
-    if (hasPermission()) {
-      init();
-    } else {
-      requestPermission();
-    }
+
     bindClickEvent();
 
     final UrlListAdapter urlListAdapter = new UrlListAdapter(MainActivity.this);
@@ -187,33 +183,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
   }
 
-
-  private boolean hasPermission() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-    return true;
-  }
-
-  private void requestPermission() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE_STORAGE);
-    }
-  }
-
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    if (PERMISSION_REQUEST_CODE_STORAGE == requestCode) {
-      if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-        requestPermission();
-      } else {
-        init();
-      }
-      return;
-    }
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-  }
-
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
@@ -238,9 +207,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public void btn_web_view(View view) {
-    Intent intent = new Intent();
-    intent.setClassName(this, "com.cashhub.cash.app.WebviewActivity");
-    startActivity(intent);
+//    Intent intent = new Intent();
+//    intent.setClassName(this, "com.cashhub.cash.app.WebviewActivity");
+//    startActivity(intent);
+    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
   }
 
   public void dataOpt(int type) {
