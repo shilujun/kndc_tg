@@ -97,6 +97,7 @@ public class BaseActivity extends AppCompatActivity {
     initData();
     //禁止横屏
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    setFullScreen(this);
 
     //EventBus
     EventBus.getDefault().register(this);
