@@ -357,6 +357,15 @@ public class SonicJavaScriptInterface {
     return out.toString();
   }
 
+
+  /**
+   * 开始授权
+   */
+  @JavascriptInterface
+  public void beginPermission() {
+    CommonApp.beginPermission();
+  }
+
   /**
    * 页面跳转
    */

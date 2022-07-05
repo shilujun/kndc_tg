@@ -15,6 +15,7 @@ public class KndcEvent {
   public static String UPLOAD_IMAGE_SUCCESS = "upload_image_success";
   public static String UPLOAD_REPORT_SUCCESS = "upload_report_success";
   public static String WEB_OPEN_NEW_LINK = "web_open_new_link";
+  public static String BEGIN_CHECK_PERMISSION = "begin_check_permission";
   private String mEventName = "";
   private String mToken = "";
   private String mDeviceId = "";

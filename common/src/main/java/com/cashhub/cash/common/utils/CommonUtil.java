@@ -136,12 +136,12 @@ public class CommonUtil {
   }
 
   /**
-   * 获取标题栏高度 TODO
+   * 获取标题栏高度
    * @param context
    * @return
    */
   public static int getTitleBarHeight(Context context) {
-    return  0;
+    return 56;
   }
 
   /**

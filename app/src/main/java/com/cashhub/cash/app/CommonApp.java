@@ -34,4 +34,13 @@ public class CommonApp {
     intent.setClass(context, LoginActivity.class);
     context.startActivity(intent);
   }
+
+  /**
+   * 前端通知授权
+   */
+  public static void beginPermission() {
+    KndcEvent kndcEvent = new KndcEvent();
+    kndcEvent.setEventName(KndcEvent.BEGIN_CHECK_PERMISSION);
+    EventBus.getDefault().post(kndcEvent);
+  }
 }

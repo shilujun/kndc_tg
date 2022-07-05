@@ -118,7 +118,6 @@
       android:launchMode="singleTask"
       android:screenOrientation="fullSensor"
       android:windowSoftInputMode="adjustResize">
-
 <!--       <intent-filter> -->
 <!--       <action android:name="android.intent.action.MAIN" /> -->
 

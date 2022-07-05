@@ -102,9 +102,6 @@ public class BaseActivity extends AppCompatActivity {
 
     //EventBus
     EventBus.getDefault().register(this);
-
-    //检查权限
-    waitCheckPermission();
   }
 
   @Override
@@ -214,6 +211,10 @@ public class BaseActivity extends AppCompatActivity {
       clearUserInfo();
     } else if (KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
       uploadImage(event);
+    } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
+      if (!hasPermission()) {
+        requestPermission();
+      }
     } else if (KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
       String commonRet = event.getCommonRet();
       if (TextUtils.isEmpty(commonRet)) {

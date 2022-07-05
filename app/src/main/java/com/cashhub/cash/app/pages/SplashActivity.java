@@ -36,8 +36,8 @@ public class SplashActivity extends BaseActivity {
 //    Intent intent = new Intent();
 //    intent.setClass(SplashActivity.this, MainActivity.class);
 //    startActivity(intent);
-//    CommonApp.navigateTo(this, "http://johnnyshi.com/test.html");
-    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
+    CommonApp.navigateTo(this, "http://johnnyshi.com/test.html");
+//    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
     finish();
   }
 
