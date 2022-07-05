@@ -63,9 +63,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     } else if (v.getId() == R.id.btn_default_mode) {
       startBrowserActivity(MODE_DEFAULT);
     } else if (v.getId() == R.id.btn_camera) {
-      openCamera("living", "1");
+      KndcStorage.getInstance().setData(BaseActivity.LINE_TYPE, "living");
+      KndcStorage.getInstance().setData(BaseActivity.UPLOAD_TYPE, "1");
+      openCamera();
     } else if (v.getId() == R.id.btn_gallery) {
-      openPicture("ocr", "3");
+      KndcStorage.getInstance().setData(BaseActivity.LINE_TYPE, "ocr");
+      KndcStorage.getInstance().setData(BaseActivity.UPLOAD_TYPE, "3");
+      openPicture();
     } else if (v.getId() == R.id.btn_open_login) {
       Intent intent = new Intent();
       intent.setClassName(this, "com.cashhub.cash.app.LoginActivity");

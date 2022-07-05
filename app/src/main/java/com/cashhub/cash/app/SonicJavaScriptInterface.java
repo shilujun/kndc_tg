@@ -68,6 +68,7 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public void uploadImage(String lineType, String uploadType, String type) {
+    Log.d(TAG, "uploadImage: start!!! lineType:" + lineType + ", uploadType:" + uploadType + ", type:" + type);
     //参数校验
     if(TextUtils.isEmpty(lineType) || TextUtils.isEmpty(uploadType) || TextUtils.isEmpty(type)) {
       return;
@@ -75,6 +76,9 @@ public class SonicJavaScriptInterface {
     if(!type.equals("album") && !type.equals("camera")) {
       return;
     }
+
+    KndcStorage.getInstance().setData(BaseActivity.LINE_TYPE, lineType);
+    KndcStorage.getInstance().setData(BaseActivity.UPLOAD_TYPE, uploadType);
     KndcEvent kndcEvent = new KndcEvent();
     kndcEvent.setEventName((type.equals("camera")) ? KndcEvent.OPEN_CAMARA : KndcEvent.OPEN_IMAGE_CAPTURE);
     kndcEvent.setLineType(lineType);

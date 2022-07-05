@@ -217,6 +217,12 @@ public class BaseActivity extends AppCompatActivity {
       CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
     } else if (KndcEvent.LOGOUT.equals(event.getEventName())) {
       clearUserInfo();
+    } else if (KndcEvent.OPEN_CAMARA.equals(event.getEventName())) {
+      openCamera();
+    } else if (KndcEvent.OPEN_IMAGE_CAPTURE.equals(event.getEventName())) {
+      openPicture();
+    } else if (KndcEvent.LOGOUT.equals(event.getEventName())) {
+      clearUserInfo();
     } else if (KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
       uploadImage(event);
     } else if (KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
@@ -342,9 +348,9 @@ public class BaseActivity extends AppCompatActivity {
   }
 
   //跳转相册
-  public void openPicture(String lineType, String uploadType) {
-    KndcStorage.getInstance().setData(LINE_TYPE, lineType);
-    KndcStorage.getInstance().setData(UPLOAD_TYPE, uploadType);
+  public void openPicture() {
+
+    Log.i(TAG, "跳转相册成功");
     Intent intent = new Intent(Intent.ACTION_PICK);  //跳转到 ACTION_IMAGE_CAPTURE
     intent.setType("image/*");
     startActivityForResult(intent, TAKE_CAMARA);
@@ -352,10 +358,8 @@ public class BaseActivity extends AppCompatActivity {
   }
 
   //跳转相机
-  public void openCamera(String lineType, String uploadType) {
+  public void openCamera() {
     //将button的点击事件改成startActivityForResult启动相机
-    KndcStorage.getInstance().setData(LINE_TYPE, lineType);
-    KndcStorage.getInstance().setData(UPLOAD_TYPE, uploadType);
     Intent intent = new Intent();
     intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
     startActivityForResult(intent, TAKE_PHOTO);

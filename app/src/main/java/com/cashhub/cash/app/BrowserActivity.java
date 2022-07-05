@@ -254,6 +254,7 @@ public class BrowserActivity extends BaseActivity {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(KndcEvent event) {
+    super.onMessageEvent(event);
     Log.d(TAG, "onMessageEvent: " + event.getEventName());
     if(KndcEvent.LOGIN.equals(event.getEventName())) {
       String phone = event.getPhone();
