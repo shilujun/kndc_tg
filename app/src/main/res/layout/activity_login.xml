@@ -13,21 +13,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:background="@color/color_2681E3"
-      android:gravity="center">
-
-      <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/common_margin"
-        android:text="ลงทะเบียน"
-        android:textColor="@color/white"
-        android:textSize="@dimen/sp_16"
-        android:textStyle="bold" />
-    </LinearLayout>
+    <include layout="@layout/title_bar_layout"/>
 
     <TextView
       android:layout_width="match_parent"

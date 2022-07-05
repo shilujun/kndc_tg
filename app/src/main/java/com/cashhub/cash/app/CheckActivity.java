@@ -86,9 +86,6 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     int id = v.getId();
     if(id == R.id.llt_back) {
       //后退按钮点击
-      Intent intent = new Intent();
-      intent.setClassName(this, "LoginActivity");
-      startActivity(intent);
       this.finish();
     } else if(id == R.id.llt_can_not_get_code) {
       //收不到验证

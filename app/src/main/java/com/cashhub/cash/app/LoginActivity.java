@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
+import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 
@@ -27,6 +28,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   private static final String TAG = "LoginActivity";
   private Context mContext;
   private LinearLayout lltVerifyCode;
+  private LinearLayout lltBack;
   private EditText editPhoneTxt;
   private ImageView ivClear;
   private ImageView ivError;
@@ -45,6 +47,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     lltVerifyCode = findViewById(R.id.llt_verify_code);
     lltVerifyCode.setOnClickListener(this);
 
+    lltBack = findViewById(R.id.llt_back);
+    lltBack.setOnClickListener(this);
+
     editPhoneTxt = findViewById(R.id.edit_phone_num);
 
     ivClear = findViewById(R.id.iv_clear);
@@ -62,6 +67,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     chxProtocol = findViewById(R.id.chx_protocol);
     tvTips = findViewById(R.id.tv_tips);
     ivGap = findViewById(R.id.iv_gap);
+
+
+
+    setConfigInfo(KndcStorage.H5_IS_CHECK_PERMISSION, "1");
 
     //弹出数字键盘
     waitPopNumKeyboard(editPhoneTxt);
@@ -95,6 +104,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       intent.putExtra(BrowserActivity.PARAM_MODE, 1);
       intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
       startActivity(intent);
+    } else if(id == R.id.llt_back) {
+      //后退按钮点击
+      this.finish();
     }
   }
 
