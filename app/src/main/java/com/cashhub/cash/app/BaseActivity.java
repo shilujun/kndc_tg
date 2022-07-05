@@ -91,7 +91,6 @@ public class BaseActivity extends AppCompatActivity {
   public DaoSession mDaoSession;
   public ConfigDao mConfigDao;
   public ReportInfoDao mReportInfoDao;
-  public String mUserToken = "";
   private boolean isInit = false;
 
   @Override
@@ -208,7 +207,7 @@ public class BaseActivity extends AppCompatActivity {
     } else if (KndcEvent.OPEN_IMAGE_CAPTURE.equals(event.getEventName())) {
       openPicture();
     } else if (KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
-      uploadImage(event);
+      uploadImage(event, lineType, uploadType);
     } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
       setConfigInfo(KndcStorage.H5_IS_CHECK_PERMISSION, "1");
       if (!hasPermission()) {
@@ -217,6 +216,14 @@ public class BaseActivity extends AppCompatActivity {
         collectDataAndUpload();
       }
     } else if (KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
+      String uploadImageUrl = event.getUrl();
+      Log.d(TAG, "common result:" + uploadImageUrl);
+      if (TextUtils.isEmpty(uploadImageUrl)) {
+        return;
+      }
+      String userToken = KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
+      CommonApi.getInstance().reportUploadSuccessData(this, userToken, uploadImageUrl, lineType);
+    } else if (KndcEvent.REPORT_UPLOAD_SUCCESS.equals(event.getEventName())) {
       String commonRet = event.getCommonRet();
       if (TextUtils.isEmpty(commonRet)) {
         return;
@@ -225,25 +232,7 @@ public class BaseActivity extends AppCompatActivity {
       CommonResult commonResult = gson.fromJson(commonRet,
           new TypeToken<CommonResult>() {
           }.getType());
-      if (commonResult == null || commonResult.getData() == null) {
-        Log.d(TAG, "common result is null");
-        return;
-      }
-
-      Map<String, String> retData = commonResult.getData();
-      //TODO
-      CommonApi.getInstance()
-          .uploadSuccessReportData(this, mUserToken, retData.get("downloadUrl"), lineType);
-    } else if (KndcEvent.UPLOAD_REPORT_SUCCESS.equals(event.getEventName())) {
-      String commonRet = event.getCommonRet();
-      if (TextUtils.isEmpty(commonRet)) {
-        return;
-      }
-      Gson gson = new Gson();
-      CommonResult commonResult = gson.fromJson(commonRet,
-          new TypeToken<CommonResult>() {
-          }.getType());
-      if (commonResult == null || commonResult.getData() == null) {
+      if (commonResult == null) {
         showToastLong("返回内容为NULL");
         return;
       }
@@ -260,20 +249,20 @@ public class BaseActivity extends AppCompatActivity {
         stringBuilder.append(uploadType);
         stringBuilder.append("&card_data=");
         stringBuilder.append(retData.toString());
-        gotoUrl = Host.getH5Host(this, stringBuilder.toString());
-      } else if ("" .equals(lineType) && commonResult.getCode() == 0) {
+        gotoUrl = stringBuilder.toString();
+      } else if ("living" .equals(lineType) && commonResult.getCode() == 0) {
         showToastLong(commonResult.getMsg());
-        gotoUrl = Host.getH5Host(this, "/#/pagesB/pages/face_recog/face_result?result=success");
+        gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=success";
       } else {
         showToastLong(commonResult.getMsg());
-        if ("ocr" .equals(lineType)) {
-          gotoUrl = Host.getH5Host(this, "/#/pagesB/pages/card_auth/err_card");
+        if ("ocr".equals(lineType)) {
+          gotoUrl = "/#/pagesB/pages/card_auth/err_card";
         } else {
-          gotoUrl = Host.getH5Host(this, "/#/pagesB/pages/face_recog/face_result?result=error");
+          gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=error";
         }
       }
       if (!TextUtils.isEmpty(gotoUrl)) {
-
+        CommonApp.navigateToInWebView(Host.getH5Host(this, gotoUrl));
       }
     }
   }
@@ -288,10 +277,6 @@ public class BaseActivity extends AppCompatActivity {
 
   public ReportInfoDao getDaoReportInfo() {
     return mReportInfoDao;
-  }
-
-  public String getUserToken() {
-    return mUserToken;
   }
 
   /**
@@ -461,7 +446,7 @@ public class BaseActivity extends AppCompatActivity {
   /**
    * 上传图片
    */
-  private void uploadImage(KndcEvent event) {
+  private void uploadImage(KndcEvent event, String lineType, String uploadType) {
     String commonRet = event.getCommonRet();
     if (TextUtils.isEmpty(commonRet)) {
       showToastLong("获取上传地址失败");

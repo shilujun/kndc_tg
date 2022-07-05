@@ -84,7 +84,7 @@
         android:id="@+id/btn_insert"
         style="@style/SonicButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.02"
         android:text="写入数据" />
 

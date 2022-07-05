@@ -1,17 +1,12 @@
 package com.cashhub.cash.app.pages;
 
 import android.content.Intent;
-import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import com.cashhub.cash.app.BaseActivity;
 import com.cashhub.cash.app.CommonApp;
 import com.cashhub.cash.app.MainActivity;
 import com.cashhub.cash.common.Host;
-import com.cashhub.cash.common.utils.DeviceUtils;
 
 public class SplashActivity extends BaseActivity {
 
@@ -20,8 +15,6 @@ public class SplashActivity extends BaseActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Log.d(TAG, "onCreate, SplashActivity");
-//    //TODO 调试使用  需要去除
 
     if (isLauncherStart()) {
       return;
@@ -33,11 +26,11 @@ public class SplashActivity extends BaseActivity {
       e.printStackTrace();
     }
 
-//    Intent intent = new Intent();
-//    intent.setClass(SplashActivity.this, MainActivity.class);
-//    startActivity(intent);
+    Intent intent = new Intent();
+    intent.setClass(SplashActivity.this, MainActivity.class);
+    startActivity(intent);
 //    CommonApp.navigateTo(this, "http://johnnyshi.com/test.html");
-    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
+//    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
     finish();
   }
 

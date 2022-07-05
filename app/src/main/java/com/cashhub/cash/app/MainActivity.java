@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return;
       }
       storageData.forEach((key, value) -> {
-        Log.d(TAG, "storageData Key:" + key + ",value:" + value);
+        Log.d(TAG, "storageData " + key + ":" + value);
       });
     } else if (v.getId() == R.id.btn_sonic_preload) {
       SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       mDemoUrl = "http://johnnyshi.com/test.html";
       startBrowserActivity(MODE_SONIC);
     } else if (v.getId() == R.id.btn_insert) {
-      dataOpt(0);
+//      dataOpt(0);
     } else if (v.getId() == R.id.btn_query) {
       dataOpt(1);
     } else if (v.getId() == R.id.btn_sonic) {
@@ -240,7 +240,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
       for ( Config config: configList ) {
         Log.d(TAG,
-            "CONFIG DATA, id:" + config.getId() + ", key:" + config.getConfigKey() +
+            "CONFIG DATA, " + config.getId() + ":" + config.getConfigKey() +
                 ", value:" + config.getConfigValue());
       }
     } else {

@@ -305,29 +305,23 @@ public class CommonApi {
             OkHttpClient client = builder.build();
             response = client.newCall(request).execute();
 
-            if(response.code() != 200) {
-              Log.d(TAG,
-                  "sendNetRequest response is Null or code not 200  " + response.code() +
-                      " " + response.message());
-              response.body().close();
-              return ;
+            if(response.code() == 200) {
+              uploadImageUrl = url + "/" + dir + fileName;
+              bodyStr = response.body().string();
+              Log.d(TAG, "sendNetRequest uploadImageUrl: " + uploadImageUrl);
             }
-
-            uploadImageUrl = url + "/" + dir + fileName;
-            bodyStr = response.body().string();
-            Log.d(TAG, "sendNetRequest bodyStr: " + bodyStr);
-            Log.d(TAG, "sendNetRequest uploadImageUrl: " + uploadImageUrl);
+            response.body().close();
           } catch (Exception e) {
             Log.d(TAG, "sendNetRequest onFailure " + e.getMessage());
-            return ;
           }
           KndcEvent kndcEvent = new KndcEvent();
-          kndcEvent.setEventName(KndcEvent.UPLOAD_REPORT_SUCCESS);
-          if(TextUtils.isEmpty(uploadImageUrl)) {
-            //上传失败
-          } else {
-            //上传成功
-          }
+          kndcEvent.setEventName(KndcEvent.UPLOAD_IMAGE_SUCCESS);
+          kndcEvent.setUrl(uploadImageUrl);
+//          if(TextUtils.isEmpty(uploadImageUrl)) {
+//            //上传失败
+//          } else {
+//            //上传成功
+//          }
           EventBus.getDefault().post(kndcEvent);
         }
       }).start();
@@ -337,9 +331,11 @@ public class CommonApi {
   }
 
   /**
-   * Ocr/活体上传上报
+   * Ocr/活体 上传上报
    */
-  public void uploadSuccessReportData(Context context, String token, String imgUrl, String type) {
+  public void reportUploadSuccessData(Context context, String token, String imgUrl, String type) {
+    Log.d(TAG, "reportUploadSuccessData token: " + token + ", imgUrl:" + imgUrl + ", type:" + type);
+
     if(TextUtils.isEmpty(token) || TextUtils.isEmpty(imgUrl) || TextUtils.isEmpty(type)) {
       return;
     }
@@ -366,7 +362,7 @@ public class CommonApi {
 
     Log.d(TAG, "trackFaceData device url: " + url);
 
-    HttpsUtils.sendRequest("", url, request, KndcEvent.UPLOAD_REPORT_SUCCESS, null);
+    HttpsUtils.sendRequest("", url, request, KndcEvent.REPORT_UPLOAD_SUCCESS, null);
   }
 
   private String formUpload(String urlStr, Map<String, String> formFields, Bitmap bitmap)

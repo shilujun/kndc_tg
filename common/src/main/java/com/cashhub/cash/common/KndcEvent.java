@@ -13,10 +13,11 @@ public class KndcEvent {
   public static String OPEN_IMAGE_CAPTURE_FAILURE = "open_image_capture_failure";
   public static String GET_POLICY_SIGN = "get_policy_sign";
   public static String UPLOAD_IMAGE_SUCCESS = "upload_image_success";
-  public static String UPLOAD_REPORT_SUCCESS = "upload_report_success";
+  public static String REPORT_UPLOAD_SUCCESS = "report_upload_success";
   public static String WEB_OPEN_NEW_LINK = "web_open_new_link";
   public static String BEGIN_CHECK_PERMISSION = "begin_check_permission";
   private String mEventName = "";
+  private String code = "";
   private String mToken = "";
   private String mDeviceId = "";
   private String mVerifyCode = "";
@@ -28,6 +29,10 @@ public class KndcEvent {
   private String url;
 
   public KndcEvent() {
+  }
+
+  public String getCode() {
+    return code;
   }
 
   public String getEventName() {
@@ -68,6 +73,10 @@ public class KndcEvent {
 
   public String getUrl() {
     return url;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
   }
 
   public void setEventName(String eventName) {
