@@ -281,8 +281,10 @@ public class BrowserActivity extends BaseActivity {
       String userExpire = retData.get("expire");
 
       setUserInfo(phone, userToken, userId, userExpire);
-      mWebView.loadUrl("javascript:syncUserInfo('" + phone + "','" + userToken+ "','" + userId +
-          "','" + userExpire  + "')");
+      if (sonicSession != null) {
+        sonicSession.getSessionClient().loadUrl("javascript:syncUserInfo('" + phone + "','" + userToken+ "','" + userId +
+            "','" + userExpire  + "')", new Bundle());
+      }
     } else if(KndcEvent.WEB_OPEN_NEW_LINK.equals(event.getEventName())) {
       String url = event.getUrl();
       if(TextUtils.isEmpty(url)) {
@@ -297,6 +299,7 @@ public class BrowserActivity extends BaseActivity {
       String lineType = KndcStorage.getInstance().getData(LINE_TYPE);
       String uploadType = KndcStorage.getInstance().getData(UPLOAD_TYPE);
       String commonRet = event.getCommonRet();
+      Log.d(TAG, "lineType: " + lineType + ",uploadType:" + uploadType + ",commonRet:" + commonRet);
 
       if (TextUtils.isEmpty(commonRet)) {
         return;
@@ -306,10 +309,10 @@ public class BrowserActivity extends BaseActivity {
           new TypeToken<CommonResult>() {
           }.getType());
       if (commonResult == null) {
-        showToastLong("返回内容为NULL");
+        showToastLong("RESULT IS NULL");
         return;
       }
-      Map<String, String> retData = commonResult.getData();
+      Map retData = commonResult.getData();
       String gotoUrl = "";
       if ("living" .equals(lineType) && commonResult.getCode() == 0 && retData != null &&
           "Y" .equals(retData.get("status"))) {
@@ -324,7 +327,7 @@ public class BrowserActivity extends BaseActivity {
         stringBuilder.append("&upload_type=");
         stringBuilder.append(uploadType);
         stringBuilder.append("&card_data=");
-        stringBuilder.append(JSONObject.parse(retData.toString()));
+        stringBuilder.append(new JSONObject(retData));
         gotoUrl = stringBuilder.toString();
       } else {
         showToastLong(commonResult.getMsg());
