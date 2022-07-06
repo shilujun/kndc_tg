@@ -20,6 +20,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcEvent;
@@ -323,7 +324,7 @@ public class BrowserActivity extends BaseActivity {
         stringBuilder.append("&upload_type=");
         stringBuilder.append(uploadType);
         stringBuilder.append("&card_data=");
-        stringBuilder.append(retData.toString());
+        stringBuilder.append(JSONObject.parse(retData.toString()));
         gotoUrl = stringBuilder.toString();
       } else {
         showToastLong(commonResult.getMsg());

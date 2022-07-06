@@ -97,7 +97,7 @@ public class CommonApi {
 
     Log.d(TAG, "getCheckCode url: " + url);
 
-    HttpsUtils.sendRequest(phone, url, request, "", null);
+    HttpsUtils.sendRequest(phone, url, request, KndcEvent.GET_CHECK_CODE, null);
   }
 
   /**

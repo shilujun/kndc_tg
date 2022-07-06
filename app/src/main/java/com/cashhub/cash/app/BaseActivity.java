@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.CollectionUtils;
 import com.cashhub.cash.app.greendao.ConfigDao;
 import com.cashhub.cash.app.greendao.DaoMaster;
@@ -42,6 +43,7 @@ import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.TrackData;
 import com.cashhub.cash.common.UploadData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -223,48 +225,34 @@ public class BaseActivity extends AppCompatActivity {
       }
       String userToken = KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
       CommonApi.getInstance().reportUploadSuccessData(this, userToken, uploadImageUrl, lineType);
-    } else if (KndcEvent.REPORT_UPLOAD_SUCCESS.equals(event.getEventName())) {
+    } else if (KndcEvent.GET_CHECK_CODE.equals(event.getEventName())) {
       String commonRet = event.getCommonRet();
-
-//      if (TextUtils.isEmpty(commonRet)) {
-//        return;
-//      }
-//      Gson gson = new Gson();
-//      CommonResult commonResult = gson.fromJson(commonRet,
-//          new TypeToken<CommonResult>() {
-//          }.getType());
-//      if (commonResult == null) {
-//        showToastLong("返回内容为NULL");
-//        return;
-//      }
-//      Map<String, String> retData = commonResult.getData();
-//      String gotoUrl = "";
-//      if ("living" .equals(lineType) && commonResult.getCode() == 0 && retData != null &&
-//          "Y" .equals(retData.get("status"))) {
-//        showToastLong(commonResult.getMsg());
-//        gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=success";
-//      } else if ("ocr" .equals(lineType) && commonResult.getCode() == 0) {
-//        showToastLong(commonResult.getMsg());
-//        StringBuilder stringBuilder = new StringBuilder();
-//        stringBuilder.append("/#/pagesB/pages/card_auth/suc_card?sign_url=");
-//        stringBuilder.append(Host.getApiHost(this));
-//        stringBuilder.append("/api/v1/ocr/image-info");
-//        stringBuilder.append("&upload_type=");
-//        stringBuilder.append(uploadType);
-//        stringBuilder.append("&card_data=");
-//        stringBuilder.append(retData.toString());
-//        gotoUrl = stringBuilder.toString();
-//      } else {
-//        showToastLong(commonResult.getMsg());
-//        if ("living".equals(lineType)) {
-//          gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=error";
-//        } else {
-//          gotoUrl = "/#/pagesB/pages/card_auth/err_card";
-//        }
-//      }
-//      if (!TextUtils.isEmpty(gotoUrl)) {
-//        CommonApp.navigateToInWebView(Host.getH5Host(this, gotoUrl));
-//      }
+      if (TextUtils.isEmpty(commonRet)) {
+        //埋点获取验证码错误
+        TrackData.getInstance().getCodeFail(this);
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>() {
+          }.getType());
+      if (commonResult == null) {
+        showToastLong("返回内容为NULL");
+        //埋点获取验证码错误
+        TrackData.getInstance().getCodeFail(this);
+        return;
+      }
+      Map<String, String> retData = commonResult.getData();
+      if (commonResult.getCode() == 0) {
+        String phoneNum = event.getPhone();
+        Intent intent = new Intent();
+        intent.putExtra(CheckActivity.LOGIN_PHONE_NUM, phoneNum);
+        intent.setClassName(this, "com.cashhub.cash.app.CheckActivity");
+        startActivity(intent);
+      } else {
+        //埋点获取验证码错误
+        TrackData.getInstance().getCodeFail(this);
+      }
     }
   }
 

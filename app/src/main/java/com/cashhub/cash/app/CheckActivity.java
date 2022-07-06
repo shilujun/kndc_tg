@@ -27,6 +27,7 @@ import com.cashhub.cash.app.widget.SecurityCodeView.InputCompleteListener;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.TrackData;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -102,6 +103,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
           popWinBottomLayout.showPopView();
         }
       }
+      //埋点收不到验证码
+      TrackData.getInstance().notGetCode(this);
     } else if(id == R.id.iv_customer_service) {
       //人工客服
       Intent intent = new Intent(this, BrowserActivity.class);
@@ -131,6 +134,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
           txtResendCode.setTextColor(getResources().getColor(R.color.gray_400));
           CommonApi.getInstance().getCheckCode(mContext, mPhoneNum);
           txtResendCode.setOnClickListener(null);
+          //埋点-重新发送验证码
+          TrackData.getInstance().resendCode(mContext);
           timer.start();
         }
       });

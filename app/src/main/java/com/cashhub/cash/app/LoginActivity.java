@@ -17,9 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.TrackData;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 
@@ -119,13 +121,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       tvTips.setTextColor(getResources().getColor(R.color.colorRed, this.getTheme()));
       ivGap.setImageDrawable(getDrawable(R.drawable.bg_color_ff1111));
       lltVerifyCode.setBackground(getDrawable(R.drawable.button_round_bg_unable));
+      //埋点手机号验证错误
+      TrackData.getInstance().checkPhoneFail(this);
       return;
     }
     CommonApi.getInstance().getCheckCode(this, phoneNum);
-    Intent intent = new Intent();
-    intent.putExtra(CheckActivity.LOGIN_PHONE_NUM, phoneNum);
-    intent.setClassName(this, "com.cashhub.cash.app.CheckActivity");
-    startActivity(intent);
   }
 
   //重置View
