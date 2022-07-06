@@ -16,6 +16,7 @@ public class KndcEvent {
   public static String REPORT_UPLOAD_SUCCESS = "report_upload_success";
   public static String WEB_OPEN_NEW_LINK = "web_open_new_link";
   public static String BEGIN_CHECK_PERMISSION = "begin_check_permission";
+  public static String UPLOAD_END_CALL_JS = "upload_end_call_js";
   private String mEventName = "";
   private String code = "";
   private String mToken = "";

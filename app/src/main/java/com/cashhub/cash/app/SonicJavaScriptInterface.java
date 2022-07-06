@@ -167,6 +167,29 @@ public class SonicJavaScriptInterface {
   }
 
   @JavascriptInterface
+  public void jsCallbackFunc(final String jsCallbackFunc) {
+    if (null != mSessionClient) {
+      mSessionClient.getDiffData(new SonicDiffDataCallback() {
+        @Override
+        public void callback(final String resultData) {
+          Runnable callbackRunnable = new Runnable() {
+            @Override
+            public void run() {
+              String jsCode = "javascript:" + jsCallbackFunc + "('"+ toJsString(resultData) + "')";
+              mSessionClient.getWebView().loadUrl(jsCode);
+            }
+          };
+          if (Looper.getMainLooper() == Looper.myLooper()) {
+            callbackRunnable.run();
+          } else {
+            new Handler(Looper.getMainLooper()).post(callbackRunnable);
+          }
+        }
+      });
+    }
+  }
+
+  @JavascriptInterface
   public void getDiffData2(final String jsCallbackFunc) {
     if (null != mSessionClient) {
       mSessionClient.getDiffData(new SonicDiffDataCallback() {

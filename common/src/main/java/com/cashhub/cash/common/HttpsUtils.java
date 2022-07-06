@@ -256,7 +256,7 @@ public class HttpsUtils {
         stringList.add(KndcEvent.LOGIN);
         stringList.add(KndcEvent.LOGOUT);
         stringList.add(KndcEvent.GET_POLICY_SIGN);
-        stringList.add(KndcEvent.REPORT_UPLOAD_SUCCESS);
+        stringList.add(KndcEvent.UPLOAD_END_CALL_JS);
         if(stringList.contains(type)) {
             KndcEvent kndcEvent = new KndcEvent();
             kndcEvent.setEventName(type);

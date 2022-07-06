@@ -21,6 +21,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 import com.cashhub.cash.common.CommonResult;
+import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
 import com.google.gson.Gson;
@@ -290,6 +291,50 @@ public class BrowserActivity extends BaseActivity {
 //        sonicSession.srcUrl = url;
         sonicSession.getSessionClient().loadUrl(url, new Bundle());
 //        sonicSession.refresh();
+      }
+    } else if(KndcEvent.UPLOAD_END_CALL_JS.equals(event.getEventName())) {
+      String lineType = KndcStorage.getInstance().getData(LINE_TYPE);
+      String uploadType = KndcStorage.getInstance().getData(UPLOAD_TYPE);
+      String commonRet = event.getCommonRet();
+
+      if (TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>() {
+          }.getType());
+      if (commonResult == null) {
+        showToastLong("返回内容为NULL");
+        return;
+      }
+      Map<String, String> retData = commonResult.getData();
+      String gotoUrl = "";
+      if ("living" .equals(lineType) && commonResult.getCode() == 0 && retData != null &&
+          "Y" .equals(retData.get("status"))) {
+        showToastLong(commonResult.getMsg());
+        gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=success";
+      } else if ("ocr" .equals(lineType) && commonResult.getCode() == 0) {
+        showToastLong(commonResult.getMsg());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("/#/pagesB/pages/card_auth/suc_card?sign_url=");
+        stringBuilder.append(Host.getApiHost(this));
+        stringBuilder.append("/api/v1/ocr/image-info");
+        stringBuilder.append("&upload_type=");
+        stringBuilder.append(uploadType);
+        stringBuilder.append("&card_data=");
+        stringBuilder.append(retData.toString());
+        gotoUrl = stringBuilder.toString();
+      } else {
+        showToastLong(commonResult.getMsg());
+        if ("living".equals(lineType)) {
+          gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=error";
+        } else {
+          gotoUrl = "/#/pagesB/pages/card_auth/err_card";
+        }
+      }
+      if (sonicSession != null && !TextUtils.isEmpty(gotoUrl)) {
+        sonicSession.getSessionClient().loadUrl(Host.getH5Host(this, gotoUrl), new Bundle());
       }
     }
   }

@@ -225,45 +225,46 @@ public class BaseActivity extends AppCompatActivity {
       CommonApi.getInstance().reportUploadSuccessData(this, userToken, uploadImageUrl, lineType);
     } else if (KndcEvent.REPORT_UPLOAD_SUCCESS.equals(event.getEventName())) {
       String commonRet = event.getCommonRet();
-      if (TextUtils.isEmpty(commonRet)) {
-        return;
-      }
-      Gson gson = new Gson();
-      CommonResult commonResult = gson.fromJson(commonRet,
-          new TypeToken<CommonResult>() {
-          }.getType());
-      if (commonResult == null) {
-        showToastLong("返回内容为NULL");
-        return;
-      }
-      Map<String, String> retData = commonResult.getData();
-      String gotoUrl = "";
-      if ("ocr" .equals(lineType) && commonResult.getCode() == 0 && retData != null &&
-          "Y" .equals(retData.get("status"))) {
-        showToastLong(commonResult.getMsg());
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("/#/pagesB/pages/card_auth/suc_card?sign_url=");
-        stringBuilder.append(Host.getApiHost(this));
-        stringBuilder.append("/api/v1/ocr/image-info");
-        stringBuilder.append("&upload_type=");
-        stringBuilder.append(uploadType);
-        stringBuilder.append("&card_data=");
-        stringBuilder.append(retData.toString());
-        gotoUrl = stringBuilder.toString();
-      } else if ("living" .equals(lineType) && commonResult.getCode() == 0) {
-        showToastLong(commonResult.getMsg());
-        gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=success";
-      } else {
-        showToastLong(commonResult.getMsg());
-        if ("ocr".equals(lineType)) {
-          gotoUrl = "/#/pagesB/pages/card_auth/err_card";
-        } else {
-          gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=error";
-        }
-      }
-      if (!TextUtils.isEmpty(gotoUrl)) {
-        CommonApp.navigateToInWebView(Host.getH5Host(this, gotoUrl));
-      }
+
+//      if (TextUtils.isEmpty(commonRet)) {
+//        return;
+//      }
+//      Gson gson = new Gson();
+//      CommonResult commonResult = gson.fromJson(commonRet,
+//          new TypeToken<CommonResult>() {
+//          }.getType());
+//      if (commonResult == null) {
+//        showToastLong("返回内容为NULL");
+//        return;
+//      }
+//      Map<String, String> retData = commonResult.getData();
+//      String gotoUrl = "";
+//      if ("living" .equals(lineType) && commonResult.getCode() == 0 && retData != null &&
+//          "Y" .equals(retData.get("status"))) {
+//        showToastLong(commonResult.getMsg());
+//        gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=success";
+//      } else if ("ocr" .equals(lineType) && commonResult.getCode() == 0) {
+//        showToastLong(commonResult.getMsg());
+//        StringBuilder stringBuilder = new StringBuilder();
+//        stringBuilder.append("/#/pagesB/pages/card_auth/suc_card?sign_url=");
+//        stringBuilder.append(Host.getApiHost(this));
+//        stringBuilder.append("/api/v1/ocr/image-info");
+//        stringBuilder.append("&upload_type=");
+//        stringBuilder.append(uploadType);
+//        stringBuilder.append("&card_data=");
+//        stringBuilder.append(retData.toString());
+//        gotoUrl = stringBuilder.toString();
+//      } else {
+//        showToastLong(commonResult.getMsg());
+//        if ("living".equals(lineType)) {
+//          gotoUrl = "/#/pagesB/pages/face_recog/face_result?result=error";
+//        } else {
+//          gotoUrl = "/#/pagesB/pages/card_auth/err_card";
+//        }
+//      }
+//      if (!TextUtils.isEmpty(gotoUrl)) {
+//        CommonApp.navigateToInWebView(Host.getH5Host(this, gotoUrl));
+//      }
     }
   }
 

@@ -362,7 +362,7 @@ public class CommonApi {
 
     Log.d(TAG, "trackFaceData device url: " + url);
 
-    HttpsUtils.sendRequest("", url, request, KndcEvent.REPORT_UPLOAD_SUCCESS, null);
+    HttpsUtils.sendRequest("", url, request, KndcEvent.UPLOAD_END_CALL_JS, null);
   }
 
   private String formUpload(String urlStr, Map<String, String> formFields, Bitmap bitmap)
