@@ -25,11 +25,17 @@ import com.cashhub.cash.app.widget.PopWinBottomLayout;
 import com.cashhub.cash.app.widget.SecurityCodeView;
 import com.cashhub.cash.app.widget.SecurityCodeView.InputCompleteListener;
 import com.cashhub.cash.common.CommonApi;
+import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.Host;
+import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.TrackData;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.greenrobot.eventbus.EventBus;
 
 public class CheckActivity extends BaseActivity implements View.OnClickListener {
 
@@ -107,11 +113,8 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
       TrackData.getInstance().notGetCode(this);
     } else if(id == R.id.iv_customer_service) {
       //人工客服
-      Intent intent = new Intent(this, BrowserActivity.class);
-      intent.putExtra(BrowserActivity.PARAM_URL, Host.HOST_CUSTOMER_SERVICE);
-      intent.putExtra(BrowserActivity.PARAM_MODE, 1);
-      intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
-      startActivity(intent);
+      CommonApp.navigateToInWebView(Host.HOST_CUSTOMER_SERVICE);
+      finish();
     }
   }
 
@@ -161,5 +164,54 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
     public void deleteContent(boolean isDelete) {
 
     };
+  }
+
+  @Override
+  public void onMessageEvent(KndcEvent event) {
+    super.onMessageEvent(event);
+    Log.d(TAG, "onMessageEvent: " + event.getEventName());
+    Log.d(TAG, "common result:" + event.getCommonRet());
+    String lineType = KndcStorage.getInstance().getData(LINE_TYPE);
+    String uploadType = KndcStorage.getInstance().getData(UPLOAD_TYPE);
+    if (KndcEvent.LOGIN.equals(event.getEventName())) {
+      String phone = event.getPhone();
+      String commonRet = event.getCommonRet();
+      if (TextUtils.isEmpty(phone) || TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>() {
+          }.getType());
+      if (commonResult == null || commonResult.getData() == null) {
+        Log.d(TAG, "common result is null");
+        return;
+      } else if(commonResult.getCode() != 0) {
+        Log.d(TAG, "login fail");
+        return;
+      }
+
+      Map<String, String> retData = commonResult.getData();
+
+      //用户登录信息
+      String userToken = retData.get("token");
+      String userId = retData.get("user_uuid");
+      String userExpire = retData.get("expire");
+      setUserInfo(phone, userToken, userId, userExpire);
+      //等0.5秒待状态同步完成，再进行页面跳转
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+//      CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
+      KndcEvent kndcEvent = new KndcEvent();
+      kndcEvent.setEventName(KndcEvent.CLOSE_LOGIN_ACTIVITY);
+      EventBus.getDefault().post(kndcEvent);
+
+      kndcEvent.setEventName(KndcEvent.SYNC_USER_STATUS);
+      EventBus.getDefault().post(kndcEvent);
+      finish();
+    }
   }
 }

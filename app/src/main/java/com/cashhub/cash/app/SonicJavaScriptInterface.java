@@ -26,7 +26,7 @@ import org.greenrobot.eventbus.EventBus;
  */
 
 public class SonicJavaScriptInterface {
-  private static final String TAG = "JavaScriptMethods";
+  private static final String TAG = "SonicJavaScriptInterface";
 
   private Context mContext;
   private WebView mWebView;
@@ -58,6 +58,7 @@ public class SonicJavaScriptInterface {
    */
   @JavascriptInterface
   public void clearLoginInfo() {
+    Log.d(TAG, "clearLoginInfo Start!!!");
     CommonApi.getInstance().clearLoginInfo(mContext);
   }
 

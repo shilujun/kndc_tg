@@ -174,36 +174,7 @@ public class BaseActivity extends AppCompatActivity {
     Log.d(TAG, "common result:" + event.getCommonRet());
     String lineType = KndcStorage.getInstance().getData(LINE_TYPE);
     String uploadType = KndcStorage.getInstance().getData(UPLOAD_TYPE);
-    if (KndcEvent.LOGIN.equals(event.getEventName())) {
-      String phone = event.getPhone();
-      String commonRet = event.getCommonRet();
-      if (TextUtils.isEmpty(phone) || TextUtils.isEmpty(commonRet)) {
-        return;
-      }
-      Gson gson = new Gson();
-      CommonResult commonResult = gson.fromJson(commonRet,
-          new TypeToken<CommonResult>() {
-          }.getType());
-      if (commonResult == null || commonResult.getData() == null) {
-        Log.d(TAG, "common result is null");
-        return;
-      }
-
-      Map<String, String> retData = commonResult.getData();
-
-      //用户登录信息
-      String userToken = retData.get("token");
-      String userId = retData.get("user_uuid");
-      String userExpire = retData.get("expire");
-      setUserInfo(phone, userToken, userId, userExpire);
-      //等0.5秒待状态同步完成，再进行页面跳转
-      try {
-        Thread.sleep(50);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
-    } else if (KndcEvent.LOGOUT.equals(event.getEventName())) {
+    if (KndcEvent.LOGOUT.equals(event.getEventName())) {
       clearUserInfo();
     } else if (KndcEvent.OPEN_CAMARA.equals(event.getEventName())) {
       openCamera();

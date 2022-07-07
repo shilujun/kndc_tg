@@ -18,6 +18,8 @@ public class KndcEvent {
   public static String WEB_OPEN_NEW_LINK = "web_open_new_link";
   public static String BEGIN_CHECK_PERMISSION = "begin_check_permission";
   public static String UPLOAD_END_CALL_JS = "upload_end_call_js";
+  public static String CLOSE_LOGIN_ACTIVITY = "close_login_activity";
+  public static String SYNC_USER_STATUS = "sync_user_status";
   private String mEventName = "";
   private String code = "";
   private String mToken = "";

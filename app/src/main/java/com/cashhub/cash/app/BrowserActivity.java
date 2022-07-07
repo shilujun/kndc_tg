@@ -1,5 +1,6 @@
 package com.cashhub.cash.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -30,6 +33,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tencent.sonic.sdk.SonicCacheInterceptor;
 import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicConstants;
+import com.tencent.sonic.sdk.SonicDiffDataCallback;
 import com.tencent.sonic.sdk.SonicEngine;
 import com.tencent.sonic.sdk.SonicSession;
 import com.tencent.sonic.sdk.SonicSessionConfig;
@@ -69,10 +73,13 @@ public class BrowserActivity extends BaseActivity {
       mWebView.goBack();
       return true;
     }
+    String jsCode = "javascript:alert('111111')";
+    sonicSession.getSessionClient().loadUrl(jsCode, new Bundle());
 
     return super.onKeyDown(keyCode, event);
   }
 
+  @SuppressLint("SetJavaScriptEnabled")
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -246,61 +253,33 @@ public class BrowserActivity extends BaseActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    //用户登录信息
-    String userPhone = KndcStorage.getInstance().getData(KndcStorage.USER_PHONE);
-    String userToken = KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
-    String userID = KndcStorage.getInstance().getData(KndcStorage.USER_ID);
-    String userExpire = KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME);
-    mWebView.loadUrl("javascript:syncUserInfo('" + userPhone + "','" + userToken+ "','" + userID +
-        "','" + userExpire  + "')");
+    Log.d(TAG, "onResume!!!!");
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onMessageEvent(KndcEvent event) {
     super.onMessageEvent(event);
     Log.d(TAG, "onMessageEvent: " + event.getEventName());
-    if(KndcEvent.LOGIN.equals(event.getEventName())) {
-      String phone = event.getPhone();
-      String commonRet = event.getCommonRet();
-      if (TextUtils.isEmpty(phone) || TextUtils.isEmpty(commonRet)) {
-        return;
-      }
-      Gson gson = new Gson();
-      CommonResult commonResult = gson.fromJson(commonRet,
-          new TypeToken<CommonResult>() {
-          }.getType());
-      if (commonResult == null || commonResult.getData() == null) {
-        Log.d(TAG, "common result is null");
-        return;
-      }
-
-      Map<String, String> retData = commonResult.getData();
-
+    if(KndcEvent.SYNC_USER_STATUS.equals(event.getEventName())) {
       //用户登录信息
-      String userToken = retData.get("token");
-      String userId = retData.get("user_uuid");
-      String userExpire = retData.get("expire");
-      //等0.5秒待状态同步完成，再进行页面跳转
-      try {
-        Thread.sleep(50);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      Log.d(TAG, "setUserInfo SUCCESS!!!");
-      if (sonicSession != null) {
-        Log.d(TAG, "sonicSession is not null!!!");
-        sonicSession.getSessionClient().loadUrl("javascript:syncUserInfo('" + phone + "','" + userToken+ "','" + userId +
-            "','" + userExpire  + "')", new Bundle());
+      String userPhone = KndcStorage.getInstance().getData(KndcStorage.USER_PHONE);
+      String userToken = KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
+      String userId = KndcStorage.getInstance().getData(KndcStorage.USER_ID);
+      String userExpire = KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME);
+      Log.d(TAG, "userPhone:" + userPhone + ",userToken:" + userToken + ",userId:" + userId
+          + ",userExpire:" + userExpire);
+      if(mWebView != null) {
+        mWebView.loadUrl("javascript:syncUserInfo('" + userPhone + "','" + userToken+ "','" + userId +
+            "','" + userExpire  + "')");
       }
     } else if(KndcEvent.WEB_OPEN_NEW_LINK.equals(event.getEventName())) {
       String url = event.getUrl();
       if(TextUtils.isEmpty(url)) {
         return;
       }
-      if(sonicSession != null) {
-//        sonicSession.srcUrl = url;
-        sonicSession.getSessionClient().loadUrl(url, new Bundle());
-//        sonicSession.refresh();
+
+      if(mWebView != null) {
+        mWebView.loadUrl(url);
       }
     } else if(KndcEvent.UPLOAD_END_CALL_JS.equals(event.getEventName())) {
       String lineType = KndcStorage.getInstance().getData(LINE_TYPE);
@@ -344,8 +323,9 @@ public class BrowserActivity extends BaseActivity {
           gotoUrl = "/#/pagesB/pages/card_auth/err_card";
         }
       }
-      if (sonicSession != null && !TextUtils.isEmpty(gotoUrl)) {
-        sonicSession.getSessionClient().loadUrl(Host.getH5Host(this, gotoUrl), new Bundle());
+
+      if(mWebView != null) {
+        mWebView.loadUrl(Host.getH5Host(this, gotoUrl));
       }
     }
   }

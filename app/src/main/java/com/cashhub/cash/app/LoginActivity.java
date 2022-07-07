@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
+import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.TrackData;
 import com.cashhub.cash.common.utils.CommonUtil;
@@ -101,14 +102,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       editPhoneTxt.setText("");
     } else if(id == R.id.iv_customer_service) {
       //人工客服
-      Intent intent = new Intent(this, BrowserActivity.class);
-      intent.putExtra(BrowserActivity.PARAM_URL, Host.HOST_CUSTOMER_SERVICE);
-      intent.putExtra(BrowserActivity.PARAM_MODE, 1);
-      intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
-      startActivity(intent);
+      CommonApp.navigateToInWebView(Host.HOST_CUSTOMER_SERVICE);
+      finish();
     } else if(id == R.id.llt_back) {
       //后退按钮点击
-      this.finish();
+      finish();
+    }
+  }
+
+  @Override
+  public void onMessageEvent(KndcEvent event) {
+    super.onMessageEvent(event);
+    Log.d(TAG, "onMessageEvent: " + event.getEventName());
+    if (KndcEvent.CLOSE_LOGIN_ACTIVITY.equals(event.getEventName())) {
+      finish();
     }
   }
 
@@ -224,7 +231,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       public void onSpanClick(View widget) {
           //点击用户协议的相关操作，可以使用WebView来加载一个网页
         Log.d(TAG, "onSpanClick: HOST_USER_AGREEMENT!!!");
-          CommonApp.navigateTo(mContext, Host.HOST_USER_AGREEMENT);
+          CommonApp.navigateToInWebView(Host.HOST_USER_AGREEMENT);
+          finish();
         }
       }, index, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
       start = end;
@@ -238,7 +246,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         @Override
         public void onSpanClick(View widget) {
           //点击隐私政策的相关操作，可以使用WebView来加载一个网页
-          CommonApp.navigateTo(mContext, Host.HOST_PRIVACY);
+          CommonApp.navigateToInWebView(Host.HOST_PRIVACY);
+          finish();
         }
       }, index, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
       start = end;
