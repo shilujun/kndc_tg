@@ -64,6 +64,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
       getDeviceInfo();
     } else if (v.getId() == R.id.btn_check_permisson_ok) {
       CommonApp.beginPermission();
+    } else if (v.getId() == R.id.btn_toast) {
+      showToastShort1(MainActivity.this, "我是测试弹窗");
     } else if (v.getId() == R.id.btn_camera) {
       KndcStorage.getInstance().setData(BaseActivity.LINE_TYPE, "living");
       KndcStorage.getInstance().setData(BaseActivity.UPLOAD_TYPE, "1");
@@ -130,6 +132,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     // clean up cache btn
     Button btnCheckOK = (Button) findViewById(R.id.btn_check_permisson_ok);
     btnCheckOK.setOnClickListener(this);
+
+    // clean up cache btn
+    Button btnToast = (Button) findViewById(R.id.btn_toast);
+    btnToast.setOnClickListener(this);
 
     // device btn
     Button btnDeviceInfo = (Button) findViewById(R.id.btn_device_info);

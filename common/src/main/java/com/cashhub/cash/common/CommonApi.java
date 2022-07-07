@@ -8,6 +8,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -310,9 +311,12 @@ public class CommonApi {
               bodyStr = response.body().string();
               Log.d(TAG, "sendNetRequest uploadImageUrl: " + uploadImageUrl);
             }
+
             response.body().close();
+            file.deleteOnExit();
           } catch (Exception e) {
             Log.d(TAG, "sendNetRequest onFailure " + e.getMessage());
+            file.deleteOnExit();
           }
           KndcEvent kndcEvent = new KndcEvent();
           kndcEvent.setEventName(KndcEvent.UPLOAD_IMAGE_SUCCESS);

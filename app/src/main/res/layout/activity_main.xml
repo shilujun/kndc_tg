@@ -43,9 +43,17 @@
         android:id="@+id/btn_check_permisson_ok"
         style="@style/SonicButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="0.02"
         android:text="确认授权" />
+
+      <Button
+        android:id="@+id/btn_toast"
+        style="@style/SonicButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        android:text="显示弹窗" />
 
       <Button
         android:id="@+id/btn_upload_activity"

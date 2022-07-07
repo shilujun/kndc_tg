@@ -11,12 +11,14 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
@@ -84,7 +86,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     int id = v.getId();
     if (id == R.id.llt_verify_code) {
       if(!chxProtocol.isChecked()) {
-        chxProtocol.didTouchFocusSelect();
+        showToastShort("กรุณาอ่าน และรับการลงทะเบียน และนโยบายความเป็นส่วนตัว");
         return;
       }
       if(editPhoneTxt != null) {

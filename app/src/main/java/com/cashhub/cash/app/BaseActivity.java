@@ -20,6 +20,7 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -458,10 +459,48 @@ public class BaseActivity extends AppCompatActivity {
   }
 
   /**
-   * 显示提示信息
+   * 显示提示信息 - long
    */
   public void showToastLong(String message) {
-    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+
+    toast.setGravity(Gravity.CENTER, 0, 0);
+
+    toast.show();
+  }
+
+  /**
+   * 显示提示信息 - short
+   */
+  public void showToastShort(String message) {
+    Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+
+    toast.setGravity(Gravity.CENTER, 0, 0);
+
+    toast.show();
+  }
+
+  /**
+   * 显示提示信息 - short
+   */
+  public void showToastShort1(Context context, String message) {
+    Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+
+    toast.setGravity(Gravity.CENTER, 0, 0);
+
+    toast.show();
+  }
+
+  /**
+   * 显示提示信息 - short
+   */
+  public void showToastView(View view) {
+    Toast toast = new Toast(this);
+
+    toast.setView(view);
+    toast.setGravity(Gravity.CENTER, 0, 0);
+
+    toast.show();
   }
 
 
