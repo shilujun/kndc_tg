@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
+import com.cashhub.cash.common.utils.LocationUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
@@ -196,113 +197,131 @@ public class UploadData {
    * 获取位置信息
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendLocation(JSONObject locationJson) {
-    Log.d(TAG, "getAndSendLocation Start!!!");
-    if(locationJson == null) {
+  public void getAndSendLocation() {
+    double[] location = LocationUtils.getLngAndLatWithNetwork(mContext);
+    if(location.length < 2) {
       return;
     }
+    Log.d(TAG, "getAndSendLocation: " + location.toString());
+    JSONObject locationJson = new JSONObject();
+    locationJson.put("latitude", location[0]);
+    locationJson.put("longitude", location[1]);
+
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("data", locationJson);
     postOssSign(jsonObject, 5);
   }
 
-  /**
-   * 获取位置信息
-   */
-  @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendLocation2() {
-    Log.d(TAG, "getAndSendLocation Start!!!");
-    getLocation();
-    double[] locationJson =
-        com.cashhub.cash.common.utils.LocationUtils.getLatAndLng(mContext.getApplicationContext());
-    Log.d(TAG, "getAndSendLocation2 locationJson: " + locationJson[0] + "," + locationJson[1]);
-  }
+  //  @RequiresApi(api = VERSION_CODES.M)
+//  private void sendLocation(Location location) {
+//    JSONObject locationObj = new JSONObject();
+//    if(location != null) {
+//      locationObj.put("longitude", location.getLongitude());
+//      locationObj.put("latitude", location.getLatitude());
+//    }
+//
+//    JSONObject jsonObject = new JSONObject();
+//    jsonObject.put("data", locationObj);
+//    postOssSign(jsonObject, 5);
+//  }
+
+//  /**
+//   * 获取位置信息
+//   */
+//  @RequiresApi(api = VERSION_CODES.M)
+//  public void getAndSendLocation2() {
+//    Log.d(TAG, "getAndSendLocation Start!!!");
+//    getLocation();
+//    double[] locationJson =
+//        com.cashhub.cash.common.utils.LocationUtils.getLatAndLng(mContext.getApplicationContext());
+//    Log.d(TAG, "getAndSendLocation2 locationJson: " + locationJson[0] + "," + locationJson[1]);
+//  }
 
 
-  @RequiresApi(api = VERSION_CODES.M)
-  private void getLocation() {
-    //1.获取位置管理器
-    locationManager = (LocationManager) mContext.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-    //2.获取位置提供器，GPS或是NetWork
-    List<String> providers = locationManager.getProviders(true);
-    Log.e(TAG, providers.toString());
-    if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
-      //如果是网络定位
-      locationProvider = LocationManager.NETWORK_PROVIDER;
-      Log.e(TAG, "locationManager 网络");
-    } else if (providers.contains(LocationManager.GPS_PROVIDER)) {
-      //如果是GPS定位
-      locationProvider = LocationManager.GPS_PROVIDER;
-      Log.e(TAG, "locationManager gps");
-    } else {
-      Log.e(TAG, "没有可用的位置提供器");
-//      Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
-      return;
-    }
+//  @RequiresApi(api = VERSION_CODES.M)
+//  private void getLocation() {
+//    //1.获取位置管理器
+//    locationManager = (LocationManager) mContext.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+//    //2.获取位置提供器，GPS或是NetWork
+//    List<String> providers = locationManager.getProviders(true);
+//    Log.e(TAG, providers.toString());
+//    if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+//      //如果是网络定位
+//      locationProvider = LocationManager.NETWORK_PROVIDER;
+//      Log.e(TAG, "locationManager 网络");
+//    } else if (providers.contains(LocationManager.GPS_PROVIDER)) {
+//      //如果是GPS定位
+//      locationProvider = LocationManager.GPS_PROVIDER;
+//      Log.e(TAG, "locationManager gps");
+//    } else {
+//      Log.e(TAG, "没有可用的位置提供器");
+////      Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
+//      return;
+//    }
+//
+//    //3.获取上次的位置，一般第一次运行，此值为null
+//    if (mContext.getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//        mContext.getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//      // TODO: Consider calling
+//      //    ActivityCompat#requestPermissions
+//      // here to request the missing permissions, and then overriding
+//      //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//      //                                          int[] grantResults)
+//      // to handle the case where the user grants the permission. See the documentation
+//      // for ActivityCompat#requestPermissions for more details.
+//
+//      Log.e(TAG, "没权限");
+//      return;
+//    }
+//    Location location = locationManager.getLastKnownLocation(locationProvider);
+//    if (location != null) {
+//      Log.e(TAG, "location != null");
+//      sendLocation(location);
+//    } else {
+//      Log.e(TAG, "location == null");
+//      // 监视地理位置变化，第二个和第三个参数分别为更新的最短时间minTime和最短距离minDistace
+//      locationManager.requestLocationUpdates(locationProvider, 0, 0, mListener);
+//    }
+//  }
+//
+//  @RequiresApi(api = VERSION_CODES.M)
+//  private void sendLocation(Location location) {
+//    JSONObject locationObj = new JSONObject();
+//    if(location != null) {
+//      locationObj.put("longitude", location.getLongitude());
+//      locationObj.put("latitude", location.getLatitude());
+//    }
+//
+//    JSONObject jsonObject = new JSONObject();
+//    jsonObject.put("data", locationObj);
+//    postOssSign(jsonObject, 5);
+//  }
 
-    //3.获取上次的位置，一般第一次运行，此值为null
-    if (mContext.getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-        mContext.getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      // TODO: Consider calling
-      //    ActivityCompat#requestPermissions
-      // here to request the missing permissions, and then overriding
-      //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-      //                                          int[] grantResults)
-      // to handle the case where the user grants the permission. See the documentation
-      // for ActivityCompat#requestPermissions for more details.
-
-      Log.e(TAG, "没权限");
-      return;
-    }
-    Location location = locationManager.getLastKnownLocation(locationProvider);
-    if (location != null) {
-      Log.e(TAG, "location != null");
-      sendLocation(location);
-    } else {
-      Log.e(TAG, "location == null");
-      // 监视地理位置变化，第二个和第三个参数分别为更新的最短时间minTime和最短距离minDistace
-      locationManager.requestLocationUpdates(locationProvider, 0, 0, mListener);
-    }
-  }
-
-  @RequiresApi(api = VERSION_CODES.M)
-  private void sendLocation(Location location) {
-    JSONObject locationObj = new JSONObject();
-    if(location != null) {
-      locationObj.put("longitude", location.getLongitude());
-      locationObj.put("latitude", location.getLatitude());
-    }
-
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", locationObj);
-    postOssSign(jsonObject, 5);
-  }
-
-  LocationListener mListener = new LocationListener() {
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-      Log.e(TAG, "onStatusChanged");
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-      Log.e(TAG, "onProviderEnabled");
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-      Log.e(TAG, "onProviderDisabled");
-    }
-
-    // 如果位置发生变化，重新显示
-    @RequiresApi(api = VERSION_CODES.M)
-    @Override
-    public void onLocationChanged(Location location) {
-      Log.e(TAG, "onLocationChanged");
-      sendLocation(location);
-    }
-  };
+//  LocationListener mListener = new LocationListener() {
+//    @Override
+//    public void onStatusChanged(String provider, int status, Bundle extras) {
+//      Log.e(TAG, "onStatusChanged");
+//    }
+//
+//    @Override
+//    public void onProviderEnabled(String provider) {
+//      Log.e(TAG, "onProviderEnabled");
+//    }
+//
+//    @Override
+//    public void onProviderDisabled(String provider) {
+//
+//      Log.e(TAG, "onProviderDisabled");
+//    }
+//
+//    // 如果位置发生变化，重新显示
+//    @RequiresApi(api = VERSION_CODES.M)
+//    @Override
+//    public void onLocationChanged(Location location) {
+//      Log.e(TAG, "onLocationChanged");
+//      sendLocation(location);
+//    }
+//  };
 
   @RequiresApi(api = VERSION_CODES.M)
   private void postOssSign(JSONObject jsonObject, int dataType) {

@@ -86,9 +86,7 @@ public class UploadActivity extends AppCompatActivity {
             mUploadData.getAndSendCalendar();
             break;
           case "location":
-            mUploadData.getAndSendLocation(locationJson);
-          case "location2":
-            mUploadData.getAndSendLocation2();
+            mUploadData.getAndSendLocation();
             break;
           default:
             mUploadData.getAndSendSms(timeStamp);

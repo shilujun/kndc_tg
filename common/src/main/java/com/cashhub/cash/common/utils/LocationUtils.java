@@ -7,7 +7,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import androidx.core.app.ActivityCompat;
-import com.cashhub.cash.common.utils.CoordinateUtil.LatLng;
 import java.util.List;
 
 public class LocationUtils {
@@ -47,49 +46,49 @@ public class LocationUtils {
     }
   }
 
-  public static double[] getLatAndLng(Context context) {
-    if (sLatAndLng[0] != 0 && sLatAndLng[1] != 0) {
-      LatLng latLng = CoordinateUtil
-          .transformFromWGSToGCJ(new LatLng(sLatAndLng[0], sLatAndLng[1]));
-      return new double[]{latLng.latitude, latLng.longitude};
-    }
-
-    double latitude = 0.0;
-    double longitude = 0.0;
-    try {
-      LocationManager locationManager = (LocationManager) context
-          .getSystemService(Context.LOCATION_SERVICE);
-      //从gps获取经纬度
-      if (locationManager != null
-          && ActivityCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION)
-          == PackageManager.PERMISSION_GRANTED
-          && ActivityCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION)
-          == PackageManager.PERMISSION_GRANTED) {
-
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-          Location location = locationManager.getLastKnownLocation(getBestProvider(context));
-          if (location != null) {
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-          } else {//当GPS信号弱没获取到位置的时候又从网络获取
-            return getLngAndLatWithNetwork(context);
-          }
-        } else {    //从网络获取经纬度
-          Location location = locationManager
-              .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-          if (location != null) {
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-          }
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    LatLng latLng = CoordinateUtil.transformFromWGSToGCJ(new LatLng(latitude, longitude));
-    return new double[]{latLng.latitude, latLng.longitude};
-  }
+//  public static double[] getLatAndLng(Context context) {
+//    if (sLatAndLng[0] != 0 && sLatAndLng[1] != 0) {
+//      LatLng latLng = CoordinateUtil
+//          .transformFromWGSToGCJ(new LatLng(sLatAndLng[0], sLatAndLng[1]));
+//      return new double[]{latLng.latitude, latLng.longitude};
+//    }
+//
+//    double latitude = 0.0;
+//    double longitude = 0.0;
+//    try {
+//      LocationManager locationManager = (LocationManager) context
+//          .getSystemService(Context.LOCATION_SERVICE);
+//      //从gps获取经纬度
+//      if (locationManager != null
+//          && ActivityCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION)
+//          == PackageManager.PERMISSION_GRANTED
+//          && ActivityCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION)
+//          == PackageManager.PERMISSION_GRANTED) {
+//
+//        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+//          Location location = locationManager.getLastKnownLocation(getBestProvider(context));
+//          if (location != null) {
+//            latitude = location.getLatitude();
+//            longitude = location.getLongitude();
+//          } else {//当GPS信号弱没获取到位置的时候又从网络获取
+//            return getLngAndLatWithNetwork(context);
+//          }
+//        } else {    //从网络获取经纬度
+//          Location location = locationManager
+//              .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//          if (location != null) {
+//            latitude = location.getLatitude();
+//            longitude = location.getLongitude();
+//          }
+//        }
+//      }
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//    }
+//
+//    LatLng latLng = CoordinateUtil.transformFromWGSToGCJ(new LatLng(latitude, longitude));
+//    return new double[]{latLng.latitude, latLng.longitude};
+//  }
 
 
   private static String getBestProvider(Context context) {
