@@ -100,6 +100,18 @@ public class SonicJavaScriptInterface {
 
 
   /**
+   * 清理登录信息
+   */
+  @JavascriptInterface
+  public void syncUserInfo() {
+    Log.d(TAG, "syncUserInfo: 111111111");
+    KndcEvent kndcEvent = new KndcEvent();
+    kndcEvent.setEventName(KndcEvent.SYNC_USER_STATUS);
+    EventBus.getDefault().post(kndcEvent);
+  }
+
+
+  /**
    * 获取用户Token
    */
   @JavascriptInterface

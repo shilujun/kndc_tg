@@ -73,8 +73,6 @@ public class BrowserActivity extends BaseActivity {
       mWebView.goBack();
       return true;
     }
-    String jsCode = "javascript:alert('111111')";
-    sonicSession.getSessionClient().loadUrl(jsCode, new Bundle());
 
     return super.onKeyDown(keyCode, event);
   }
@@ -248,12 +246,16 @@ public class BrowserActivity extends BaseActivity {
       Log.d(TAG, "webView is load by default mode");
       mWebView.loadUrl(url);
     }
+    //用户登录信息
+    syncUserInfoToH5();
   }
 
   @Override
   protected void onResume() {
     super.onResume();
     Log.d(TAG, "onResume!!!!");
+    //用户登录信息
+    syncUserInfoToH5();
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
@@ -262,16 +264,7 @@ public class BrowserActivity extends BaseActivity {
     Log.d(TAG, "onMessageEvent: " + event.getEventName());
     if(KndcEvent.SYNC_USER_STATUS.equals(event.getEventName())) {
       //用户登录信息
-      String userPhone = KndcStorage.getInstance().getData(KndcStorage.USER_PHONE);
-      String userToken = KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
-      String userId = KndcStorage.getInstance().getData(KndcStorage.USER_ID);
-      String userExpire = KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME);
-      Log.d(TAG, "userPhone:" + userPhone + ",userToken:" + userToken + ",userId:" + userId
-          + ",userExpire:" + userExpire);
-      if(mWebView != null) {
-        mWebView.loadUrl("javascript:syncUserInfo('" + userPhone + "','" + userToken+ "','" + userId +
-            "','" + userExpire  + "')");
-      }
+      syncUserInfoToH5();
     } else if(KndcEvent.WEB_OPEN_NEW_LINK.equals(event.getEventName())) {
       String url = event.getUrl();
       if(TextUtils.isEmpty(url)) {
@@ -410,6 +403,20 @@ public class BrowserActivity extends BaseActivity {
     @Override
     public String getResponseHeaderField(String key) {
       return "";
+    }
+  }
+
+  private void syncUserInfoToH5() {
+    String userPhone = KndcStorage.getInstance().getData(KndcStorage.USER_PHONE);
+    String userToken = KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN);
+    String userId = KndcStorage.getInstance().getData(KndcStorage.USER_ID);
+    String userExpire = KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME);
+    Log.d(TAG, "userPhone:" + userPhone + ",userToken:" + userToken + ",userId:" + userId
+        + ",userExpire:" + userExpire);
+    if(mWebView != null) {
+      mWebView
+          .loadUrl("javascript:syncUserInfo('" + userPhone + "','" + userToken + "','" + userId +
+              "','" + userExpire + "')");
     }
   }
 }
