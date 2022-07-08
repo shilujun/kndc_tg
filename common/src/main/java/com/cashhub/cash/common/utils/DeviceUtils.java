@@ -10,7 +10,6 @@ import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
-import com.cashhub.cash.common.KndcStorage;
 
 public class DeviceUtils {
 
@@ -46,32 +45,6 @@ public class DeviceUtils {
     return deviceId;
   }
 
-    public static int getVersionCode(Context context) {
-      int versionCode = 0;
-      try {
-        //获取软件版本号，对应AndroidManifest.xml下android:versionCode
-        versionCode = context.getPackageManager().
-            getPackageInfo(context.getPackageName(), 0).versionCode;
-      } catch (PackageManager.NameNotFoundException e) {
-        e.printStackTrace();
-      }
-      return versionCode;
-    }
-
-    /**
-     * 获取版本号名称
-     */
-    public static String getVerName(Context context) {
-      String verName = "";
-      try {
-        verName = context.getPackageManager().
-            getPackageInfo(context.getPackageName(), 0).versionName;
-      } catch (PackageManager.NameNotFoundException e) {
-        e.printStackTrace();
-      }
-      return verName;
-    }
-
   /**
    * 获取屏幕宽度
    */
@@ -81,6 +54,13 @@ public class DeviceUtils {
 //      int width = displayMetrics.widthPixels;
     int height = displayMetrics.heightPixels;
     return height;
+  }
+
+  /**
+   * 手机系统版本
+   */
+  public static String getSdkVersion() {
+    return android.os.Build.VERSION.RELEASE;
   }
 
   /**
@@ -101,6 +81,7 @@ public class DeviceUtils {
     jsonObject.put("BOARD:", Build.BOARD);
     jsonObject.put("PRODUCT:", Build.PRODUCT);
     jsonObject.put("TAGS:", Build.TAGS);
+    jsonObject.put("getSdkVersion:", getSdkVersion());
     return jsonObject;
   }
 

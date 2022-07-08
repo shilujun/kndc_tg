@@ -1,37 +1,168 @@
 package com.cashhub.cash.common.utils;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.Window;
-import androidx.annotation.RequiresApi;
-import java.lang.reflect.Field;
+import androidx.core.app.ActivityCompat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.UUID;
 
 public class CommonUtil {
 
   private static final String TAG = "CommonUtil";
   //为了防止用户或者测试MM疯狂的点击某个button，写个方法防止按钮连续点击
   private static long lastClickTime;
+
+  /**
+
+   * 获取手机IMEI
+
+   */
+
+  private static String getIMEI(Context context) {
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+      return null;
+
+    }
+
+    try {
+
+      TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+      if (telephonyManager ==null) {
+
+        return null;
+
+      }
+
+      @SuppressLint({"MissingPermission", "HardwareIds"}) String imei = telephonyManager.getDeviceId();
+      return imei;
+
+    }catch (Exception e) {
+
+      return null;
+    }
+
+  }
+  /**
+   * 得到全局唯一UUID,有权限时
+   * @param context NameActivity.this
+   * @return 返回UUID字符串
+   */
+  @SuppressLint("HardwareIds")
+  public static String getUniqueID(Context context) {
+    try {
+      if (ActivityCompat
+          .checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+        return "";
+      }
+      final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+      final String tmDevice, tmSerial, androidId;
+      tmDevice = "" + tm.getDeviceId();
+      tmSerial = "" + tm.getSimSerialNumber();
+
+      androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+      UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+      return deviceUuid.toString();
+    } catch (Exception e) {
+
+    }
+    return getUUID(context);
+  }
+  /**
+   * 得到全局唯一UUID,无权限时通过UUID.randomUUID().toString()随机产生一个UUID
+   */
+  public static String getUUID(Context context) {
+    return UUID.randomUUID().toString();
+  }
+
+  /**
+   * 获取当前应用的PackageName
+   * @param context
+   * @return
+   * @throws Exception
+   */
+  public static String getPackageName(Context context) {
+    String packageName = "";
+    try {
+      packageName = context.getPackageName();
+    } catch (Exception e) {
+
+    }
+    return packageName;
+  }
+
+  /**
+   * 获取当前应用的applicationId
+   * @param context
+   * @return
+   * @throws Exception
+   */
+  public static String getApplicationId(Context context) {
+    String applicationId = "";
+    try {
+      applicationId = context.getPackageName();
+    } catch (Exception e) {
+
+    }
+    return applicationId;
+  }
+
+  /**
+   * 获取当前应用的版本号
+   * @param context
+   * @return
+   * @throws Exception
+   */
+  public static String getVersionName(Context context) {
+    String version = "";
+    try {
+      // 获取packagemanager的实例
+      PackageManager packageManager = context.getPackageManager();
+      // getPackageName()是你当前类的包名，0表明是获取版本信息
+      PackageInfo packInfo = packageManager.getPackageInfo(context.getPackageName(),0);
+      version = packInfo.versionName;
+    } catch (Exception e) {
+
+    }
+    return version;
+  }
+
+  public static int getVersionCode(Context context) {
+    int versionCode = 0;
+    try {
+      //获取软件版本号，对应AndroidManifest.xml下android:versionCode
+      versionCode = context.getPackageManager().
+          getPackageInfo(context.getPackageName(), 0).versionCode;
+    } catch (PackageManager.NameNotFoundException e) {
+      e.printStackTrace();
+    }
+    return versionCode;
+  }
 
   public synchronized static boolean isFastClick() {
     long time = System.currentTimeMillis();
@@ -306,6 +437,18 @@ public class CommonUtil {
     calendar.set(Calendar.SECOND, 0);
     calendar.set(Calendar.MILLISECOND, 0);
     return calendar.getTimeInMillis();
+  }
+
+  public static String getFormatDate() {
+    String date = "";
+    try {
+      @SuppressLint("SimpleDateFormat")
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      date = sdf.format(new Date());
+    } catch (Exception ignored) {
+
+    }
+    return date;
   }
 }
 

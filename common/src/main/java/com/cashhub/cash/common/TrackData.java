@@ -1,6 +1,7 @@
 package com.cashhub.cash.common;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.utils.CommonUtil;
@@ -99,21 +100,33 @@ public class TrackData {
       jsonObject = new JSONObject();
     }
     jsonObject.put("uid", KndcStorage.getInstance().getData(KndcStorage.USER_ID));
+    //loan_data_sure.clientid   uuid: 设备的唯一标识
+    //imei: 设备的国际移动设备身份码
+    //imsi: 设备的国际移动用户识别码
+    //model: 设备的型号
+    //vendor: 设备的生产厂商
+    //uuid: 设备的唯一标识
     jsonObject.put("trace_id", DeviceUtils.getDeviceId(context));
-//    jsonObject.put("source", CommonUtil.get(context));
+    jsonObject.put("source", CommonUtil.getPackageName(context)); //loan_data_sure.pkName  main.getPackageName()
     jsonObject.put("ip", "");
-//    jsonObject.put("client_os", DeviceUtils.get.getDeviceId(context));
-//    jsonObject.put("client_os_version", DeviceUtils.getDeviceId(context));
-//    jsonObject.put("client_no", DeviceUtils.getDeviceId(context));
-//    jsonObject.put("client_manufacture", DeviceUtils.getDeviceId(context));
-//    jsonObject.put("client_model", DeviceUtils.getDeviceId(context));
+    jsonObject.put("client_os", "android"); //客户端平台，值域为：ios、android、mac（
+    jsonObject.put("client_os_version", Build.VERSION.SDK_INT); //引擎版本号
+    jsonObject.put("client_no", Build.BOARD); //设备型号
+    jsonObject.put("client_manufacture", Build.BRAND); //设备品牌
+    jsonObject.put("client_model", "Android" + Build.VERSION.RELEASE); //操作系统名称及版本，如Android 10
     jsonObject.put("timestamp", System.currentTimeMillis());
-//    jsonObject.put("date", DeviceUtils.getDeviceId(context));
+    jsonObject.put("date", CommonUtil.getFormatDate());
 
 
     JSONObject jsonExtend = new JSONObject();
-    jsonExtend.put("app_version", DeviceUtils.getVersionCode(context));
-//    jsonExtend.put("application_id", DeviceUtils.getVerName(context)); //TODO
+    //app 名称  loan_data_sure.version plus.runtime.version
+    jsonExtend.put("app_version", CommonUtil.getVersionName(context));
+    //app 版本号 loan_data_sure.appid  plus.runtime.appid
+    jsonExtend.put("application_id", CommonUtil.getApplicationId(context));
+
+    jsonObject.put("extend", jsonExtend.toString());
+
+    Log.d(TAG, "=======jsonObject:" + jsonObject);
 
     CommonApi.getInstance().trackData(context, jsonObject.toString());
   }

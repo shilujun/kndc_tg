@@ -22,6 +22,7 @@ import com.cashhub.cash.app.model.Config;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.TrackData;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 import com.cashhub.cash.common.utils.StatusBarUtils;
@@ -61,6 +62,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     } else if (v.getId() == R.id.btn_default_mode) {
       startBrowserActivity(MODE_DEFAULT);
     } else if (v.getId() == R.id.btn_device_info) {
+      TrackData.getInstance().report(this, null);
       getDeviceInfo();
     } else if (v.getId() == R.id.btn_check_permisson_ok) {
       CommonApp.beginPermission();
@@ -291,31 +293,49 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
   private void getDeviceInfo() {
     Log.d(TAG, "开始获取设备信息======");
 
-    Log.d(TAG, "系统信息:");
-    Log.d(TAG, String.valueOf(DeviceUtils.getSystemInfo()));
+    Log.d(TAG, "系统信息:" + String.valueOf(DeviceUtils.getSystemInfo()));
+    Log.d(TAG, "系统信息 Context:" + String.valueOf(DeviceUtils.getSystemInfo(this)));
+    Log.d(TAG, "getApplicationId:" + String.valueOf(CommonUtil.getApplicationId(this)));
+
+    Log.d(TAG, "getVersionName:" + String.valueOf(CommonUtil.getVersionName(this)));
+
+    Log.d(TAG,  "getVersionCode:" + String.valueOf(CommonUtil.getVersionCode(this)));
+
+    Log.d(TAG, "getUniqueID:" + String.valueOf(CommonUtil.getUniqueID(this)));
 
 //    Log.d(TAG, "SystemInfo:");
 //    Log.d(TAG, String.valueOf(DeviceUtils.getSystemInfo(this)));
+    Log.d(TAG, "状态栏高度:" + String.valueOf(CommonUtil.getStatusBarHeight(this)));
 
-    Log.d(TAG, "状态栏高度:");
-    Log.d(TAG, String.valueOf(CommonUtil.getStatusBarHeight(this)));
+    Log.d(TAG, "状态栏高度Dp:" + String.valueOf(CommonUtil.getStatusBarHeightDp(this)));
+    Log.d(TAG, "显示高度:" + String.valueOf(DeviceUtils.getDisplayHeight(this)));
 
-    Log.d(TAG, "状态栏高度Dp:");
-    Log.d(TAG, String.valueOf(CommonUtil.getStatusBarHeightDp(this)));
+    Log.d(TAG, "DeviceId:" + DeviceUtils.getDeviceId(this));
+    Log.d(TAG, "titleBarHeight:" + String.valueOf(CommonUtil.getTitleBarHeight(this)));
 
-    Log.d(TAG, "显示高度:");
-    Log.d(TAG, String.valueOf(DeviceUtils.getDisplayHeight(this)));
-
-    Log.d(TAG, "DeviceId:");
-    Log.d(TAG, DeviceUtils.getDeviceId(this));
-    Log.d(TAG, "version:");
-    Log.d(TAG, DeviceUtils.getVerName(this));
-    Log.d(TAG, "appid:");
-    Log.d(TAG, String.valueOf(DeviceUtils.getVersionCode(this)));
-    Log.d(TAG, "titleBarHeight:");
-    Log.d(TAG, String.valueOf(CommonUtil.getTitleBarHeight(this)));
-    Log.d(TAG, "version:");
-    Log.d(TAG, DeviceUtils.getVerName(this));
+    Log.d(TAG, "=======VERSION.RELEASE:" + Build.VERSION.RELEASE);
+    Log.d(TAG, "=======VERSION.SDK_INT:" + Build.VERSION.SDK_INT);
+    Log.d(TAG, "=======BOARD:" + Build.BOARD);
+    Log.d(TAG, "=======BOOTLOADER:" + Build.BOOTLOADER);
+    Log.d(TAG, "=======BRAND:" + Build.BRAND);
+    Log.d(TAG, "=======CPU_ABI:" + Build.CPU_ABI);
+    Log.d(TAG, "=======CPU_ABI2:" + Build.CPU_ABI2);
+    Log.d(TAG, "=======DEVICE:" + Build.DEVICE);
+    Log.d(TAG, "=======DISPLAY:" + Build.DISPLAY);
+    Log.d(TAG, "=======FINGERPRINT:" + Build.FINGERPRINT);
+    Log.d(TAG, "=======HARDWARE:" + Build.HARDWARE);
+    Log.d(TAG, "=======HOST:" + Build.HOST);
+    Log.d(TAG, "=======ID:" + Build.ID);
+    Log.d(TAG, "=======MODEL:" + Build.MODEL);
+    Log.d(TAG, "=======MANUFACTURER:" + Build.MANUFACTURER);
+    Log.d(TAG, "=======PRODUCT:" + Build.PRODUCT);
+    Log.d(TAG, "=======RADIO:" + Build.RADIO);
+    Log.d(TAG, "=======TAGS:" + Build.TAGS);
+    Log.d(TAG, "=======TIME:" + Build.TIME);
+    Log.d(TAG, "=======TYPE:" + Build.TYPE);
+    Log.d(TAG, "=======USER:" + Build.USER);
+    Log.d(TAG, "=======VERSION.CODENAME:" + Build.VERSION.CODENAME);
+    Log.d(TAG, "=======VERSION.INCREMENTAL:" + Build.VERSION.INCREMENTAL);
     Log.d(TAG, "结束获取设备信息======");
   }
 }
