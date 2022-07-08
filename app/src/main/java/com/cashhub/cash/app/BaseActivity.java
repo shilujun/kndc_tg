@@ -193,6 +193,38 @@ public class BaseActivity extends AppCompatActivity {
       openPicture();
     } else if (KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
       uploadImage(event, lineType, uploadType);
+    } else if (KndcEvent.COLLECTION_STATUS.equals(event.getEventName())) {
+      String commonRet = event.getCommonRet();
+      if (TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>() {
+          }.getType());
+      if (commonResult == null || commonResult.getData() == null) {
+        return;
+      } else if(commonResult.getCode() != 0) {
+        Log.d(TAG, "login fail");
+        return;
+      }
+
+      Map<String, String> retData = commonResult.getData();
+
+      //收集数据开关
+      String collection = retData.get("collection");
+      if(!TextUtils.isEmpty(collection) && "true".equals(collection)) {
+        //收集数据
+        collectDataAndUpload();
+//        //点击过确认按钮 才可以收集数据
+//        String appIsCheckPermission =
+//        KndcStorage.getInstance().getData(KndcStorage.H5_IS_CHECK_PERMISSION);
+//        if (!TextUtils.isEmpty(appIsCheckPermission) && appIsCheckPermission
+//            .equals(KndcStorage.YSE)) {
+//          //收集数据
+//          collectDataAndUpload();
+//        }
+      }
     } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
       setConfigInfo(KndcStorage.H5_IS_CHECK_PERMISSION, "1");
       if (!hasPermission()) {
@@ -279,10 +311,6 @@ public class BaseActivity extends AppCompatActivity {
       return;
     }
     ISINIT = true;
-//    new Thread(() -> {
-//      UploadData uploadData111 = new UploadData(this);
-//      uploadData111.getAndSendLocation();
-//    }).start();
     //EventBus
 
     //配置信息载入初始化
@@ -297,6 +325,13 @@ public class BaseActivity extends AppCompatActivity {
 
     String appIsInit =
         KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
+    new Thread(() -> {
+      //初始化过之后才上报数据
+      if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+        CommonApi.getInstance().getCollectionStatus(this);
+      }
+    }).start();
+
     if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
       //设置初始化
       setConfigInfo(KndcStorage.APP_IS_INIT, "1");
@@ -304,14 +339,16 @@ public class BaseActivity extends AppCompatActivity {
 
     setConfigInfo(KndcStorage.APP_LAST_OPEN_TIME, String.valueOf(System.currentTimeMillis()));
 
-    String appIsCheckPermission =
-        KndcStorage.getInstance().getData(KndcStorage.H5_IS_CHECK_PERMISSION);
 
-    if (!TextUtils.isEmpty(appIsCheckPermission) && appIsCheckPermission
-        .equals(KndcStorage.YSE)) {
-      //收集数据
-      collectDataAndUpload();
-    }
+
+//    String appIsCheckPermission =
+//        KndcStorage.getInstance().getData(KndcStorage.H5_IS_CHECK_PERMISSION);
+//
+//    if (!TextUtils.isEmpty(appIsCheckPermission) && appIsCheckPermission
+//        .equals(KndcStorage.YSE)) {
+//      //收集数据
+//      collectDataAndUpload();
+//    }
   }
 
   //跳转相册

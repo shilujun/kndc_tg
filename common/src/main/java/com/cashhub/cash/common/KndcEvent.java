@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 public class KndcEvent {
   public static String LOGIN = "user_login";
   public static String LOGOUT = "user_logout";
+  public static String COLLECTION_STATUS = "collection_status";
   public static String GET_CHECK_CODE = "get_check_code";
   public static String OPEN_CAMARA = "open_camera";
   public static String OPEN_CAMARA_SUCCESS = "open_camera_success";

@@ -258,6 +258,7 @@ public class HttpsUtils {
         stringList.add(KndcEvent.GET_POLICY_SIGN);
         stringList.add(KndcEvent.UPLOAD_END_CALL_JS);
         stringList.add(KndcEvent.GET_CHECK_CODE);
+        stringList.add(KndcEvent.COLLECTION_STATUS);
         if(stringList.contains(type)) {
             KndcEvent kndcEvent = new KndcEvent();
             kndcEvent.setEventName(type);

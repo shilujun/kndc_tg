@@ -72,6 +72,27 @@ public class CommonApi {
   }
 
   /**
+   * 获取采集开关
+   */
+  public void getCollectionStatus(Context context) {
+    String url = Host.getApiHost(context) + "/api/v1/collection/status";
+
+    HashMap<String, String> headParams = new HashMap<>();
+    headParams.put("Content-Type", "application/json");
+
+    Headers headers = setHeaderParams(headParams);
+    Request request = new Request.Builder()
+        .url(url)
+        .get()
+        .headers(headers)
+        .build();
+
+    Log.d(TAG, "userLogout url: " + url);
+
+    HttpsUtils.sendRequest("", url, request, KndcEvent.COLLECTION_STATUS, null);
+  }
+
+  /**
    * 获取验证码
    */
   public void getCheckCode(Context context, String phone) {
