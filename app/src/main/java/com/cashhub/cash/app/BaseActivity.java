@@ -101,9 +101,9 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setFullScreen(this);
     //禁止横屏
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    setFullScreen(this);
     EventBus.getDefault().register(this);
 
     DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, DATABASE_NAME);
