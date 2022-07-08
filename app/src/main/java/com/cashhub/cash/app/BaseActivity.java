@@ -104,6 +104,15 @@ public class BaseActivity extends AppCompatActivity {
     //禁止横屏
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     setFullScreen(this);
+    EventBus.getDefault().register(this);
+
+    DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, DATABASE_NAME);
+    SQLiteDatabase database = helper.getWritableDatabase();
+    DaoMaster daoMaster = new DaoMaster(database);
+    mDaoSession = daoMaster.newSession();
+
+    mConfigDao = mDaoSession.getConfigDao();
+    mReportInfoDao = mDaoSession.getReportInfoDao();
 
     initData();
   }
@@ -275,15 +284,6 @@ public class BaseActivity extends AppCompatActivity {
 //      uploadData111.getAndSendLocation();
 //    }).start();
     //EventBus
-    EventBus.getDefault().register(this);
-
-    DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, DATABASE_NAME);
-    SQLiteDatabase database = helper.getWritableDatabase();
-    DaoMaster daoMaster = new DaoMaster(database);
-    mDaoSession = daoMaster.newSession();
-
-    mConfigDao = mDaoSession.getConfigDao();
-    mReportInfoDao = mDaoSession.getReportInfoDao();
 
     //配置信息载入初始化
     List<Config> configList = getDaoConfig().queryBuilder().build().list();
@@ -340,11 +340,13 @@ public class BaseActivity extends AppCompatActivity {
   public void setConfigInfo(String configKey, String configValue) {
     KndcStorage.getInstance().setData(configKey, configValue);
 
-    //配置信息 存入数据库和缓存，启动app的时候载入
-    Config configInfo = new Config();
-    configInfo.setConfigKey(configKey);
-    configInfo.setConfigValue(configValue);
-    mConfigDao.insertOrReplace(configInfo);
+    if(mConfigDao != null) {
+      //配置信息 存入数据库和缓存，启动app的时候载入
+      Config configInfo = new Config();
+      configInfo.setConfigKey(configKey);
+      configInfo.setConfigValue(configValue);
+      mConfigDao.insertOrReplace(configInfo);
+    }
   }
 
   /**

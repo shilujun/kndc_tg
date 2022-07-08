@@ -40,11 +40,11 @@ public class Host {
 
   private static String getCustomApiHost(Context context) {
     String host = HOST_API;
-    boolean isDebug = isDebugMode(context);
-    Log.d(TAG, "isDebug:" + isDebug);
-    if(isDebug) {
-      host = HOST_API_OA;
-    }
+//    boolean isDebug = isDebugMode(context);
+//    Log.d(TAG, "isDebug:" + isDebug);
+//    if(isDebug) {
+//      host = HOST_API_OA;
+//    }
     return host;
   }
 
