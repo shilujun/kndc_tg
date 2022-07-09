@@ -287,7 +287,7 @@ public class BaseActivity extends AppCompatActivity {
    */
   public void setFullScreen(Activity activity) {
     // full screen
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
+    supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
         WindowManager.LayoutParams.FLAG_FULLSCREEN);
     //5.x开始需要把颜色设置透明，否则导航栏会呈现系统默认的浅灰色

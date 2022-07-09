@@ -43,12 +43,6 @@ public class CommonUtil {
 
   private static String getIMEI(Context context) {
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
-      return null;
-
-    }
-
     try {
 
       TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
