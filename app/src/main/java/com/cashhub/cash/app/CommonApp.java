@@ -13,10 +13,14 @@ public class CommonApp {
   public static void navigateTo(Context context, String url) {
     Log.d(TAG, "navigateTo url: " + url);
     Intent intent = new Intent();
-    intent.setClass(context, BrowserActivity.class);
-    intent.putExtra(BrowserActivity.PARAM_URL, url);
-    intent.putExtra(BrowserActivity.PARAM_MODE, MainActivity.MODE_SONIC);
-    intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
+//    intent.setClass(context, BrowserActivity.class);
+//    intent.putExtra(BrowserActivity.PARAM_URL, url);
+//    intent.putExtra(BrowserActivity.PARAM_MODE, MainActivity.MODE_SONIC);
+//    intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
+    intent.setClass(context, WebviewActivity.class);
+    intent.putExtra(WebviewActivity.PARAM_URL, url);
+//    intent.putExtra(WebviewActivity.PARAM_MODE, MainActivity.MODE_SONIC);
+//    intent.putExtra(SonicJavaScriptInterface.PARAM_CLICK_TIME, System.currentTimeMillis());
     context.startActivity(intent);
   }
   public static void navigateToInWebView(String url) {

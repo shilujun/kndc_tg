@@ -1,11 +1,12 @@
 package com.cashhub.cash.app.pages;
 
 import android.content.Intent;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import android.os.Bundle;
 import com.cashhub.cash.app.BaseActivity;
 import com.cashhub.cash.app.CommonApp;
-import com.cashhub.cash.app.MainActivity;
+//import com.cashhub.cash.app.MainActivity;
 import com.cashhub.cash.common.Host;
 
 public class SplashActivity extends BaseActivity {
@@ -29,8 +30,11 @@ public class SplashActivity extends BaseActivity {
 //    Intent intent = new Intent();
 //    intent.setClass(SplashActivity.this, MainActivity.class);
 //    startActivity(intent);
-//    CommonApp.navigateTo(this, "http://johnnyshi.com/test.html");
-    CommonApp.navigateTo(this, Host.getH5Host(this, "/#/pages/index/index"));
+    String url = Host.getH5Host(this, "/#/pages/index/index");
+//    String url = "http://johnnyshi.com/test.html";
+//    String url = "http://kndc.junya.online";
+    CommonApp.navigateTo(this, url);
+    Log.d(TAG, "onCreate: " + url);
     finish();
   }
 
