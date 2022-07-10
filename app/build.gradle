@@ -8,8 +8,8 @@ android {
         applicationId "com.cashhub.cash.app"
         minSdk 23
         targetSdk 31
-        versionCode 1
-        versionName "2.0"
+        versionCode project.APP_VERSION_CODE as int
+        versionName project.APP_VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -30,6 +30,15 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
     buildFeatures {
         viewBinding true
     }
@@ -39,6 +48,12 @@ android {
         targetGenDir 'src/main/java'//固定目录
         generateTests false //设置为true以自动生成单元测试。
         targetGenDirTests 'src/main/java/com/cashhub/cash/common/greendao/test'
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 }
 
@@ -79,4 +94,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.aliyun.dpa:oss-android-sdk:2.9.11'
 //    implementation 'com.github.tyhjh:PermissionUtil:v1.0.7'
+    implementation 'io.branch.sdk.android:library:5.+'
+//    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0+'
+//    implementation 'androidx.browser:browser:1.0.0'
 }

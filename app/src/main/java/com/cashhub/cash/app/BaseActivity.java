@@ -50,6 +50,7 @@ import com.cashhub.cash.common.UploadData;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import io.branch.referral.Branch;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +97,8 @@ public class BaseActivity extends AppCompatActivity {
   public DaoSession mDaoSession;
   public ConfigDao mConfigDao;
   public ReportInfoDao mReportInfoDao;
-  private static boolean ISINIT = false;
+  private static boolean IS_INIT = false;
+  private static boolean IS_CHECK_PERMISSION_UPLOAD = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,8 @@ public class BaseActivity extends AppCompatActivity {
 
     mConfigDao = mDaoSession.getConfigDao();
     mReportInfoDao = mDaoSession.getReportInfoDao();
+
+//    Branch.getAutoInstance(this);
 
     initData();
   }
@@ -230,6 +234,11 @@ public class BaseActivity extends AppCompatActivity {
       if (!hasPermission()) {
         requestPermission();
       } else {
+        //每次打开APP 保证前端出发上传只上传一次
+        if(IS_CHECK_PERMISSION_UPLOAD) {
+          return;
+        }
+        IS_CHECK_PERMISSION_UPLOAD = true;
         collectDataAndUpload();
       }
     } else if (KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
@@ -307,10 +316,10 @@ public class BaseActivity extends AppCompatActivity {
    * 初始化启动数据
    */
   private void initData() {
-    if(ISINIT) {
+    if(IS_INIT) {
       return;
     }
-    ISINIT = true;
+    IS_INIT = true;
     //EventBus
 
     //配置信息载入初始化
