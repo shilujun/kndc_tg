@@ -113,8 +113,9 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
       TrackData.getInstance().notGetCode(this);
     } else if(id == R.id.iv_customer_service) {
       //人工客服
-      CommonApp.navigateToInWebView(Host.HOST_CUSTOMER_SERVICE);
-      finish();
+      CommonApp.navigateToInWeb(this, Host.HOST_CUSTOMER_SERVICE);
+      return;
+//      finish();
     }
   }
 

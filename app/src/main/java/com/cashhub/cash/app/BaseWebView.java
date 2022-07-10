@@ -9,7 +9,7 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 
 public class BaseWebView extends WebView {
-  private static final String TAG = "BaseWebView：";
+  private static final String TAG = "BaseWebView";
   public WChromeClient wChromeClient;
   public BaseWebView(@NonNull Context context, String url) {
     super(context);

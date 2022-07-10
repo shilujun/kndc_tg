@@ -104,8 +104,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       editPhoneTxt.setText("");
     } else if(id == R.id.iv_customer_service) {
       //人工客服
-      CommonApp.navigateToInWebView(Host.HOST_CUSTOMER_SERVICE);
-      finish();
+      CommonApp.navigateToInWeb(this, Host.HOST_CUSTOMER_SERVICE);
+//      finish();
+      return;
     } else if(id == R.id.llt_back) {
       //后退按钮点击
       finish();
@@ -233,8 +234,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
       public void onSpanClick(View widget) {
           //点击用户协议的相关操作，可以使用WebView来加载一个网页
         Log.d(TAG, "onSpanClick: HOST_USER_AGREEMENT!!!");
-          CommonApp.navigateToInWebView(Host.HOST_USER_AGREEMENT);
-          finish();
+          CommonApp.navigateToInWeb(mContext, Host.HOST_USER_AGREEMENT);
+          return;
+//          finish();
         }
       }, index, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
       start = end;
@@ -248,8 +250,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         @Override
         public void onSpanClick(View widget) {
           //点击隐私政策的相关操作，可以使用WebView来加载一个网页
-          CommonApp.navigateToInWebView(Host.HOST_PRIVACY);
-          finish();
+          CommonApp.navigateToInWeb(mContext, Host.HOST_PRIVACY);
+          return;
+//          finish();
         }
       }, index, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
       start = end;

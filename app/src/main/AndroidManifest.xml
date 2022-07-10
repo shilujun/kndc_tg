@@ -83,14 +83,16 @@
       android:theme="@style/Theme.Kndc_tg.NoActionBar"
       tools:ignore="Instantiatable" />
     <activity
-      android:name=".UploadActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:name=".WebActivity"
       android:exported="false"
+      android:label="@string/title_activity_webview"
       android:launchMode="singleTask"
       android:screenOrientation="fullSensor"
-      android:windowSoftInputMode="adjustResize" />
+      android:theme="@style/Theme.Kndc_tg.NoActionBar"
+      tools:ignore="Instantiatable" />
     <activity
-      android:name=".BrowserActivity"
+      android:name=".UploadActivity"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:exported="false"
       android:launchMode="singleTask"
       android:screenOrientation="fullSensor"
