@@ -116,7 +116,7 @@ public class BaseActivity extends AppCompatActivity {
     mConfigDao = mDaoSession.getConfigDao();
     mReportInfoDao = mDaoSession.getReportInfoDao();
 
-//    Branch.getAutoInstance(this);
+    Branch.getAutoInstance(this);
 
     initData();
   }

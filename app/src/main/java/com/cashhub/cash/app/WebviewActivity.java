@@ -149,7 +149,7 @@ public class WebviewActivity extends BaseActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    Log.d(TAG, "onResume!!!!");
+    Log.d(TAG, Host.getH5Host(this, "/test.html"));
     //用户登录信息
     syncUserInfoToH5();
   }
