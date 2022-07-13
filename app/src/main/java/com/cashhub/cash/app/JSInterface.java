@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.KndcEvent;
@@ -19,7 +20,7 @@ public class JSInterface {
   private static final String TAG = "JSInterface";
 
   private Context mContext;
-  private BaseWebView mWebView;
+  private WebView mWebView;
 
   public static final String PARAM_CLICK_TIME = "clickTime";
 
@@ -31,24 +32,24 @@ public class JSInterface {
 //  private Context _c;
 //  private WebviewActivity _m;
 //  private BaseWebView _w;
-  public JSInterface(Context context, BaseWebView view) {
+  public JSInterface(Context context, WebView view) {
     mContext = context;
     mWebView = view;
   }
 
   // 注入js
-  @JavascriptInterface
-  public void testInject() {
-    String js = "alert();";
-    mWebView.injection(js);
-  }
-
-  // 执行操作
-  @JavascriptInterface
-  public void testExecute() {
-    // TODO：在这里可以执行Android程序方法和操作
-    mWebView.executeMethod("cbExecute", "test"); // 回调执行 js 方法
-  }
+//  @JavascriptInterface
+//  public void testInject() {
+//    String js = "alert();";
+//    mWebView.injection(js);
+//  }
+//
+//  // 执行操作
+//  @JavascriptInterface
+//  public void testExecute() {
+//    // TODO：在这里可以执行Android程序方法和操作
+//    mWebView.executeMethod("cbExecute", "test"); // 回调执行 js 方法
+//  }
     /**
    * 清理登录信息
    */

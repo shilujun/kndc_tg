@@ -1,9 +1,12 @@
 package com.cashhub.cash.app;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.text.TextUtils;
+import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -31,7 +34,9 @@ public class WebviewActivity extends BaseActivity {
   private static final String TAG = "WebviewActivity";
   public final static String PARAM_URL = "param_url";
 
-  private BaseWebView mWebView;
+  private WebView mWebView;
+
+  @SuppressLint("SetJavaScriptEnabled")
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -41,9 +46,11 @@ public class WebviewActivity extends BaseActivity {
       finish();
       return;
     }
-    mWebView = new BaseWebView(this, url);
-
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+
+    setContentView(R.layout.activity_webview);
+    mWebView = (WebView) findViewById(R.id.wv_web_view);
+
     mWebView.setWebViewClient(new WebViewClient() {
       @Override
       public void onPageFinished(WebView view, String url) {
@@ -54,7 +61,6 @@ public class WebviewActivity extends BaseActivity {
       @Override
       public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
         String url = request.getUrl().toString();
-
         if(url.startsWith("http:") || url.startsWith("https:") ) {
           view.loadUrl(url);
           return false;
@@ -84,13 +90,28 @@ public class WebviewActivity extends BaseActivity {
       }
     });
 
+    //防止遇到重定向
+    mWebView.setOnKeyListener(new View.OnKeyListener() {
+      @Override
+      public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+          if (keyCode == KeyEvent.KEYCODE_BACK && mWebView.canGoBack()) {
+            mWebView.goBack();
+            return true;
+          }
+        }
+
+        return false;
+      }
+    });
+
     WebSettings webSettings = mWebView.getSettings();
 
     // add java script interface
     // note:if api level lower than 17(android 4.2), addJavascriptInterface has security
     // issue, please use x5 or see https://developer.android.com/reference/android/webkit/
     // WebView.html#addJavascriptInterface(java.lang.Object, java.lang.String)
-    mWebView.removeJavascriptInterface("searchBoxJavaBridge_");
+    mWebView.removeJavascriptInterface("jsInterface");
 
 //    Intent intent = getIntent();
     mWebView.addJavascriptInterface(new JSInterface(this, mWebView), "jsInterface");
@@ -111,10 +132,20 @@ public class WebviewActivity extends BaseActivity {
     webSettings.setLoadsImagesAutomatically(true); //支持自动加载图片
 
 
-    setContentView(mWebView);
+    mWebView.loadUrl(url);
 
     //用户登录信息
     syncUserInfoToH5();
+  }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (mWebView != null && keyCode == KeyEvent.KEYCODE_BACK && mWebView.canGoBack()) {
+      mWebView.goBack();
+      return true;
+    }
+
+    return super.onKeyDown(keyCode, event);
   }
 
   // 程序退出销毁
@@ -212,9 +243,19 @@ public class WebviewActivity extends BaseActivity {
           gotoUrl = "/#/pagesB/pages/card_auth/err_card";
         }
       }
+      Log.d(TAG, "gotoUrl: " + gotoUrl);
 
       if(mWebView != null) {
-        mWebView.loadUrl(Host.getH5Host(this, gotoUrl));
+        String newUrl = parseRouter(Host.getH5Host(this, gotoUrl));
+        Log.d(TAG, "newUrl: " + newUrl);
+        mWebView.loadUrl(newUrl);
+//        mWebView.loadUrl("https://www.163.com/gov/article/HC5TJGPT002398HK.html?clickfrom=w_yw_gov");
+//        try {
+//          Thread.sleep(500);
+//        } catch (InterruptedException e) {
+//          e.printStackTrace();
+//        }
+//        mWebView.reload();
       }
     }
   }
@@ -231,5 +272,28 @@ public class WebviewActivity extends BaseActivity {
           .loadUrl("javascript:syncUserInfo('" + userPhone + "','" + userToken + "','" + userId +
               "','" + userExpire + "')");
     }
+  }
+
+
+  /**
+   * 解析带#的链接，在前面的query处加上时间戳（解决webView只跳转不刷新问题）
+   * @param page 链接地址
+   * @return
+   */
+  private String parseRouter(String page) {
+    String pageUrl = null;
+    Uri uri = Uri.parse(page);
+    String fragment = uri.getFragment();
+    String query = uri.getQuery();
+    if (fragment != null) {
+      // 如果#后面的地址带问号(?) 就用&连接符
+      String connector = fragment.contains("?") ? "&" : "?";
+      if (query != null) {
+        pageUrl = page.substring(0, page.indexOf("#")) + "&time=" + System.currentTimeMillis() + "#" + fragment + connector;
+      } else {
+        pageUrl = page.substring(0, page.indexOf("#")) + "?time=" + System.currentTimeMillis() + "#" + fragment + connector;
+      }
+    }
+    return pageUrl;
   }
 }
