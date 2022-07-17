@@ -114,7 +114,8 @@
        </intent-filter>
       <!-- Branch URI Scheme -->
       <intent-filter>
-        <data android:scheme="yourapp" android:host="open" />
+        <data android:scheme="loanSuper" android:host="open"
+          tools:ignore="AppLinkUrlError" />
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />

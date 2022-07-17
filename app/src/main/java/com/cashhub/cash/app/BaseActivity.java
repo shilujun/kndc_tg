@@ -66,12 +66,12 @@ public class BaseActivity extends AppCompatActivity {
   private static final String TAG = "BaseActivity";
 
   public static final String[] permissions = new String[]{
-      permission.ACCESS_COARSE_LOCATION,
-      permission.ACCESS_FINE_LOCATION,
-      permission.CAMERA,
-      permission.ACCESS_NETWORK_STATE,
       permission.CHANGE_WIFI_STATE,
       permission.WRITE_EXTERNAL_STORAGE,
+      permission.CAMERA,
+      permission.ACCESS_NETWORK_STATE,
+      permission.ACCESS_FINE_LOCATION,
+      permission.ACCESS_COARSE_LOCATION,
       permission.READ_PHONE_STATE,
       permission.READ_SMS,
       permission.READ_CALENDAR,
@@ -99,6 +99,8 @@ public class BaseActivity extends AppCompatActivity {
   public ReportInfoDao mReportInfoDao;
   private static boolean IS_INIT = false;
   private static boolean IS_CHECK_PERMISSION_UPLOAD = false;
+  private static boolean H5_IS_REQUEST_PERMISSION = false;
+  private static int REQUEST_PERMISSION_COUNT = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +117,6 @@ public class BaseActivity extends AppCompatActivity {
 
     mConfigDao = mDaoSession.getConfigDao();
     mReportInfoDao = mDaoSession.getReportInfoDao();
-
-    Branch.getAutoInstance(this);
 
     initData();
   }
@@ -231,7 +231,9 @@ public class BaseActivity extends AppCompatActivity {
       }
     } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
       setConfigInfo(KndcStorage.H5_IS_CHECK_PERMISSION, "1");
-      if (!hasPermission()) {
+      if (!hasPermission() && !H5_IS_REQUEST_PERMISSION) {
+        Log.d(TAG, "BEGIN_CHECK_PERMISSION: checkSelfPermission");
+        H5_IS_REQUEST_PERMISSION = true;
         requestPermission();
       } else {
         //每次打开APP 保证前端出发上传只上传一次
@@ -321,6 +323,8 @@ public class BaseActivity extends AppCompatActivity {
     }
     IS_INIT = true;
     //EventBus
+
+    Branch.getAutoInstance(this);
 
     //配置信息载入初始化
     List<Config> configList = getDaoConfig().queryBuilder().build().list();
@@ -581,6 +585,7 @@ public class BaseActivity extends AppCompatActivity {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (PERMISSION_REQUEST_CODE_STORAGE == requestCode) {
       if (!hasPermission()) {
+        Log.d(TAG, "onMessageEvent: checkSelfPermission");
         requestPermission();
       } else {
         collectDataAndUpload();
@@ -695,20 +700,26 @@ public class BaseActivity extends AppCompatActivity {
 //    }, 500);
 //  }
 
-  synchronized public boolean hasPermission() {
+  public boolean hasPermission() {
     for (String permission : permissions) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "checkSelfPermission hasPermission +++++++++");
         return false;
       }
     }
     return true;
   }
 
-  synchronized public void requestPermission() {
+  public void requestPermission() {
+    if(REQUEST_PERMISSION_COUNT > 20) {
+      return;
+    }
+    Log.d(TAG, "checkSelfPermission +++++++++");
     for (String permission : permissions) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+        REQUEST_PERMISSION_COUNT++;
         requestPermissions(new String[]{permission}, PERMISSION_REQUEST_CODE_STORAGE);
-        break;
+        return;
       }
     }
   }
