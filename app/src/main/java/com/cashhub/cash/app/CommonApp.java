@@ -30,11 +30,12 @@ public class CommonApp {
     EventBus.getDefault().post(kndcEvent);
   }
 
-  public static void navigateToInWeb(Context context, String url) {
+  public static void navigateToInWeb(Context context, String url, String title) {
     Log.d(TAG, "navigateTo url: " + url);
     Intent intent = new Intent();
     intent.setClass(context, WebActivity.class);
     intent.putExtra(WebActivity.PARAM_URL, url);
+    intent.putExtra(WebActivity.PARAM_TITLE, title);
     context.startActivity(intent);
   }
 

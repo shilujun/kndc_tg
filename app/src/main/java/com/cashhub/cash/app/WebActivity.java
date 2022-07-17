@@ -16,6 +16,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class WebActivity extends BaseActivity implements View.OnClickListener {
@@ -34,6 +35,7 @@ public class WebActivity extends BaseActivity implements View.OnClickListener {
     setContentView(R.layout.activity_web);
     Intent intent = getIntent();
     String url = intent.getStringExtra(PARAM_URL);
+    String title = intent.getStringExtra(PARAM_TITLE);
     if (TextUtils.isEmpty(url)) {
       finish();
       return;
@@ -44,6 +46,12 @@ public class WebActivity extends BaseActivity implements View.OnClickListener {
 
     mWebView = findViewById(R.id.wv_web_view);
     mWebView.loadUrl(url);
+
+    if(TextUtils.isEmpty(title)) {
+      title = "";
+    }
+    TextView tvTitle = findViewById(R.id.tv_title);
+    tvTitle.setText(title);
 
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     mWebView.setWebViewClient(new WebViewClient() {

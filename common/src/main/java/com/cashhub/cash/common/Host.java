@@ -11,10 +11,9 @@ public class Host {
   //在线客服
   public static final String HOST_CUSTOMER_SERVICE = "https://lygapp.s5.udesk.cn/im_client/?web_plugin_id=576&language=th&channel=CashHub";
   //注册协议
-  public static final String HOST_USER_AGREEMENT = "https://api.cashhubloan"
-      + ".com/api/union/agreement?code=SnJIQX";
+  public static final String HOST_USER_AGREEMENT = "https://www.cashhubloan.com/register_agreement.html";
   //隐私政策
-  public static final String HOST_PRIVACY = "https://www.cashhubloan.com/privacy.html";
+  public static final String HOST_PRIVACY = "https://www.cashhubloan.com/privacy_new.html";
   private static final String HOST_API_OA = "http://apishop.c99349d1eb3d045a4857270fb79311aa0.cn-shanghai.alicontainer.com";
   private static final String HOST_API = "https://api.cashhubloan.com";
   private static final String HOST_H5_OA = "http://kndc.junya.online";

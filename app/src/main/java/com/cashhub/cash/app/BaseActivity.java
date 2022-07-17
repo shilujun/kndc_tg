@@ -81,6 +81,9 @@ public class BaseActivity extends AppCompatActivity {
 
   public static final String LINE_TYPE = "line_type";
   public static final String UPLOAD_TYPE = "upload_type";
+  public static final String CUSTOMER_TITLE = "ฝ่ายบริการลูกค้าออนไลน์";
+  public static final String REGISTER_TITLE = "ข้อกำหนดและเงื่อนไขสำหรับผู้ใช้ที่ลงทะเบียน";
+  public static final String PRIVACY_TITLE = "นโยบายความเป็นส่วนตัว";
 
   public static final int MODE_DEFAULT = 0;
 
