@@ -23,6 +23,8 @@ public class WebActivity extends BaseActivity implements View.OnClickListener {
   private static final String TAG = "WebActivity";
   public final static String PARAM_URL = "param_url";
 
+  public final static String PARAM_TITLE = "param_title";
+
   private WebView mWebView;
 
   private LinearLayout lltBack;
