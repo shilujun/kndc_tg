@@ -109,7 +109,7 @@ public class BaseActivity extends AppCompatActivity {
   private static boolean H5_IS_REQUEST_PERMISSION = false;
   private static int REQUEST_PERMISSION_COUNT = 0;
 
-  public final Map<String, String> permissionsCallback = new HashMap<>();
+  public static final Map<String, String> permissionsCallback = new HashMap<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -616,12 +616,13 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    if(permissions != null && permissions.length > 0) {
-      if (PERMISSION_REQUEST_CODE_STORAGE == requestCode) {
-        notifyJsPermissionResult(permissions[0], "1");
-      } else {
-        notifyJsPermissionResult(permissions[0], "0");
-      }
+
+    Log.d(TAG,
+        "onRequestPermissionsResult, requestCode:" + requestCode + ",permissions:" + permissions.toString() + ",grantResults:" + grantResults.toString());
+    if(permissions.length > 0 && grantResults.length > 0) {
+      Log.d(TAG,
+          "onRequestPermissionsResult permission:" + permissions[0] + ",grantResult:" + grantResults[0]);
+      notifyJsPermissionResult(permissions[0], String.valueOf(grantResults[0]));
       permissionsList.remove(permissions);
     }
     if (!hasPermission()) {
@@ -772,12 +773,19 @@ public class BaseActivity extends AppCompatActivity {
 
   //通知前端权限项 0 未获得权限  1已有权限
   public void notifyJsPermissionResult(String permission, String type) {
+    if(permissionsCallback == null) {
+      Log.d(TAG, "onRequestPermissionsResult notifyJsPermissionResult: permissionsCallback is "
+          + "NULL");
+      return;
+    }
     String notifyTig = permissionsCallback.get(permission);
-    //TODO
+    Log.d(TAG,
+        "onRequestPermissionsResult permissionsCallback:" + permissionsCallback.toString());
+    Log.d(TAG, "onRequestPermissionsResult checkSelfPermission notifyTig:" + notifyTig);
     if(!TextUtils.isEmpty(notifyTig)) {
       KndcEvent kndcEvent = new KndcEvent();
       kndcEvent.setEventName(KndcEvent.PERMISSION_END_CALL_JS);
-      kndcEvent.setPermission(permission);
+      kndcEvent.setPermission(notifyTig);
       kndcEvent.setType(type);
       EventBus.getDefault().post(kndcEvent);
     }

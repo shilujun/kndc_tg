@@ -277,6 +277,7 @@ public class WebviewActivity extends BaseActivity {
   }
 
   private void syncUserPermissionToH5(String permission, String type) {
+    Log.d(TAG, "syncUserPermissionToH5, permission:" + permission + ",type:" + type);
     if(TextUtils.isEmpty(permission) || TextUtils.isEmpty(type)) {
       return;
     }
