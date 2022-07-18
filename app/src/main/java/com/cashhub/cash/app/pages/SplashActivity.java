@@ -16,11 +16,11 @@ public class SplashActivity extends BaseActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setFullScreen(this);
 
     if (isLauncherStart()) {
       return;
     }
-    setFullScreen(this);
     try {
       Thread.sleep(300);
     } catch (InterruptedException e) {

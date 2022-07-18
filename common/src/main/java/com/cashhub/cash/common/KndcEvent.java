@@ -19,6 +19,7 @@ public class KndcEvent {
   public static String WEB_OPEN_NEW_LINK = "web_open_new_link";
   public static String BEGIN_CHECK_PERMISSION = "begin_check_permission";
   public static String UPLOAD_END_CALL_JS = "upload_end_call_js";
+  public static String PERMISSION_END_CALL_JS = "permission_end_call_js";
   public static String CLOSE_LOGIN_ACTIVITY = "close_login_activity";
   public static String SYNC_USER_STATUS = "sync_user_status";
   private String mEventName = "";
@@ -32,6 +33,8 @@ public class KndcEvent {
   private String mUploadType = "";
   private Bitmap mBitmap;
   private String url;
+  private String permission;
+  private String type;
 
   public KndcEvent() {
   }
@@ -80,6 +83,14 @@ public class KndcEvent {
     return url;
   }
 
+  public String getPermission() {
+    return permission;
+  }
+
+  public String getType() {
+    return type;
+  }
+
   public void setCode(String code) {
     this.code = code;
   }
@@ -122,5 +133,13 @@ public class KndcEvent {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public void setPermission(String permission) {
+    this.permission = permission;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }

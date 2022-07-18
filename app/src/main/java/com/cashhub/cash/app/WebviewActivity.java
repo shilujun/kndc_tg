@@ -257,6 +257,8 @@ public class WebviewActivity extends BaseActivity {
 //        }
 //        mWebView.reload();
       }
+    } else if(KndcEvent.PERMISSION_END_CALL_JS.equals(event.getEventName())) {
+      syncUserPermissionToH5(event.getPermission(), event.getType());
     }
   }
 
@@ -271,6 +273,17 @@ public class WebviewActivity extends BaseActivity {
       mWebView
           .loadUrl("javascript:syncUserInfo('" + userPhone + "','" + userToken + "','" + userId +
               "','" + userExpire + "')");
+    }
+  }
+
+  private void syncUserPermissionToH5(String permission, String type) {
+    if(TextUtils.isEmpty(permission) || TextUtils.isEmpty(type)) {
+      return;
+    }
+    Log.d(TAG, "permission:" + permission + ",type:" + type);
+    if(mWebView != null) {
+      mWebView
+          .loadUrl("javascript:getPermissionActive('" + permission + "','" + type + "')");
     }
   }
 

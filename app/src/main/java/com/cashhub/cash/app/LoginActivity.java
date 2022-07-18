@@ -46,6 +46,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setFullScreen(this);
+
     setContentView(R.layout.activity_login);
     mContext = this;
 

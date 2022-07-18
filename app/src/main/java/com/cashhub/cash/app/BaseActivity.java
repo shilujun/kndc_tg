@@ -54,6 +54,9 @@ import com.tencent.bugly.crashreport.CrashReport;
 import io.branch.referral.Branch;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -66,7 +69,7 @@ public class BaseActivity extends AppCompatActivity {
 
   private static final String TAG = "BaseActivity";
 
-  public static final String[] permissions = new String[]{
+  public static final List<String> permissionsList = Arrays.asList(
       permission.CHANGE_WIFI_STATE,
       permission.WRITE_EXTERNAL_STORAGE,
       permission.CAMERA,
@@ -78,7 +81,7 @@ public class BaseActivity extends AppCompatActivity {
       permission.READ_CALENDAR,
       permission.READ_CONTACTS,
       permission.INTERNET
-  };
+  );
 
   public static final String LINE_TYPE = "line_type";
   public static final String UPLOAD_TYPE = "upload_type";
@@ -106,10 +109,11 @@ public class BaseActivity extends AppCompatActivity {
   private static boolean H5_IS_REQUEST_PERMISSION = false;
   private static int REQUEST_PERMISSION_COUNT = 0;
 
+  public final Map<String, String> permissionsCallback = new HashMap<>();
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setFullScreen(this);
     //禁止横屏
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     EventBus.getDefault().register(this);
@@ -334,6 +338,26 @@ public class BaseActivity extends AppCompatActivity {
 
     //初始化Bugly
     CrashReport.initCrashReport(getApplicationContext());
+
+
+//    permission.CHANGE_WIFI_STATE,
+//    permission.WRITE_EXTERNAL_STORAGE,
+//    permission.CAMERA,
+//    permission.ACCESS_NETWORK_STATE,
+//    permission.ACCESS_FINE_LOCATION,
+//    permission.ACCESS_COARSE_LOCATION,
+//    permission.READ_PHONE_STATE,
+//    permission.READ_SMS,
+//    permission.READ_CALENDAR,
+//    permission.READ_CONTACTS,
+//    permission.INTERNET
+    permissionsCallback.put(permission.READ_PHONE_STATE, "device");
+    permissionsCallback.put(permission.READ_CONTACTS, "contact");
+    permissionsCallback.put(permission.READ_SMS, "message");
+    permissionsCallback.put(permission.READ_CALENDAR, "calendar");
+    permissionsCallback.put(permission.ACCESS_COARSE_LOCATION, "map");
+    permissionsCallback.put(permission.CAMERA, "camera");
+    permissionsCallback.put(permission.WRITE_EXTERNAL_STORAGE, "storage"); //存储
 
     //配置信息载入初始化
     List<Config> configList = getDaoConfig().queryBuilder().build().list();
@@ -592,14 +616,22 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    if (PERMISSION_REQUEST_CODE_STORAGE == requestCode) {
-      if (!hasPermission()) {
-        Log.d(TAG, "onMessageEvent: checkSelfPermission");
-        requestPermission();
+    if(permissions != null && permissions.length > 0) {
+      if (PERMISSION_REQUEST_CODE_STORAGE == requestCode) {
+        notifyJsPermissionResult(permissions[0], "1");
       } else {
-        collectDataAndUpload();
+        notifyJsPermissionResult(permissions[0], "0");
       }
+      permissionsList.remove(permissions);
     }
+    if (!hasPermission()) {
+      Log.d(TAG, "onMessageEvent: checkSelfPermission");
+      requestPermission();
+    } else {
+      collectDataAndUpload();
+    }
+
+
   }
 
   //授权完成之后数据上报
@@ -710,7 +742,7 @@ public class BaseActivity extends AppCompatActivity {
 //  }
 
   public boolean hasPermission() {
-    for (String permission : permissions) {
+    for (String permission : permissionsList) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
         Log.d(TAG, "checkSelfPermission hasPermission +++++++++");
         return false;
@@ -723,13 +755,25 @@ public class BaseActivity extends AppCompatActivity {
     if(REQUEST_PERMISSION_COUNT > 20) {
       return;
     }
-    Log.d(TAG, "checkSelfPermission +++++++++");
-    for (String permission : permissions) {
+    for (String permission : permissionsList) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
         REQUEST_PERMISSION_COUNT++;
         requestPermissions(new String[]{permission}, PERMISSION_REQUEST_CODE_STORAGE);
         return;
       }
+    }
+  }
+
+  //通知前端权限项 0 未获得权限  1已有权限
+  public void notifyJsPermissionResult(String permission, String type) {
+    String notifyTig = permissionsCallback.get(permission);
+    //TODO
+    if(!TextUtils.isEmpty(notifyTig)) {
+      KndcEvent kndcEvent = new KndcEvent();
+      kndcEvent.setEventName(KndcEvent.PERMISSION_END_CALL_JS);
+      kndcEvent.setPermission(permission);
+      kndcEvent.setType(type);
+      EventBus.getDefault().post(kndcEvent);
     }
   }
 }
