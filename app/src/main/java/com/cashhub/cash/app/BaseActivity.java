@@ -50,6 +50,7 @@ import com.cashhub.cash.common.UploadData;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.bugly.crashreport.CrashReport;
 import io.branch.referral.Branch;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -122,6 +123,8 @@ public class BaseActivity extends AppCompatActivity {
     mReportInfoDao = mDaoSession.getReportInfoDao();
 
     initData();
+    //bugly数据测试
+//    CrashReport.testJavaCrash();
   }
 
   @Override
@@ -325,9 +328,12 @@ public class BaseActivity extends AppCompatActivity {
       return;
     }
     IS_INIT = true;
-    //EventBus
 
+    //初始化branch
     Branch.getAutoInstance(this);
+
+    //初始化Bugly
+    CrashReport.initCrashReport(getApplicationContext());
 
     //配置信息载入初始化
     List<Config> configList = getDaoConfig().queryBuilder().build().list();

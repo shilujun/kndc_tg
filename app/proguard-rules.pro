@@ -22,3 +22,9 @@
 
 #branch
 -keep class com.google.android.gms.** { *; }
+
+
+
+#buyly
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}
