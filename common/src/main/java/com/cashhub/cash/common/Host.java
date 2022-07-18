@@ -24,7 +24,8 @@ public class Host {
   }
 
   private static String getCustomH5Host(Context context) {
-    String host = HOST_H5;
+//    String host = HOST_H5;
+    String host = HOST_H5_OA;
     boolean isDebug = isDebugMode(context);
     Log.d(TAG, "isDebug:" + isDebug);
     if(isDebug) {
@@ -38,7 +39,8 @@ public class Host {
   }
 
   private static String getCustomApiHost(Context context) {
-    String host = HOST_API;
+//    String host = HOST_API;
+    String host = HOST_API_OA;
     boolean isDebug = isDebugMode(context);
     Log.d(TAG, "isDebug:" + isDebug);
     if(isDebug) {

@@ -15,6 +15,7 @@ out/
 app/src/main/res/drawable-mdpi/
 app/src/main/res/raw/js*
 app/src/main/res/raw/node_modules*
+app/debug/
 
 # Gradle files
 .gradle/
