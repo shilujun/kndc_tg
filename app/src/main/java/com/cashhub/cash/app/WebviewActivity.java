@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.Host;
@@ -175,6 +176,13 @@ public class WebviewActivity extends BaseActivity {
         // android.os.Process.killProcess(android.os.Process.myPid());
       }
     }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    Log.d(TAG,
+        "onRequestPermissionsResult, requestCode:" + requestCode + ",permissions:" + permissions.toString() + ",grantResults:" + grantResults.toString());
   }
 
   @Override

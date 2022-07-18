@@ -1,13 +1,22 @@
 package com.cashhub.cash.app;
 
+import android.Manifest.permission;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import com.cashhub.cash.common.KndcEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.greenrobot.eventbus.EventBus;
 
 public class CommonApp {
+
+  public static Map<String, String> permissionsCallback = new HashMap<>();
+  public static List<String> permissionsList = new ArrayList<>();
 
   private static final String TAG = "CommonApp";
   public static void navigateTo(Context context, String url) {

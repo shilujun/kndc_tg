@@ -1,9 +1,7 @@
 package com.cashhub.cash.app;
 
-import android.Manifest;
 import android.Manifest.permission;
 import android.app.Activity;
-import android.app.SharedElementCallback;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -12,11 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,9 +25,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.CollectionUtils;
 import com.cashhub.cash.app.greendao.ConfigDao;
 import com.cashhub.cash.app.greendao.DaoMaster;
@@ -52,11 +44,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.bugly.crashreport.CrashReport;
 import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
 import java.io.FileNotFoundException;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -64,24 +56,11 @@ import java.util.TimerTask;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 public class BaseActivity extends AppCompatActivity {
 
   private static final String TAG = "BaseActivity";
-
-  public static final List<String> permissionsList = Arrays.asList(
-      permission.CHANGE_WIFI_STATE,
-      permission.WRITE_EXTERNAL_STORAGE,
-      permission.CAMERA,
-      permission.ACCESS_NETWORK_STATE,
-      permission.ACCESS_FINE_LOCATION,
-      permission.ACCESS_COARSE_LOCATION,
-      permission.READ_PHONE_STATE,
-      permission.READ_SMS,
-      permission.READ_CALENDAR,
-      permission.READ_CONTACTS,
-      permission.INTERNET
-  );
 
   public static final String LINE_TYPE = "line_type";
   public static final String UPLOAD_TYPE = "upload_type";
@@ -108,8 +87,6 @@ public class BaseActivity extends AppCompatActivity {
   private static boolean IS_CHECK_PERMISSION_UPLOAD = false;
   private static boolean H5_IS_REQUEST_PERMISSION = false;
   private static int REQUEST_PERMISSION_COUNT = 0;
-
-  public static final Map<String, String> permissionsCallback = new HashMap<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -241,10 +218,10 @@ public class BaseActivity extends AppCompatActivity {
       }
     } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
       setConfigInfo(KndcStorage.H5_IS_CHECK_PERMISSION, "1");
-      if (!hasPermission() && !H5_IS_REQUEST_PERMISSION) {
+      if (!hasPermissionKndc() && !H5_IS_REQUEST_PERMISSION) {
         Log.d(TAG, "BEGIN_CHECK_PERMISSION: checkSelfPermission");
         H5_IS_REQUEST_PERMISSION = true;
-        requestPermission();
+        requestPermissionKndc();
       } else {
         //每次打开APP 保证前端出发上传只上传一次
         if(IS_CHECK_PERMISSION_UPLOAD) {
@@ -291,6 +268,19 @@ public class BaseActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public void onStart() {
+    super.onStart();
+    Branch.sessionBuilder(this).withCallback(branchReferralInitListener).withData(getIntent() != null ? getIntent().getData() : null).init();
+  }
+
+  private Branch.BranchReferralInitListener branchReferralInitListener = new Branch.BranchReferralInitListener() {
+    @Override
+    public void onInitFinished(JSONObject linkProperties, BranchError error) {
+      // do stuff with deep link data (nav to page, display content, etc)
+    }
+  };
+
   public DaoSession getDaoSession() {
     return mDaoSession;
   }
@@ -333,31 +323,34 @@ public class BaseActivity extends AppCompatActivity {
     }
     IS_INIT = true;
 
-    //初始化branch
+    // Branch logging for debugging
+    Branch.enableLogging();
+
+    // Branch object initialization
     Branch.getAutoInstance(this);
 
     //初始化Bugly
     CrashReport.initCrashReport(getApplicationContext());
 
+    CommonApp.permissionsCallback.put(permission.READ_PHONE_STATE, "device");
+    CommonApp.permissionsCallback.put(permission.READ_CONTACTS, "contact");
+    CommonApp.permissionsCallback.put(permission.READ_SMS, "message");
+    CommonApp.permissionsCallback.put(permission.READ_CALENDAR, "calendar");
+    CommonApp.permissionsCallback.put(permission.ACCESS_FINE_LOCATION, "map");
+    CommonApp.permissionsCallback.put(permission.CAMERA, "camera");
+    CommonApp.permissionsCallback.put(permission.WRITE_EXTERNAL_STORAGE, "storage"); //存储
 
-//    permission.CHANGE_WIFI_STATE,
-//    permission.WRITE_EXTERNAL_STORAGE,
-//    permission.CAMERA,
-//    permission.ACCESS_NETWORK_STATE,
-//    permission.ACCESS_FINE_LOCATION,
-//    permission.ACCESS_COARSE_LOCATION,
-//    permission.READ_PHONE_STATE,
-//    permission.READ_SMS,
-//    permission.READ_CALENDAR,
-//    permission.READ_CONTACTS,
-//    permission.INTERNET
-    permissionsCallback.put(permission.READ_PHONE_STATE, "device");
-    permissionsCallback.put(permission.READ_CONTACTS, "contact");
-    permissionsCallback.put(permission.READ_SMS, "message");
-    permissionsCallback.put(permission.READ_CALENDAR, "calendar");
-    permissionsCallback.put(permission.ACCESS_COARSE_LOCATION, "map");
-    permissionsCallback.put(permission.CAMERA, "camera");
-    permissionsCallback.put(permission.WRITE_EXTERNAL_STORAGE, "storage"); //存储
+    CommonApp.permissionsList.add(permission.CHANGE_WIFI_STATE);
+    CommonApp.permissionsList.add(permission.WRITE_EXTERNAL_STORAGE);
+    CommonApp.permissionsList.add(permission.CAMERA);
+    CommonApp.permissionsList.add(permission.ACCESS_NETWORK_STATE);
+    CommonApp.permissionsList.add(permission.ACCESS_FINE_LOCATION);
+    CommonApp.permissionsList.add(permission.ACCESS_COARSE_LOCATION);
+    CommonApp.permissionsList.add(permission.READ_PHONE_STATE);
+    CommonApp.permissionsList.add(permission.READ_SMS);
+    CommonApp.permissionsList.add(permission.READ_CALENDAR);
+    CommonApp.permissionsList.add(permission.READ_CONTACTS);
+    CommonApp.permissionsList.add(permission.INTERNET);
 
     //配置信息载入初始化
     List<Config> configList = getDaoConfig().queryBuilder().build().list();
@@ -613,6 +606,12 @@ public class BaseActivity extends AppCompatActivity {
     }, 300);
   }
 
+  /**
+   * 授权返回结果：
+   * 1.始终允许
+   * 2.禁止
+   * 3.禁止后不再提示
+   * */
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -622,17 +621,19 @@ public class BaseActivity extends AppCompatActivity {
     if(permissions.length > 0 && grantResults.length > 0) {
       Log.d(TAG,
           "onRequestPermissionsResult permission:" + permissions[0] + ",grantResult:" + grantResults[0]);
+      List<String> permissionList= new ArrayList<>(Arrays.asList(permissions));
+      Log.d(TAG, "onRequestPermissionsResult permissionList:" + permissionList);
+      CommonApp.permissionsList.removeAll(permissionList);
       notifyJsPermissionResult(permissions[0], String.valueOf(grantResults[0]));
-      permissionsList.remove(permissions);
     }
-    if (!hasPermission()) {
-      Log.d(TAG, "onMessageEvent: checkSelfPermission");
-      requestPermission();
-    } else {
-      collectDataAndUpload();
+    if(requestCode == PERMISSION_REQUEST_CODE_STORAGE) {
+      if (!hasPermissionKndc()) {
+        Log.d(TAG, "onMessageEvent: checkSelfPermission");
+        requestPermissionKndc();
+      } else {
+        collectDataAndUpload();
+      }
     }
-
-
   }
 
   //授权完成之后数据上报
@@ -742,11 +743,11 @@ public class BaseActivity extends AppCompatActivity {
 //    }, 500);
 //  }
 
-  public boolean hasPermission() {
-    if(permissionsList == null || permissionsList.isEmpty()) {
+  public boolean hasPermissionKndc() {
+    if(CommonApp.permissionsList == null || CommonApp.permissionsList.isEmpty()) {
       return true;
     }
-    for (String permission : permissionsList) {
+    for (String permission : CommonApp.permissionsList) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
         Log.d(TAG, "checkSelfPermission hasPermission +++++++++");
         return false;
@@ -755,32 +756,47 @@ public class BaseActivity extends AppCompatActivity {
     return true;
   }
 
-  public void requestPermission() {
-    if(permissionsList == null || permissionsList.isEmpty()) {
+  public void requestPermissionKndc() {
+    if(CommonApp.permissionsList == null || CommonApp.permissionsList.isEmpty()) {
       return;
     }
+    Log.d(TAG,
+        "checkSelfPermission requestPermissionKndc permissionsList length:" + CommonApp.permissionsList.size());
     if(REQUEST_PERMISSION_COUNT > 20) {
       return;
     }
-    for (String permission : permissionsList) {
+
+    for (String permission : CommonApp.permissionsList) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
         REQUEST_PERMISSION_COUNT++;
         requestPermissions(new String[]{permission}, PERMISSION_REQUEST_CODE_STORAGE);
         return;
       }
     }
+//    String[] permissionsTmp = new String[]{};
+//
+//    for (String permission : CommonApp.permissionsList) {
+//      if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+//        REQUEST_PERMISSION_COUNT++;
+//        permissionsTmp[permissionsTmp.length] = permission;
+//      }
+//    }
+//
+//    if(permissionsTmp.length > 0) {
+//      requestPermissions(permissionsTmp, PERMISSION_REQUEST_CODE_STORAGE);
+//    }
   }
 
   //通知前端权限项 0 未获得权限  1已有权限
   public void notifyJsPermissionResult(String permission, String type) {
-    if(permissionsCallback == null) {
+    if(CommonApp.permissionsCallback == null || CommonApp.permissionsCallback.isEmpty()) {
       Log.d(TAG, "onRequestPermissionsResult notifyJsPermissionResult: permissionsCallback is "
           + "NULL");
       return;
     }
-    String notifyTig = permissionsCallback.get(permission);
+    String notifyTig = CommonApp.permissionsCallback.get(permission);
     Log.d(TAG,
-        "onRequestPermissionsResult permissionsCallback:" + permissionsCallback.toString());
+        "onRequestPermissionsResult permissionsCallback:" + CommonApp.permissionsCallback.toString());
     Log.d(TAG, "onRequestPermissionsResult checkSelfPermission notifyTig:" + notifyTig);
     if(!TextUtils.isEmpty(notifyTig)) {
       KndcEvent kndcEvent = new KndcEvent();

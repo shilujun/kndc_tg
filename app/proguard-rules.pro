@@ -23,6 +23,11 @@
 #branch
 -keep class com.google.android.gms.** { *; }
 
+#-keep class com.google.android.gms.ads.identifier.** { *; }
+#-keep public class com.google.android.gms.ads.identifier.** { *; }
+#-keep public class com.google.android.gms.gcm.** { *; }
+#-keep public class com.google.android.gms.common.** { *; }
+
 
 
 #buyly
