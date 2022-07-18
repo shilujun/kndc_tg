@@ -742,6 +742,9 @@ public class BaseActivity extends AppCompatActivity {
 //  }
 
   public boolean hasPermission() {
+    if(permissionsList == null || permissionsList.isEmpty()) {
+      return true;
+    }
     for (String permission : permissionsList) {
       if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
         Log.d(TAG, "checkSelfPermission hasPermission +++++++++");
@@ -752,6 +755,9 @@ public class BaseActivity extends AppCompatActivity {
   }
 
   public void requestPermission() {
+    if(permissionsList == null || permissionsList.isEmpty()) {
+      return;
+    }
     if(REQUEST_PERMISSION_COUNT > 20) {
       return;
     }
