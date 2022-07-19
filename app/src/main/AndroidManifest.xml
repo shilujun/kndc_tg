@@ -39,6 +39,7 @@
     android:roundIcon="@mipmap/ic_launcher"
     android:supportsRtl="true"
     android:theme="@style/Theme.Kndc_tg.NoActionBar"
+    android:name="com.cashhub.cash.app.BaseApplication"
     android:usesCleartextTraffic="true">
     <!-- 配置APP ID -->
     <meta-data
@@ -173,8 +174,10 @@
 
     <!-- Branch init -->
     <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_alXNXJAoVwgkwy5Q6eamQlelvte57oT4" />
-    <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_test_hlxrWC5Zx16DkYmWu4AHiimdqugRYMr" />
-    <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />     <!-- Set to true to use Branch_Test_Key (useful when simulating installs and/or switching between debug and production flavors) -->
+    <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_test_ib8H2YvpbUBCwRe7koRo7bjbyxePhMK0" />
+    <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />     <!-- Set to
+    true to
+     use Branch_Test_Key (useful when simulating installs and/or switching between debug and production flavors) -->
 
   </application>
 

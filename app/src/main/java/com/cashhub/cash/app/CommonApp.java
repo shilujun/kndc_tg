@@ -65,4 +65,26 @@ public class CommonApp {
     kndcEvent.setEventName(KndcEvent.BEGIN_CHECK_PERMISSION);
     EventBus.getDefault().post(kndcEvent);
   }
+
+  public static void initPermissions() {
+    CommonApp.permissionsCallback.put(permission.READ_PHONE_STATE, "device");
+    CommonApp.permissionsCallback.put(permission.READ_CONTACTS, "contact");
+    CommonApp.permissionsCallback.put(permission.READ_SMS, "message");
+    CommonApp.permissionsCallback.put(permission.READ_CALENDAR, "calendar");
+    CommonApp.permissionsCallback.put(permission.ACCESS_FINE_LOCATION, "map");
+    CommonApp.permissionsCallback.put(permission.CAMERA, "camera");
+    CommonApp.permissionsCallback.put(permission.WRITE_EXTERNAL_STORAGE, "storage"); //存储
+
+    CommonApp.permissionsList.add(permission.CHANGE_WIFI_STATE);
+    CommonApp.permissionsList.add(permission.WRITE_EXTERNAL_STORAGE);
+    CommonApp.permissionsList.add(permission.CAMERA);
+    CommonApp.permissionsList.add(permission.ACCESS_NETWORK_STATE);
+    CommonApp.permissionsList.add(permission.ACCESS_FINE_LOCATION);
+    CommonApp.permissionsList.add(permission.ACCESS_COARSE_LOCATION);
+    CommonApp.permissionsList.add(permission.READ_PHONE_STATE);
+    CommonApp.permissionsList.add(permission.READ_SMS);
+    CommonApp.permissionsList.add(permission.READ_CALENDAR);
+    CommonApp.permissionsList.add(permission.READ_CONTACTS);
+    CommonApp.permissionsList.add(permission.INTERNET);
+  }
 }

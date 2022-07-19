@@ -173,7 +173,9 @@ public class BaseActivity extends AppCompatActivity {
 
     //初始化过之后 校验权限 - 第一次由H5触发
     if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+      //重置需要校验的权限项
       if (!hasPermissionKndc()) {
+        CommonApp.initPermissions();
         Log.d(TAG, "onMessageEvent: checkSelfPermission");
         requestPermissionKndc();
       }
@@ -348,34 +350,10 @@ public class BaseActivity extends AppCompatActivity {
     }
     IS_INIT = true;
 
-    // Branch logging for debugging
-    Branch.enableLogging();
-
-    // Branch object initialization
-    Branch.getAutoInstance(this);
+    CommonApp.initPermissions();
 
     //初始化Bugly
     CrashReport.initCrashReport(getApplicationContext());
-
-    CommonApp.permissionsCallback.put(permission.READ_PHONE_STATE, "device");
-    CommonApp.permissionsCallback.put(permission.READ_CONTACTS, "contact");
-    CommonApp.permissionsCallback.put(permission.READ_SMS, "message");
-    CommonApp.permissionsCallback.put(permission.READ_CALENDAR, "calendar");
-    CommonApp.permissionsCallback.put(permission.ACCESS_FINE_LOCATION, "map");
-    CommonApp.permissionsCallback.put(permission.CAMERA, "camera");
-    CommonApp.permissionsCallback.put(permission.WRITE_EXTERNAL_STORAGE, "storage"); //存储
-
-    CommonApp.permissionsList.add(permission.CHANGE_WIFI_STATE);
-    CommonApp.permissionsList.add(permission.WRITE_EXTERNAL_STORAGE);
-    CommonApp.permissionsList.add(permission.CAMERA);
-    CommonApp.permissionsList.add(permission.ACCESS_NETWORK_STATE);
-    CommonApp.permissionsList.add(permission.ACCESS_FINE_LOCATION);
-    CommonApp.permissionsList.add(permission.ACCESS_COARSE_LOCATION);
-    CommonApp.permissionsList.add(permission.READ_PHONE_STATE);
-    CommonApp.permissionsList.add(permission.READ_SMS);
-    CommonApp.permissionsList.add(permission.READ_CALENDAR);
-    CommonApp.permissionsList.add(permission.READ_CONTACTS);
-    CommonApp.permissionsList.add(permission.INTERNET);
 
     //配置信息载入初始化
     List<Config> configList = getDaoConfig().queryBuilder().build().list();
