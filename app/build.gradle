@@ -78,6 +78,7 @@ dependencies {
 ////    debugImplementation 'com.github.whataa:pandora:v1.3.0'
 //    releaseImplementation 'com.github.whataa:pandora-no-op:v2.1.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0-alpha03'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 //    implementation 'com.tencent.sonic:sdk:3.1.0'
@@ -98,14 +99,11 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.aliyun.dpa:oss-android-sdk:2.9.11'
-//    implementation 'com.github.tyhjh:PermissionUtil:v1.0.7'
     implementation 'io.branch.sdk.android:library:5.2.0'
-//    implementation 'com.google.android.gms:play-services-ads:17.2.0' {
-//        exclude module: 'answers-shim'
-//    }
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0+'
+//    implementation 'com.google.android.gms:play-services-ads:17.2.0'
+    // Replace above with the line below if you do not support androidx
+//    implementation 'com.android.support:customtabs:28.0.0'
 
-//    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
-//    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
-//    implementation 'androidx.browser:browser:1.0.0'
     implementation 'com.tencent.bugly:crashreport:latest.release'
 }

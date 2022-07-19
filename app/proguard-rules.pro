@@ -22,13 +22,13 @@
 
 #branch
 -keep class com.google.android.gms.** { *; }
+-keep class com.huawei.hms.ads.** { *; }
+-keep interface com.huawei.hms.ads.** { *; }
 
 #-keep class com.google.android.gms.ads.identifier.** { *; }
 #-keep public class com.google.android.gms.ads.identifier.** { *; }
 #-keep public class com.google.android.gms.gcm.** { *; }
 #-keep public class com.google.android.gms.common.** { *; }
-
-
 
 #buyly
 -dontwarn com.tencent.bugly.**
