@@ -67,7 +67,8 @@ public class CommonApp {
   }
 
   public static void initPermissions() {
-    CommonApp.permissionsCallback.put(permission.READ_PHONE_STATE, "device");
+    permissionsCallback = new HashMap<>();
+//    CommonApp.permissionsCallback.put(permission.READ_PHONE_STATE, "device");
     CommonApp.permissionsCallback.put(permission.READ_CONTACTS, "contact");
     CommonApp.permissionsCallback.put(permission.READ_SMS, "message");
     CommonApp.permissionsCallback.put(permission.READ_CALENDAR, "calendar");
@@ -75,6 +76,7 @@ public class CommonApp {
     CommonApp.permissionsCallback.put(permission.CAMERA, "camera");
     CommonApp.permissionsCallback.put(permission.WRITE_EXTERNAL_STORAGE, "storage"); //存储
 
+    permissionsList = new ArrayList<>();
     CommonApp.permissionsList.add(permission.CHANGE_WIFI_STATE);
     CommonApp.permissionsList.add(permission.WRITE_EXTERNAL_STORAGE);
     CommonApp.permissionsList.add(permission.CAMERA);

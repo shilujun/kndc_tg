@@ -168,15 +168,11 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-
+    Log.d(TAG, "onResume");
     //初始化过之后 校验权限 - 第一次由H5触发
     if (IS_INIT) {
       //重置需要校验的权限项
-      if (!hasPermissionKndc()) {
-        CommonApp.initPermissions();
-        Log.d(TAG, "onResume hasPermissionKndc: false");
-        requestPermissionKndc();
-      }
+      checkPermissionKndc();
     }
   }
 
@@ -707,6 +703,19 @@ public class BaseActivity extends AppCompatActivity {
     }).start();//启动线程
   }
 
+  /**
+   * 权限校验
+   * @return
+   */
+  public void checkPermissionKndc() {
+    if(CommonApp.permissionsCallback == null || CommonApp.permissionsCallback.isEmpty()) {
+      return;
+    }
+    for (Map.Entry<String, String> entry : CommonApp.permissionsCallback.entrySet()) {
+      notifyJsPermissionResult(entry.getKey(), String.valueOf(checkSelfPermission(entry.getKey())));
+    }
+  }
+
   public boolean hasPermissionKndc() {
     if(CommonApp.permissionsList == null || CommonApp.permissionsList.isEmpty()) {
       return true;
@@ -733,6 +742,8 @@ public class BaseActivity extends AppCompatActivity {
     }
     Log.d(TAG,
         "checkSelfPermission requestPermissionKndc permissionsList length:" + CommonApp.permissionsList.size());
+
+    Log.d(TAG, "checkSelfPermission REQUEST_PERMISSION_COUNT:" + REQUEST_PERMISSION_COUNT);
     if(REQUEST_PERMISSION_COUNT > 30) {
       return;
     }

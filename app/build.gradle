@@ -100,6 +100,9 @@ dependencies {
     implementation 'com.aliyun.dpa:oss-android-sdk:2.9.11'
 //    implementation 'com.github.tyhjh:PermissionUtil:v1.0.7'
     implementation 'io.branch.sdk.android:library:5.2.0'
+//    implementation 'com.google.android.gms:play-services-ads:17.2.0' {
+//        exclude module: 'answers-shim'
+//    }
 
 //    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
 //    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
