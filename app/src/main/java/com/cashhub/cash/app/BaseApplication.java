@@ -8,6 +8,7 @@ public class BaseApplication extends Application {
   public void onCreate() {
     super.onCreate();
 
+//    Branch.enableTestMode();
     // Branch logging for debugging
     Branch.enableLogging();
 

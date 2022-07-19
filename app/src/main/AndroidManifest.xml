@@ -128,30 +128,25 @@
        </intent-filter>
       <!-- Branch URI Scheme -->
       <intent-filter>
-        <data android:scheme="com.cashhub.cash.app" android:host="open" />
+        <data android:scheme="cashhub" android:host="open"/>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
       </intent-filter>
-
+<!--      <intent-filter>-->
+<!--        <data android:scheme="cashhub" android:host="open"/>-->
+<!--        <action android:name="android.intent.action.VIEW" />-->
+<!--        <category android:name="android.intent.category.DEFAULT" />-->
+<!--        <category android:name="android.intent.category.BROWSABLE" />-->
+<!--      </intent-filter>-->
       <!-- Branch App Links -->
       <intent-filter android:autoVerify="true">
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="https" android:host="zwuec.app.link" />
-        <!-- example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  -->
         <data android:scheme="https" android:host="zwuec-alternate.app.link" />
       </intent-filter>
-
-<!--      <intent-filter android:autoVerify="true">-->
-<!--        <action android:name="android.intent.action.VIEW" />-->
-<!--        <category android:name="android.intent.category.DEFAULT" />-->
-<!--        <category android:name="android.intent.category.BROWSABLE" />-->
-<!--        <data android:scheme="https" android:host="6blr6.test-app.link" />-->
-<!--        &lt;!&ndash; example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  &ndash;&gt;-->
-<!--        <data android:scheme="https" android:host="6blr6-alternate.test-app.link" />-->
-<!--      </intent-filter>-->
     </activity>
     <activity
       android:name=".MainActivity"
@@ -164,7 +159,7 @@
 
     <!-- Branch init -->
     <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_alXNXJAoVwgkwy5Q6eamQlelvte57oT4" />
-    <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_test_ib8H2YvpbUBCwRe7koRo7bjbyxePhMK0" />
+    <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_live_alXNXJAoVwgkwy5Q6eamQlelvte57oT4" />
     <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />     <!-- Set to
     true to
      use Branch_Test_Key (useful when simulating installs and/or switching between debug and production flavors) -->

@@ -45,6 +45,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tencent.bugly.crashreport.CrashReport;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import io.branch.referral.validators.IntegrationValidator;
 import java.io.FileNotFoundException;
 import java.sql.Array;
 import java.util.ArrayList;
@@ -292,6 +293,8 @@ public class BaseActivity extends AppCompatActivity {
     super.onStart();
     Log.d(TAG, "branchReferralInitListener onStart");
     Branch.sessionBuilder(this).withCallback(branchReferralInitListener).withData(getIntent() != null ? getIntent().getData() : null).init();
+
+//    IntegrationValidator.validate(this);
   }
 
   private Branch.BranchReferralInitListener branchReferralInitListener = new Branch.BranchReferralInitListener() {
