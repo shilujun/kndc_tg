@@ -87,10 +87,6 @@
       android:name=".LoginActivity"
       android:launchMode="singleTask"
       android:exported="false">
-<!--      <intent-filter>-->
-<!--        <action android:name="android.intent.action.MAIN" />-->
-<!--        <category android:name="android.intent.category.LAUNCHER" />-->
-<!--      </intent-filter>-->
     </activity>
     <activity
       android:name=".WebviewActivity"
@@ -152,9 +148,9 @@
 <!--        <action android:name="android.intent.action.VIEW" />-->
 <!--        <category android:name="android.intent.category.DEFAULT" />-->
 <!--        <category android:name="android.intent.category.BROWSABLE" />-->
-<!--        <data android:scheme="https" android:host="example.test-app.link" />-->
+<!--        <data android:scheme="https" android:host="6blr6.test-app.link" />-->
 <!--        &lt;!&ndash; example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  &ndash;&gt;-->
-<!--        <data android:scheme="https" android:host="example-alternate.test-app.link" />-->
+<!--        <data android:scheme="https" android:host="6blr6-alternate.test-app.link" />-->
 <!--      </intent-filter>-->
     </activity>
     <activity
@@ -164,12 +160,6 @@
       android:launchMode="singleTask"
       android:screenOrientation="fullSensor"
       android:windowSoftInputMode="adjustResize">
-<!--       <intent-filter> -->
-<!--       <action android:name="android.intent.action.MAIN" /> -->
-
-
-<!--       <category android:name="android.intent.category.LAUNCHER" /> -->
-<!--       </intent-filter> -->
     </activity>
 
     <!-- Branch init -->

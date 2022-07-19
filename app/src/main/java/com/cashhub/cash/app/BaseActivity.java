@@ -168,15 +168,13 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    String appIsInit =
-        KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
 
     //初始化过之后 校验权限 - 第一次由H5触发
-    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+    if (IS_INIT) {
       //重置需要校验的权限项
       if (!hasPermissionKndc()) {
         CommonApp.initPermissions();
-        Log.d(TAG, "onMessageEvent: checkSelfPermission");
+        Log.d(TAG, "onResume hasPermissionKndc: false");
         requestPermissionKndc();
       }
     }
