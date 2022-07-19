@@ -130,23 +130,23 @@
        <action android:name="android.intent.action.MAIN" />
        <category android:name="android.intent.category.LAUNCHER" />
        </intent-filter>
-<!--      &lt;!&ndash; Branch URI Scheme &ndash;&gt;-->
-<!--      <intent-filter>-->
-<!--        <data android:scheme="com.cashhub.cash.app" android:host="open" />-->
-<!--        <action android:name="android.intent.action.VIEW" />-->
-<!--        <category android:name="android.intent.category.DEFAULT" />-->
-<!--        <category android:name="android.intent.category.BROWSABLE" />-->
-<!--      </intent-filter>-->
+      <!-- Branch URI Scheme -->
+      <intent-filter>
+        <data android:scheme="com.cashhub.cash.app" android:host="open" />
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+      </intent-filter>
 
-<!--      &lt;!&ndash; Branch App Links &ndash;&gt;-->
-<!--      <intent-filter android:autoVerify="true">-->
-<!--        <action android:name="android.intent.action.VIEW" />-->
-<!--        <category android:name="android.intent.category.DEFAULT" />-->
-<!--        <category android:name="android.intent.category.BROWSABLE" />-->
-<!--        <data android:scheme="https" android:host="example.app.link" />-->
-<!--        &lt;!&ndash; example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  &ndash;&gt;-->
-<!--        <data android:scheme="https" android:host="example-alternate.app.link" />-->
-<!--      </intent-filter>-->
+      <!-- Branch App Links -->
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" android:host="zwuec.app.link" />
+        <!-- example-alternate domain is required for App Links when the Journeys/Web SDK and Deepviews are used inside your website.  -->
+        <data android:scheme="https" android:host="zwuec-alternate.app.link" />
+      </intent-filter>
 
 <!--      <intent-filter android:autoVerify="true">-->
 <!--        <action android:name="android.intent.action.VIEW" />-->

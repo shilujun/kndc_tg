@@ -190,6 +190,7 @@ public class CheckActivity extends BaseActivity implements View.OnClickListener 
         return;
       } else if(commonResult.getCode() != 0) {
         Log.d(TAG, "login fail");
+        showToastShort(commonResult.getMsg());
         return;
       }
 

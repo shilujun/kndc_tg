@@ -83,6 +83,7 @@ public class UploadData {
     JSONObject deviceInfo = DeviceUtils.getSystemInfo(mContext);
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("data", deviceInfo);
+    Log.d(TAG, "deviceInfo:" + deviceInfo);
     postOssSign(jsonObject, 1);
   }
 
@@ -95,6 +96,7 @@ public class UploadData {
     List<JSONObject> contact = mSystemInfo.getAllContacts();
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("data", contact);
+    Log.d(TAG, "contact:" + contact);
     postOssSign(jsonObject, 2);
   }
 
@@ -190,6 +192,7 @@ public class UploadData {
 
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("data", calendars);
+    Log.d(TAG, "calendars:" + calendars);
     postOssSign(jsonObject, 4);
   }
 
