@@ -10,7 +10,7 @@ public class BaseApplication extends Application {
 
 //    Branch.enableTestMode();
     // Branch logging for debugging
-    Branch.enableLogging();
+//    Branch.enableLogging();
 
     // Branch object initialization
     Branch.getAutoInstance(this);
