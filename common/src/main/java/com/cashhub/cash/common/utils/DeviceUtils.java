@@ -4,16 +4,79 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.UUID;
 
 public class DeviceUtils {
 
   private static final String TAG = "DeviceUtils";
+
+  public static String getMac(Context context) {
+    String mac = "";
+    if (context == null) {
+      return mac;
+    }
+    mac = getMacByJavaAPI();
+    if (TextUtils.isEmpty(mac)){
+      mac = getMacBySystemInterface(context);
+    }
+    return mac;
+
+  }
+
+  private static String getMacByJavaAPI() {
+    try {
+      Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+      while (interfaces.hasMoreElements()) {
+        NetworkInterface netInterface = interfaces.nextElement();
+        if ("wlan0".equals(netInterface.getName()) || "eth0".equals(netInterface.getName())) {
+          byte[] addr = netInterface.getHardwareAddress();
+          if (addr == null || addr.length == 0) {
+            return null;
+          }
+          StringBuilder buf = new StringBuilder();
+          for (byte b : addr) {
+            buf.append(String.format("%02X:", b));
+          }
+          if (buf.length() > 0) {
+            buf.deleteCharAt(buf.length() - 1);
+          }
+          return buf.toString().toLowerCase(Locale.getDefault());
+        }
+      }
+    } catch (Throwable e) {
+    }
+    return null;
+  }
+
+  private static String getMacBySystemInterface(Context context) {
+    if (context == null) {
+      return "";
+    }
+    try {
+      WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+      if (context.checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) ==
+          PackageManager.PERMISSION_GRANTED) {
+        WifiInfo info = wifi.getConnectionInfo();
+        return info.getMacAddress();
+      } else {
+        return "";
+      }
+    } catch (Throwable e) {
+      return "";
+    }
+  }
 
   /**
    * 获取设备号
@@ -41,6 +104,9 @@ public class DeviceUtils {
       } else {
         deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
       }
+    }
+    if(TextUtils.isEmpty(deviceId)) {
+      UUID.randomUUID().toString();
     }
     return deviceId;
   }

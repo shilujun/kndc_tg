@@ -168,6 +168,16 @@ public class BaseActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
+    String appIsInit =
+        KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
+
+    //初始化过之后 校验权限 - 第一次由H5触发
+    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+      if (!hasPermissionKndc()) {
+        Log.d(TAG, "onMessageEvent: checkSelfPermission");
+        requestPermissionKndc();
+      }
+    }
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
@@ -269,8 +279,22 @@ public class BaseActivity extends AppCompatActivity {
   }
 
   @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    setIntent(intent);
+    // if activity is in foreground (or in backstack but partially visible) launching the same
+    // activity will skip onStart, handle this case with reInitSession
+    if (intent != null &&
+        intent.hasExtra("branch_force_new_session") &&
+        intent.getBooleanExtra("branch_force_new_session",false)) {
+      Branch.sessionBuilder(this).withCallback(branchReferralInitListener).reInit();
+    }
+  }
+
+  @Override
   public void onStart() {
     super.onStart();
+    Log.d(TAG, "branchReferralInitListener onStart");
     Branch.sessionBuilder(this).withCallback(branchReferralInitListener).withData(getIntent() != null ? getIntent().getData() : null).init();
   }
 
@@ -278,6 +302,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onInitFinished(JSONObject linkProperties, BranchError error) {
       // do stuff with deep link data (nav to page, display content, etc)
+      Log.d(TAG, "branchReferralInitListener onInitFinished");
     }
   };
 
@@ -366,12 +391,12 @@ public class BaseActivity extends AppCompatActivity {
         KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
 
     //初始化过之后 校验权限 - 第一次由H5触发
-    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
-      if (!hasPermissionKndc()) {
-        Log.d(TAG, "onMessageEvent: checkSelfPermission");
-        requestPermissionKndc();
-      }
-    }
+//    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+//      if (!hasPermissionKndc()) {
+//        Log.d(TAG, "onMessageEvent: checkSelfPermission");
+//        requestPermissionKndc();
+//      }
+//    }
     new Thread(() -> {
       //初始化过之后才上报数据
       if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {

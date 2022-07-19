@@ -99,7 +99,10 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.aliyun.dpa:oss-android-sdk:2.9.11'
 //    implementation 'com.github.tyhjh:PermissionUtil:v1.0.7'
-    implementation 'io.branch.sdk.android:library:5.+'
+    implementation 'io.branch.sdk.android:library:5.2.0'
+
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1'
+//    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
 //    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0+'
 //    implementation 'androidx.browser:browser:1.0.0'
     implementation 'com.tencent.bugly:crashreport:latest.release'
