@@ -134,11 +134,16 @@ public class CommonApi {
       return;
     }
 
+    String deviceId = DeviceUtils.getDeviceId(context);
+    if(TextUtils.isEmpty(deviceId)) {
+      deviceId = DeviceUtils.generateRandomStr(16);
+    }
+
     String url = Host.getApiHost(context) + "/api/v1/user/sms-login";
     JSONObject requestJson = new JSONObject();
     requestJson.put("phone", phone);
     requestJson.put("verify_code", verifyCode);
-    requestJson.put("device_key", DeviceUtils.getDeviceId(context));
+    requestJson.put("device_key", deviceId);
     requestJson.put("channel_code", "");
     RequestBody requestBody = FormBody.create(requestJson.toString(), MediaType.parse("application/json"));
 

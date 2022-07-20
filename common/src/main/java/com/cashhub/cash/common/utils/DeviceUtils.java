@@ -184,7 +184,7 @@ public class DeviceUtils {
   /**
    * 获取随机字符串
    */
-  private static String generateRandomStr(int length) {
+  public static String generateRandomStr(int length) {
     ArrayList<String> strList = new ArrayList<String>();
     Random random = new Random();
 
