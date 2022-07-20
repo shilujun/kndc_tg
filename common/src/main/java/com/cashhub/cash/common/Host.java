@@ -17,21 +17,21 @@ public class Host {
   public static final String HOST_PRIVACY = "https://www.cashhubloan.com/privacy_new.html?bnc_validate=true";
   private static final String HOST_API_OA = "http://apishop.c99349d1eb3d045a4857270fb79311aa0.cn-shanghai.alicontainer.com";
   private static final String HOST_API = "https://api.cashhubloan.com";
-  private static final String HOST_H5_OA = "http://kndc.junya.online";
-  private static final String HOST_H5 = "https://api.cashhubloan.com";
+  private static final String HOST_H5_OA = "http://kndc.junya.online/new_h5";
+  private static final String HOST_H5 = "https://web.cashhubloan.com/new_h5";
 
   public static String getH5Host(Context context, String url) {
     return getCustomH5Host(context)  + url;
   }
 
   private static String getCustomH5Host(Context context) {
-//    String host = HOST_H5;
     String host = HOST_H5;
-    boolean isDebug = isDebugMode(context);
-    Log.d(TAG, "isDebug:" + isDebug);
-    if(isDebug) {
-      host = HOST_H5_OA;
-    }
+//    String host = HOST_H5_OA;
+//    boolean isDebug = isDebugMode(context);
+//    Log.d(TAG, "isDebug:" + isDebug);
+//    if(isDebug) {
+//      host = HOST_H5_OA;
+//    }
     return host;
   }
 
