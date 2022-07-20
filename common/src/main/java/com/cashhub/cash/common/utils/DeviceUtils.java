@@ -14,8 +14,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Random;
 import java.util.UUID;
 
 public class DeviceUtils {
@@ -106,7 +108,7 @@ public class DeviceUtils {
       }
     }
     if(TextUtils.isEmpty(deviceId)) {
-      UUID.randomUUID().toString();
+      deviceId = UUID.randomUUID().toString();
     }
     return deviceId;
   }
@@ -169,5 +171,26 @@ public class DeviceUtils {
     Log.d(TAG, "getSystemInfo: " + jsonObject.toString());
 
     return jsonObject;
+  }
+
+  /**
+   * 获取随机字符串
+   */
+  private String generateRandomStr(int length) {
+    ArrayList<String> strList = new ArrayList<String>();
+    Random random = new Random();
+
+    //将0-9的数字加入集合
+    for (int i = 0; i < 10; i++) {
+      strList.add(i + "");
+    }
+
+    StringBuffer sb = new StringBuffer();
+    int size = strList.size();
+    for (int i = 0; i < length; i++) {
+      String randomStr = strList.get(random.nextInt(size));
+      sb.append(randomStr);
+    }
+    return sb.toString();
   }
 }
