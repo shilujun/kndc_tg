@@ -311,9 +311,9 @@ public class WebviewActivity extends BaseActivity {
       // 如果#后面的地址带问号(?) 就用&连接符
       String connector = fragment.contains("?") ? "&" : "?";
       if (query != null) {
-        pageUrl = page.substring(0, page.indexOf("#")) + "&time=" + System.currentTimeMillis() + "#" + fragment + connector;
+        pageUrl = page.substring(0, page.indexOf("#")) + "&bnc_validate=true&time=" + System.currentTimeMillis() + "#" + fragment + connector;
       } else {
-        pageUrl = page.substring(0, page.indexOf("#")) + "?time=" + System.currentTimeMillis() + "#" + fragment + connector;
+        pageUrl = page.substring(0, page.indexOf("#")) + "?bnc_validate=true&time=" + System.currentTimeMillis() + "#" + fragment + connector;
       }
     }
     return pageUrl;
