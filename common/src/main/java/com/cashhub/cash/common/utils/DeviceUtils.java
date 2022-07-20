@@ -116,7 +116,7 @@ public class DeviceUtils {
 
     }
     if(TextUtils.isEmpty(deviceId)) {
-      deviceId = UUID.randomUUID().toString();
+      deviceId = generateRandomStr(16);
     }
     return deviceId;
   }
@@ -184,7 +184,7 @@ public class DeviceUtils {
   /**
    * 获取随机字符串
    */
-  private String generateRandomStr(int length) {
+  private static String generateRandomStr(int length) {
     ArrayList<String> strList = new ArrayList<String>();
     Random random = new Random();
 
