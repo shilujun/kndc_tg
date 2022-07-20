@@ -181,4 +181,12 @@ public class JSInterface {
   public void jsNavigateToLogin() {
     CommonApp.navigateToLogin(mContext);
   }
+
+  /**
+   * 前端主动触发数据上报
+   */
+  @JavascriptInterface
+  public void jsCallUploadData() {
+    CommonApp.jsCallUploadData();
+  }
 }

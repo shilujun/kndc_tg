@@ -237,6 +237,8 @@ public class BaseActivity extends AppCompatActivity {
         IS_CHECK_PERMISSION_UPLOAD = true;
         collectDataAndUpload();
       }
+    } else if (KndcEvent.JS_CALL_UPLOAD_DATA.equals(event.getEventName())) {
+      collectDataAndUpload();
     } else if (KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
       String uploadImageUrl = event.getUrl();
       Log.d(TAG, "common result:" + uploadImageUrl);
