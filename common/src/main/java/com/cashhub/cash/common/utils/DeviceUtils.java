@@ -87,25 +87,33 @@ public class DeviceUtils {
    */
   @SuppressLint("HardwareIds")
   public static String getDeviceId(Context context) {
-    String deviceId;
+    String deviceId = "";
 
-    if (Build.VERSION.SDK_INT >= 29) {
-      deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-    } else {
-      final TelephonyManager mTelephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-      if (context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-        return "";
-      }
-      assert mTelephony != null;
-      if (mTelephony.getDeviceId() != null) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          deviceId = mTelephony.getImei();
-        } else {
-          deviceId = mTelephony.getDeviceId();
-        }
+    try {
+      if (Build.VERSION.SDK_INT >= 29) {
+        deviceId = Settings.Secure
+            .getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
       } else {
-        deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        final TelephonyManager mTelephony = (TelephonyManager) context
+            .getSystemService(Context.TELEPHONY_SERVICE);
+        if (context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+            != PackageManager.PERMISSION_GRANTED) {
+          return "";
+        }
+        assert mTelephony != null;
+        if (mTelephony.getDeviceId() != null) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            deviceId = mTelephony.getImei();
+          } else {
+            deviceId = mTelephony.getDeviceId();
+          }
+        } else {
+          deviceId = Settings.Secure
+              .getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
       }
+    } catch (Exception e) {
+
     }
     if(TextUtils.isEmpty(deviceId)) {
       deviceId = UUID.randomUUID().toString();
