@@ -33,4 +33,5 @@
   <string name="title_activity_webview">WebviewActivity</string>
   <string name="code_view_title">รับรหัสยืนยัน</string>
   <string name="user_protocol">ฉันยอมรับข้อกำหนด ในการให้บริการ และ นโยบายความเป็นส่วนตัว</string>
+  <string name="notification_error_ssl_cert_invalid">SSL authentication failed, continue to access?</string>
 </resources>

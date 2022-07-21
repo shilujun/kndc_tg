@@ -1,5 +1,6 @@
 package com.cashhub.cash.app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 
 public class WebActivity extends BaseActivity implements View.OnClickListener {
 
@@ -86,11 +88,23 @@ public class WebActivity extends BaseActivity implements View.OnClickListener {
       }
 
       @Override
-      public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        /* 不要使用super，否则有些手机访问不了，因为包含了一条 handler.cancel()
-                   super.onReceivedSslError(view, handler, error);
-                   接受所有网站的证书，忽略SSL错误，执行访问网页 */
-        handler.proceed();
+      public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setMessage(R.string.notification_error_ssl_cert_invalid);
+        builder.setPositiveButton("continue", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            handler.proceed();
+          }
+        });
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            handler.cancel();
+          }
+        });
+        final AlertDialog dialog = builder.create();
+        dialog.show();
       }
     });
 
