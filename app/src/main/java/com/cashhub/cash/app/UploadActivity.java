@@ -77,7 +77,7 @@ public class UploadActivity extends AppCompatActivity {
         long timeStamp = 1635955200;
         switch (type) {
           case "device":
-            mUploadData.getAndSendDevice();
+//            mUploadData.getAndSendDevice();
             break;
           case "contact":
             mUploadData.getAndSendContact();

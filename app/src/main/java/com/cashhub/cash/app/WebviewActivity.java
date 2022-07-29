@@ -1,6 +1,7 @@
 package com.cashhub.cash.app;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -20,14 +21,19 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import android.app.AlertDialog;
 import com.alibaba.fastjson.JSONObject;
+import com.cashhub.cash.app.model.Config;
+import com.cashhub.cash.common.CommonApi;
 import com.cashhub.cash.common.CommonResult;
 import com.cashhub.cash.common.Host;
 import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
+import com.cashhub.cash.common.utils.AdvertisingIdClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tencent.bugly.crashreport.CrashReport;
+import java.util.List;
 import java.util.Map;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -36,6 +42,11 @@ public class WebviewActivity extends BaseActivity {
 
   private static final String TAG = "WebviewActivity";
   public final static String PARAM_URL = "param_url";
+
+  private static boolean IS_INIT = false;
+
+  private static boolean IS_SHOW_SSL_DIALOG = false;
+  private Activity mActivity;
 
   private WebView mWebView;
 
@@ -50,6 +61,7 @@ public class WebviewActivity extends BaseActivity {
       return;
     }
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+    mActivity = this;
 
     setContentView(R.layout.activity_webview);
     mWebView = (WebView) findViewById(R.id.wv_web_view);
@@ -86,18 +98,26 @@ public class WebviewActivity extends BaseActivity {
 
       @Override
       public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        Log.d(TAG, "onReceivedSslError");
+        if(IS_SHOW_SSL_DIALOG) {
+          return;
+        }
+        IS_SHOW_SSL_DIALOG = true;
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
         builder.setMessage(R.string.notification_error_ssl_cert_invalid);
         builder.setPositiveButton("continue", new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
+            Log.d(TAG, "onClick: continue");
             handler.proceed();
           }
         });
         builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
+            Log.d(TAG, "onClick: cancel");
             handler.cancel();
+            finish();
           }
         });
         final AlertDialog dialog = builder.create();
@@ -151,6 +171,32 @@ public class WebviewActivity extends BaseActivity {
 
     //用户登录信息
     syncUserInfoToH5();
+
+
+    initData();
+  }
+
+  /**
+   * 初始化启动数据
+   */
+  private void initData() {
+    if(IS_INIT) {
+      return;
+    }
+    IS_INIT = true;
+    Log.d(TAG, "Begin initData");
+
+    String appIsInit =
+        KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
+    Log.d(TAG, "appIsInit:" + appIsInit);
+
+    new Thread(() -> {
+      //初始化过之后才上报数据
+      if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+        Log.d(TAG, "getCollectionStatus Start!");
+        CommonApi.getInstance().getCollectionStatus(this);
+      }
+    }).start();
   }
 
   @Override
@@ -281,6 +327,40 @@ public class WebviewActivity extends BaseActivity {
       }
     } else if(KndcEvent.PERMISSION_END_CALL_JS.equals(event.getEventName())) {
       syncUserPermissionToH5(event.getPermission(), event.getType());
+    } else if (KndcEvent.COLLECTION_STATUS.equals(event.getEventName())) {
+      String commonRet = event.getCommonRet();
+      if (TextUtils.isEmpty(commonRet)) {
+        return;
+      }
+      Gson gson = new Gson();
+      CommonResult commonResult = gson.fromJson(commonRet,
+          new TypeToken<CommonResult>() {
+          }.getType());
+      if (commonResult == null || commonResult.getData() == null) {
+        return;
+      } else if(commonResult.getCode() != 0) {
+        Log.d(TAG, "login fail");
+        return;
+      }
+
+      Map<String, String> retData = commonResult.getData();
+
+      //收集数据开关
+      String collection = retData.get("collection");
+      Log.d(TAG, "collection:" + collection);
+      if(!TextUtils.isEmpty(collection) && "true".equals(collection)) {
+        //收集数据
+        Log.d(TAG, "onMessageEvent: collectDataAndUpload COLLECTION_STATUS");
+        collectDataAndUpload();
+//        //点击过确认按钮 才可以收集数据
+//        String appIsCheckPermission =
+//        KndcStorage.getInstance().getData(KndcStorage.H5_IS_CHECK_PERMISSION);
+//        if (!TextUtils.isEmpty(appIsCheckPermission) && appIsCheckPermission
+//            .equals(KndcStorage.YSE)) {
+//          //收集数据
+//          collectDataAndUpload();
+//        }
+      }
     }
   }
 

@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
+import com.cashhub.cash.common.KndcStorage;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -161,29 +162,47 @@ public class DeviceUtils {
   }
 
   /**
+   * 获取系统信息
+   */
+  public static JSONObject getSystemInfoByJs(Context context) {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
+    jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
+    jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
+
+    Log.d(TAG, "getSystemInfoByJs: " + jsonObject.toString());
+
+    return jsonObject;
+  }
+
+  /**
    * 这个方法是耗时的，不能在主线程调用
    */
-  public static JSONObject getSystemInfo(Context context) {
+  public static JSONObject getSystemInfoReport(Context context) {
     JSONObject jsonObject = new JSONObject();
-    try {
 //    jsonObject.put("key", KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN));
 //    jsonObject.put("user_uuid", KndcStorage.getInstance().getData(KndcStorage.USER_ID));
 //    jsonObject.put("expire", KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME));
 //    jsonObject.put("phone", KndcStorage.getInstance().getData(KndcStorage.USER_PHONE));
-      jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
+    jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
 //    jsonObject.put("version", DeviceUtils.getVerName(context));
 //    jsonObject.put("appid", DeviceUtils.getVersionCode(context));
-      jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
-      jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
+    jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
+    jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
 //    jsonObject.put("windowHeight", DeviceUtils.getDisplayHeight(context));
 //    jsonObject.put("systemInfo", DeviceUtils.getSystemInfo());
-//      jsonObject.put("adid", AdvertisingIdClient.getAdvertisingIdInfo(context).getId());
+//    if(TextUtils.isEmpty(KndcStorage.getInstance().getData(KndcStorage.CONFIG_GOOGLE_ADID))) {
+//      jsonObject.put("adid", "");
+//    } else {
+//      jsonObject.put("adid", KndcStorage.getInstance().getData(KndcStorage.CONFIG_GOOGLE_ADID));
+//    }
+    try {
+      jsonObject.put("adid", AdvertisingIdClient.getGoogleAdId(context));
     } catch (Exception e) {
-
-      Log.d(TAG, "exception: " + e.getMessage());
+      e.printStackTrace();
     }
 
-    Log.d(TAG, "getSystemInfo: " + jsonObject.toString());
+    Log.d(TAG, "getSystemInfoReport: " + jsonObject.toString());
 
     return jsonObject;
   }

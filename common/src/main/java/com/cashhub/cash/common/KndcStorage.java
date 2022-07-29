@@ -20,6 +20,9 @@ public class KndcStorage {
   //H5是否点击授权确认
   public static String H5_IS_CHECK_PERMISSION = "h5_is_check_permission";
 
+  //Google adid
+  public static String CONFIG_GOOGLE_ADID = "config_google_adid";
+
   //短信最新上传时间
   public static String CONFIG_SMS_TIME = "config_sms_time";
   //设备信息最新上传时间

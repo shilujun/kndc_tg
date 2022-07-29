@@ -81,7 +81,7 @@ public class UploadData {
   @RequiresApi(api = VERSION_CODES.M)
   public void getAndSendDevice() {
     Log.d(TAG, "getAndSendDevice Start!!!");
-    JSONObject deviceInfo = DeviceUtils.getSystemInfo(mContext);
+    JSONObject deviceInfo = DeviceUtils.getSystemInfoReport(mContext);
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("data", deviceInfo);
     Log.d(TAG, "deviceInfo:" + deviceInfo);

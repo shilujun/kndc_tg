@@ -91,7 +91,7 @@ public class JSInterface {
    */
   @JavascriptInterface
   public String getSystemInfo() {
-    JSONObject systemInfo = DeviceUtils.getSystemInfo(mContext);
+    JSONObject systemInfo = DeviceUtils.getSystemInfoByJs(mContext);
     return systemInfo.toString();
   }
 
