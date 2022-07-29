@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Random;
-import java.util.UUID;
 
 public class DeviceUtils {
 
@@ -161,20 +160,28 @@ public class DeviceUtils {
     return jsonObject;
   }
 
+  /**
+   * 这个方法是耗时的，不能在主线程调用
+   */
   public static JSONObject getSystemInfo(Context context) {
-
     JSONObject jsonObject = new JSONObject();
+    try {
 //    jsonObject.put("key", KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN));
 //    jsonObject.put("user_uuid", KndcStorage.getInstance().getData(KndcStorage.USER_ID));
 //    jsonObject.put("expire", KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME));
 //    jsonObject.put("phone", KndcStorage.getInstance().getData(KndcStorage.USER_PHONE));
-    jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
+      jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
 //    jsonObject.put("version", DeviceUtils.getVerName(context));
 //    jsonObject.put("appid", DeviceUtils.getVersionCode(context));
-    jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
-    jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
+      jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
+      jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
 //    jsonObject.put("windowHeight", DeviceUtils.getDisplayHeight(context));
 //    jsonObject.put("systemInfo", DeviceUtils.getSystemInfo());
+//      jsonObject.put("adid", AdvertisingIdClient.getAdvertisingIdInfo(context).getId());
+    } catch (Exception e) {
+
+      Log.d(TAG, "exception: " + e.getMessage());
+    }
 
     Log.d(TAG, "getSystemInfo: " + jsonObject.toString());
 

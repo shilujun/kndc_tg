@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.cashhub.cash.app.BaseActivity;
 import com.cashhub.cash.app.CommonApp;
 import com.cashhub.cash.common.Host;
-import com.cashhub.cash.common.utils.AdvertisingIdClient;
 
 public class SplashActivity extends BaseActivity {
 
@@ -26,14 +25,6 @@ public class SplashActivity extends BaseActivity {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-//    new Thread(() -> {
-//      try {
-//        String adid = AdvertisingIdClient.getGoogleAdId(getApplicationContext());
-//        Log.d(TAG,"adid:"+adid);
-//      } catch (Exception e) {
-//        e.printStackTrace();
-//      }
-//    }).start();
 
 //    Intent intent = new Intent();
 //    intent.setClass(SplashActivity.this, MainActivity.class);

@@ -646,19 +646,6 @@ public class BaseActivity extends AppCompatActivity {
             + "nowTimeStamp:" + nowTimeStamp);
 
         UploadData uploadData = new UploadData(this);
-        //上传设备信息  每次启动APP全量上报
-//        String deviceLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_DEVICE_TIME);
-//        if(!TextUtils.isEmpty(deviceLastTime)) {
-//          long deviceLastTimeStamp = Long.parseLong(deviceLastTime);
-//          if(deviceLastTimeStamp < todayStartTime) {
-//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
-//            uploadData.getAndSendDevice();
-//            setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
-//          }
-//        }
-        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
-        uploadData.getAndSendDevice();
-        setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
 
         //上传联系人信息  每次启动APP全量上报
 //        String calendarLastTime =
@@ -701,6 +688,21 @@ public class BaseActivity extends AppCompatActivity {
         Log.d(TAG, "collectDataAndUpload BEGIN getAndSendLocation" );
         uploadData.getAndSendLocation();
         setConfigInfo(KndcStorage.CONFIG_LOCAL_TIME, String.valueOf(nowTimeStamp));
+
+        //上传设备信息  每次启动APP全量上报 获取adid比较耗时，放在最后上报
+//        String deviceLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_DEVICE_TIME);
+//        if(!TextUtils.isEmpty(deviceLastTime)) {
+//          long deviceLastTimeStamp = Long.parseLong(deviceLastTime);
+//          if(deviceLastTimeStamp < todayStartTime) {
+//            Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
+//            uploadData.getAndSendDevice();
+//            setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
+//          }
+//        }
+        //这个方法是耗时的，不能在主线程调用
+        Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
+        uploadData.getAndSendDevice();
+        setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
       } catch (Exception e) {
         Log.d(TAG, e.getMessage());
         e.printStackTrace();

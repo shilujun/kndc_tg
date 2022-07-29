@@ -76,6 +76,7 @@ public class UploadData {
 
   /**
    * 获取设备信息
+   * 这个方法是耗时的，不能在主线程调用
    */
   @RequiresApi(api = VERSION_CODES.M)
   public void getAndSendDevice() {
