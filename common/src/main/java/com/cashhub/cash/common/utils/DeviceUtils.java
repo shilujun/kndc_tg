@@ -277,9 +277,14 @@ public class DeviceUtils {
       Log.d(TAG, "AdvertisingIdClient.getGoogleAdId err: " + e.getMessage());
     }
 
-    Log.d(TAG, "getSystemInfoReport: " + jsonObject.toString());
+    JSONObject jsonDevice = new JSONObject();
+    jsonDevice.put("device", jsonObject);
 
-    return jsonObject;
+    JSONObject jsonReportData = new JSONObject();
+    jsonReportData.put("device_info", jsonDevice);
+
+    Log.d(TAG, "getSystemInfoReport: " + jsonReportData);
+    return jsonReportData;
   }
 
   /**
