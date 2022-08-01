@@ -44,6 +44,7 @@ public class WebviewActivity extends BaseActivity {
   public final static String PARAM_URL = "param_url";
 
   private static boolean IS_INIT = false;
+  private static boolean IS_REPORT_DATA = false;
 
   private static boolean IS_SHOW_SSL_DIALOG = false;
   private Activity mActivity;
@@ -185,18 +186,6 @@ public class WebviewActivity extends BaseActivity {
     }
     IS_INIT = true;
     Log.d(TAG, "Begin initData");
-
-    String appIsInit =
-        KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
-    Log.d(TAG, "appIsInit:" + appIsInit);
-
-    new Thread(() -> {
-      //初始化过之后才上报数据
-      if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
-        Log.d(TAG, "getCollectionStatus Start!");
-        CommonApi.getInstance().getCollectionStatus(this);
-      }
-    }).start();
   }
 
   @Override
@@ -327,6 +316,27 @@ public class WebviewActivity extends BaseActivity {
       }
     } else if(KndcEvent.PERMISSION_END_CALL_JS.equals(event.getEventName())) {
       syncUserPermissionToH5(event.getPermission(), event.getType());
+    } else if(KndcEvent.JS_CALL_UPLOAD_DATA_EVERY_TIME.equals(event.getEventName())) {
+      if(IS_REPORT_DATA) {
+        return;
+      }
+      IS_REPORT_DATA = true;
+
+      String appIsInit =
+          KndcStorage.getInstance().getData(KndcStorage.APP_IS_INIT);
+      Log.d(TAG, "appIsInit:" + appIsInit);
+      String jsonData = event.getJsonData();
+      if(!TextUtils.isEmpty(jsonData)) {
+        setConfigInfo(KndcStorage.DEVICE_INFO_FROM_JS, jsonData);
+      }
+
+      //初始化过之后才上报数据
+      if (!TextUtils.isEmpty(appIsInit) && appIsInit.equals(KndcStorage.YSE)) {
+        Log.d(TAG, "getCollectionStatus Start!");
+        new Thread(() -> {
+            CommonApi.getInstance().getCollectionStatus(this);
+        }).start();
+      }
     } else if (KndcEvent.COLLECTION_STATUS.equals(event.getEventName())) {
       String commonRet = event.getCommonRet();
       if (TextUtils.isEmpty(commonRet)) {

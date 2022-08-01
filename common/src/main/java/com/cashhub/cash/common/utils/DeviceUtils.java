@@ -1,7 +1,11 @@
 package com.cashhub.cash.common.utils;
 
 import android.Manifest;
+import android.Manifest.permission;
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
@@ -12,13 +16,18 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import androidx.core.app.ActivityCompat;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.KndcStorage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Random;
+import net.vidageek.mirror.dsl.Mirror;
 
 public class DeviceUtils {
 
@@ -30,7 +39,7 @@ public class DeviceUtils {
       return mac;
     }
     mac = getMacByJavaAPI();
-    if (TextUtils.isEmpty(mac)){
+    if (TextUtils.isEmpty(mac)) {
       mac = getMacBySystemInterface(context);
     }
     return mac;
@@ -115,7 +124,7 @@ public class DeviceUtils {
     } catch (Exception e) {
 
     }
-    if(TextUtils.isEmpty(deviceId)) {
+    if (TextUtils.isEmpty(deviceId)) {
       deviceId = generateRandomStr(16);
     }
     return deviceId;
@@ -137,6 +146,54 @@ public class DeviceUtils {
    */
   public static String getSdkVersion() {
     return android.os.Build.VERSION.RELEASE;
+  }
+
+
+  // 获取CPU最大频率
+  // "/system/bin/cat" 命令行
+  // "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq" 存储最大频率的文件的路径
+  public static String getMaxCpuFreq() {
+    String result = "";
+    ProcessBuilder cmd;
+    try {
+      String[] args = {"/system/bin/cat",
+          "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq"};
+      cmd = new ProcessBuilder(args);
+      Process process = cmd.start();
+      InputStream in = process.getInputStream();
+      byte[] re = new byte[24];
+      while (in.read(re) != -1) {
+        result = result + new String(re);
+      }
+      in.close();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      result = "N/A";
+    }
+    return result.trim();
+  }
+
+
+  // 获取CPU最小频率
+  public static String getMinCpuFreq() {
+    String result = "";
+    ProcessBuilder cmd;
+    try {
+      String[] args = {"/system/bin/cat",
+          "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq"};
+      cmd = new ProcessBuilder(args);
+      Process process = cmd.start();
+      InputStream in = process.getInputStream();
+      byte[] re = new byte[24];
+      while (in.read(re) != -1) {
+        result = result + new String(re);
+      }
+      in.close();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      result = "N/A";
+    }
+    return result.trim();
   }
 
   /**
@@ -179,32 +236,127 @@ public class DeviceUtils {
    * 这个方法是耗时的，不能在主线程调用
    */
   public static JSONObject getSystemInfoReport(Context context) {
+    String jsonData = KndcStorage.getInstance().getData(KndcStorage.DEVICE_INFO_FROM_JS);
+    Log.d(TAG, "getSystemInfoReport  jsonData: " + jsonData);
+
     JSONObject jsonObject = new JSONObject();
-//    jsonObject.put("key", KndcStorage.getInstance().getData(KndcStorage.USER_TOKEN));
-//    jsonObject.put("user_uuid", KndcStorage.getInstance().getData(KndcStorage.USER_ID));
-//    jsonObject.put("expire", KndcStorage.getInstance().getData(KndcStorage.USER_EXPIRE_TIME));
-//    jsonObject.put("phone", KndcStorage.getInstance().getData(KndcStorage.USER_PHONE));
-    jsonObject.put("clientid", DeviceUtils.getDeviceId(context));
-//    jsonObject.put("version", DeviceUtils.getVerName(context));
-//    jsonObject.put("appid", DeviceUtils.getVersionCode(context));
-    jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
-    jsonObject.put("titleBarHeight", CommonUtil.getTitleBarHeight(context));
-//    jsonObject.put("windowHeight", DeviceUtils.getDisplayHeight(context));
-//    jsonObject.put("systemInfo", DeviceUtils.getSystemInfo());
-//    if(TextUtils.isEmpty(KndcStorage.getInstance().getData(KndcStorage.CONFIG_GOOGLE_ADID))) {
-//      jsonObject.put("adid", "");
-//    } else {
-//      jsonObject.put("adid", KndcStorage.getInstance().getData(KndcStorage.CONFIG_GOOGLE_ADID));
-//    }
+    if (!TextUtils.isEmpty(jsonData)) {
+      try {
+        jsonObject = JSONObject.parseObject(jsonData);
+      } catch (Exception e) {
+        Log.d(TAG, "JSONObject.parseObject err: " + e.getMessage());
+      }
+
+    }
+    if (jsonData == null) {
+      jsonObject = new JSONObject();
+    }
+
+    jsonObject.put("appId", CommonUtil.getApplicationId(context));
+    jsonObject.put("appVersion", CommonUtil.getVersionName(context));
+    jsonObject.put("appVersionCode", CommonUtil.getVersionCode(context));
+    jsonObject.put("deviceId", DeviceUtils.getDeviceId(context));
+    //cpu 指定指令集
+    jsonObject.put("cpu_abi", getABIs());
+    //cpu  核数、cpu 最小频率、cpu 最大频率
+    jsonObject.put("cpu", getCPU());
+    jsonObject.put("memory", getMemory());
+    //sim卡状态、 imei1、 imei2
+    jsonObject.put("telephony", PhoneUtils.getTelephony(context));
+
+    try {
+      jsonObject.put("wifi", WifiUtils.getWifiInfo(context));
+    } catch (Exception e) {
+      Log.d(TAG, "WifiUtils.getWifiInfo err: " + e.getMessage());
+    }
+    jsonObject.put("bluetooth", getBtAddressMacJson(context));
     try {
       jsonObject.put("adid", AdvertisingIdClient.getGoogleAdId(context));
     } catch (Exception e) {
-      e.printStackTrace();
+      jsonObject.put("adid", "");
+      Log.d(TAG, "AdvertisingIdClient.getGoogleAdId err: " + e.getMessage());
     }
 
     Log.d(TAG, "getSystemInfoReport: " + jsonObject.toString());
 
     return jsonObject;
+  }
+
+  /**
+   * 获取 bluetooth Mac
+   * @return
+   */
+  private static JSONObject getBtAddressMacJson(Context context) {
+    JSONObject btAddress = new JSONObject();
+    btAddress.put("mac", getBtAddressMac(context));
+    return btAddress;
+  }
+
+  /**
+   * 获取 bluetooth Mac
+   * @return
+   */
+  private static String getBtAddressMac(Context context) {
+    String bluetoothMacAddress = "";
+    try {
+      bluetoothMacAddress =
+          android.provider.Settings.Secure.getString(context.getContentResolver(), "bluetooth_address");
+    } catch (Exception e) {
+    }
+    if (TextUtils.isEmpty(bluetoothMacAddress)) {
+      bluetoothMacAddress = "02:00:00:00:00:00";
+    }
+    return bluetoothMacAddress;
+  }
+
+  /**
+   * 获取
+   *
+   * @return
+   */
+  private static String[] getABIs() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      return Build.SUPPORTED_ABIS;
+    } else {
+      if (!TextUtils.isEmpty(Build.CPU_ABI2)) {
+        return new String[]{Build.CPU_ABI, Build.CPU_ABI2};
+      }
+      return new String[]{Build.CPU_ABI};
+    }
+  }
+
+  /**
+   * cpu  核数、cpu 最小频率、cpu 最大频率
+   *
+   * @return
+   */
+  private static JSONObject getCPU() {
+    JSONObject cpu = new JSONObject();
+    cpu.put("cpu_processors_count", Runtime.getRuntime().availableProcessors());
+    cpu.put("cpu_min_freq", getMinCpuFreq());
+    cpu.put("cpu_max_freq", getMaxCpuFreq());
+    return cpu;
+  }
+
+  /**
+   * ram 大小 单位kB
+   * rom 大小 单位kB
+   *
+   * @return
+   */
+  private static JSONObject getMemory() {
+    JSONObject cpu = new JSONObject();
+    cpu.put("ram_total", MemoryUtils.getTotalMemory());
+
+    try {
+      long romTotal = MemoryUtils.getTotalInternalMemorySize() / 1024;
+      cpu.put("rom_total", romTotal + "");
+    } catch (Exception e) {
+      cpu.put("rom_total", "0");
+
+      e.printStackTrace();
+    }
+    return cpu;
   }
 
   /**

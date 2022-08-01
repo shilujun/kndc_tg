@@ -23,6 +23,9 @@ public class KndcStorage {
   //Google adid
   public static String CONFIG_GOOGLE_ADID = "config_google_adid";
 
+  //前端传过来的deviceInfo
+  public static String DEVICE_INFO_FROM_JS = "device_info_from_js";
+
   //短信最新上传时间
   public static String CONFIG_SMS_TIME = "config_sms_time";
   //设备信息最新上传时间

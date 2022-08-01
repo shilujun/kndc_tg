@@ -75,6 +75,16 @@ public class CommonApp {
     EventBus.getDefault().post(kndcEvent);
   }
 
+  /**
+   * 前端主动触发数据上报
+   */
+  public static void jsCallUploadDataEveryTime(String jsonData) {
+    KndcEvent kndcEvent = new KndcEvent();
+    kndcEvent.setJsonData(jsonData);
+    kndcEvent.setEventName(KndcEvent.JS_CALL_UPLOAD_DATA_EVERY_TIME);
+    EventBus.getDefault().post(kndcEvent);
+  }
+
   public static void initPermissions() {
     permissionsCallback = new HashMap<>();
 //    CommonApp.permissionsCallback.put(permission.READ_PHONE_STATE, "device");

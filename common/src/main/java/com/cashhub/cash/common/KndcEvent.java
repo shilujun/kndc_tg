@@ -19,6 +19,7 @@ public class KndcEvent {
   public static String WEB_OPEN_NEW_LINK = "web_open_new_link";
   public static String BEGIN_CHECK_PERMISSION = "begin_check_permission";
   public static String JS_CALL_UPLOAD_DATA = "js_call_upload_data";
+  public static String JS_CALL_UPLOAD_DATA_EVERY_TIME = "js_call_upload_data_every_time";
   public static String UPLOAD_END_CALL_JS = "upload_end_call_js";
   public static String PERMISSION_END_CALL_JS = "permission_end_call_js";
   public static String CLOSE_LOGIN_ACTIVITY = "close_login_activity";
@@ -36,6 +37,7 @@ public class KndcEvent {
   private String url;
   private String permission;
   private String type;
+  private String jsonData;
 
   public KndcEvent() {
   }
@@ -92,6 +94,10 @@ public class KndcEvent {
     return type;
   }
 
+  public String getJsonData() {
+    return jsonData;
+  }
+
   public void setCode(String code) {
     this.code = code;
   }
@@ -142,5 +148,9 @@ public class KndcEvent {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public void setJsonData(String jsonData) {
+    this.jsonData = jsonData;
   }
 }

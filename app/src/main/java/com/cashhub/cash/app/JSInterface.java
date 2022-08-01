@@ -189,4 +189,12 @@ public class JSInterface {
   public void jsCallUploadData() {
     CommonApp.jsCallUploadData();
   }
+
+  /**
+   * 同步上报Device数据
+   */
+  @JavascriptInterface
+  public void syncDeviceData(String jsonData) {
+    CommonApp.jsCallUploadDataEveryTime(jsonData);
+  }
 }
