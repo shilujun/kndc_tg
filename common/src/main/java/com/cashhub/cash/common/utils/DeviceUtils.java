@@ -3,11 +3,9 @@ package com.cashhub.cash.common.utils;
 import android.Manifest;
 import android.Manifest.permission;
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -27,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Random;
-import net.vidageek.mirror.dsl.Mirror;
 
 public class DeviceUtils {
 
@@ -252,10 +249,12 @@ public class DeviceUtils {
       jsonObject = new JSONObject();
     }
 
+    jsonObject.put("brand", Build.BRAND);
     jsonObject.put("appId", CommonUtil.getApplicationId(context));
     jsonObject.put("appVersion", CommonUtil.getVersionName(context));
     jsonObject.put("appVersionCode", CommonUtil.getVersionCode(context));
     jsonObject.put("deviceId", DeviceUtils.getDeviceId(context));
+    jsonObject.put("fontSizeSetting", getFontSize(context));
     //cpu 指定指令集
     jsonObject.put("cpu_abi", getABIs());
     //cpu  核数、cpu 最小频率、cpu 最大频率
@@ -271,6 +270,9 @@ public class DeviceUtils {
     }
     jsonObject.put("bluetooth", getBtAddressMacJson(context));
     try {
+//      com.google.android.gms.ads.identifier.AdvertisingIdClient.Info adInfo =
+//          com.google.android.gms.ads.identifier.AdvertisingIdClient.getAdvertisingIdInfo(context);
+//      jsonObject.put("adid", adInfo.getId());
       jsonObject.put("adid", AdvertisingIdClient.getGoogleAdId(context));
     } catch (Exception e) {
       jsonObject.put("adid", "");
@@ -285,6 +287,30 @@ public class DeviceUtils {
 
     Log.d(TAG, "getSystemInfoReport: " + jsonReportData);
     return jsonReportData;
+  }
+
+  public static float getFontSize(Context context) {
+
+    Configuration mCurConfig = new Configuration();
+
+    try {
+
+      mCurConfig.updateFrom(context.getResources().getConfiguration());
+
+    } catch (Exception e) {
+
+      Log.w(TAG, "Unable to retrieve font size");
+
+    }
+
+
+
+    Log.w(TAG, "getFontSize(), Font size is " + mCurConfig.fontScale);
+
+    return mCurConfig.fontScale;
+
+
+
   }
 
   /**

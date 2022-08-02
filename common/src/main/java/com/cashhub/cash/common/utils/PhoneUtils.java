@@ -42,8 +42,10 @@ public class PhoneUtils {
     telephony.put("sim_operator", getTelephonyManager(context).getSimOperator());
     telephony.put("sim_operator_name", getTelephonyManager(context).getSimOperatorName());
     telephony.put("sim_state", getTelephonyManager(context).getSimState());
+    telephony.put("imei1", "");
+    telephony.put("imei2", "");
 
-    Class<?> clazz = null;
+        Class<?> clazz = null;
     Method method = null;//(int slotId)
     try {
       clazz = Class.forName("android.os.SystemProperties");
