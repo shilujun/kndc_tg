@@ -1,7 +1,6 @@
 package com.cashhub.cash.common.utils;
 
 import android.Manifest;
-import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,12 +13,10 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import androidx.core.app.ActivityCompat;
 import com.alibaba.fastjson.JSONObject;
 import com.cashhub.cash.common.KndcStorage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -233,6 +230,7 @@ public class DeviceUtils {
    * 这个方法是耗时的，不能在主线程调用
    */
   public static JSONObject getSystemInfoReport(Context context) {
+    Log.d(TAG, "getSystemInfoReport  Start!!!");
     String jsonData = KndcStorage.getInstance().getData(KndcStorage.DEVICE_INFO_FROM_JS);
     Log.d(TAG, "getSystemInfoReport  jsonData: " + jsonData);
 
@@ -249,34 +247,38 @@ public class DeviceUtils {
       jsonObject = new JSONObject();
     }
 
-    jsonObject.put("brand", Build.BRAND);
-    jsonObject.put("appId", CommonUtil.getApplicationId(context));
-    jsonObject.put("appVersion", CommonUtil.getVersionName(context));
-    jsonObject.put("appVersionCode", CommonUtil.getVersionCode(context));
-    jsonObject.put("deviceId", DeviceUtils.getDeviceId(context));
-    jsonObject.put("fontSizeSetting", getFontSize(context));
-    //cpu 指定指令集
-    jsonObject.put("cpu_abi", getABIs());
-    //cpu  核数、cpu 最小频率、cpu 最大频率
-    jsonObject.put("cpu", getCPU());
-    jsonObject.put("memory", getMemory());
-    //sim卡状态、 imei1、 imei2
-    jsonObject.put("telephony", PhoneUtils.getTelephony(context));
+    try {
+      jsonObject.put("brand", Build.BRAND);
+      jsonObject.put("appId", CommonUtil.getApplicationId(context));
+      jsonObject.put("appVersion", CommonUtil.getVersionName(context));
+      jsonObject.put("appVersionCode", CommonUtil.getVersionCode(context));
+      jsonObject.put("deviceId", DeviceUtils.getDeviceId(context));
+      jsonObject.put("fontSizeSetting", getFontSize(context));
+      //cpu 指定指令集
+      jsonObject.put("cpu_abi", getABIs());
+      //cpu  核数、cpu 最小频率、cpu 最大频率
+      jsonObject.put("cpu", getCPU());
+      jsonObject.put("memory", getMemory());
+      //sim卡状态、 imei1、 imei2
+      jsonObject.put("telephony", PhoneUtils.getTelephony(context));
 
-    try {
-      jsonObject.put("wifi", WifiUtils.getWifiInfo(context));
-    } catch (Exception e) {
-      Log.d(TAG, "WifiUtils.getWifiInfo err: " + e.getMessage());
-    }
-    jsonObject.put("bluetooth", getBtAddressMacJson(context));
-    try {
+      try {
+        jsonObject.put("wifi", WifiUtils.getWifiInfo(context));
+      } catch (Exception e) {
+        Log.d(TAG, "WifiUtils.getWifiInfo err: " + e.getMessage());
+      }
+      jsonObject.put("bluetooth", getBtAddressMacJson(context));
+      try {
 //      com.google.android.gms.ads.identifier.AdvertisingIdClient.Info adInfo =
 //          com.google.android.gms.ads.identifier.AdvertisingIdClient.getAdvertisingIdInfo(context);
 //      jsonObject.put("adid", adInfo.getId());
-      jsonObject.put("adid", AdvertisingIdClient.getGoogleAdId(context));
+        jsonObject.put("adid", AdvertisingIdClient.getGoogleAdId(context));
+      } catch (Exception e) {
+        jsonObject.put("adid", "");
+        Log.d(TAG, "AdvertisingIdClient.getGoogleAdId err: " + e.getMessage());
+      }
     } catch (Exception e) {
-      jsonObject.put("adid", "");
-      Log.d(TAG, "AdvertisingIdClient.getGoogleAdId err: " + e.getMessage());
+
     }
 
     JSONObject jsonDevice = new JSONObject();
@@ -346,14 +348,10 @@ public class DeviceUtils {
    * @return
    */
   private static String[] getABIs() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return Build.SUPPORTED_ABIS;
-    } else {
-      if (!TextUtils.isEmpty(Build.CPU_ABI2)) {
-        return new String[]{Build.CPU_ABI, Build.CPU_ABI2};
-      }
-      return new String[]{Build.CPU_ABI};
+    if (!TextUtils.isEmpty(Build.CPU_ABI2)) {
+      return new String[]{Build.CPU_ABI, Build.CPU_ABI2};
     }
+    return new String[]{Build.CPU_ABI};
   }
 
   /**
