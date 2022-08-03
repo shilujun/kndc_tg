@@ -33,55 +33,70 @@ public class PhoneUtils {
    */
   public static JSONObject getTelephony(Context context) {
     JSONObject telephony = new JSONObject();
-    telephony.put("network_country_iso", getTelephonyManager(context).getNetworkCountryIso());
-    telephony.put("network_operator", getTelephonyManager(context).getNetworkOperator());
-    telephony.put("network_operator_name", getTelephonyManager(context).getNetworkOperatorName());
-    telephony.put("phone_type", getTelephonyManager(context).getPhoneType());
-    telephony.put("sim_country_iso", getTelephonyManager(context).getSimCountryIso());
-    telephony.put("sim_operator", getTelephonyManager(context).getSimOperator());
-    telephony.put("sim_operator_name", getTelephonyManager(context).getSimOperatorName());
-    telephony.put("sim_state", getTelephonyManager(context).getSimState());
-
-    Class<?> clazz = null;
-    Method method = null;//(int slotId)
-    String imei1 = "";
-    String imei2 = "";
+    telephony.put("network_country_iso", "");
+    telephony.put("network_operator", "");
+    telephony.put("network_operator_name", "");
+    telephony.put("phone_type", "");
+    telephony.put("sim_country_iso", "");
+    telephony.put("sim_operator", "");
+    telephony.put("sim_operator_name", "");
+    telephony.put("sim_state", "");
+    telephony.put("imei1", "");
+    telephony.put("imei2", "");
     try {
-      clazz = Class.forName("android.os.SystemProperties");
-      method = clazz.getMethod("get", String.class, String.class);
-      String gsm = (String) method.invoke(null, "ril.gsm.imei", "");
-      if (!TextUtils.isEmpty(gsm)) {
-        //the value of gsm like:xxxxxx,xxxxxx
-        String[] imeiArray = gsm.split(",");
-        if (imeiArray != null && imeiArray.length > 0) {
-          imei1 = imeiArray[0];
-          if (imeiArray.length > 1) {
-            imei2 = imeiArray[1];
+      telephony.put("network_country_iso", getTelephonyManager(context).getNetworkCountryIso());
+      telephony.put("network_operator", getTelephonyManager(context).getNetworkOperator());
+      telephony.put("network_operator_name", getTelephonyManager(context).getNetworkOperatorName());
+      telephony.put("phone_type", getTelephonyManager(context).getPhoneType());
+      telephony.put("sim_country_iso", getTelephonyManager(context).getSimCountryIso());
+      telephony.put("sim_operator", getTelephonyManager(context).getSimOperator());
+      telephony.put("sim_operator_name", getTelephonyManager(context).getSimOperatorName());
+      telephony.put("sim_state", getTelephonyManager(context).getSimState());
+
+      Class<?> clazz = null;
+      Method method = null;//(int slotId)
+      String imei1 = "";
+      String imei2 = "";
+      try {
+        clazz = Class.forName("android.os.SystemProperties");
+        method = clazz.getMethod("get", String.class, String.class);
+        String gsm = (String) method.invoke(null, "ril.gsm.imei", "");
+        if (!TextUtils.isEmpty(gsm)) {
+          //the value of gsm like:xxxxxx,xxxxxx
+          String[] imeiArray = gsm.split(",");
+          if (imeiArray != null && imeiArray.length > 0) {
+            imei1 = imeiArray[0];
+            if (imeiArray.length > 1) {
+              imei2 = imeiArray[1];
+            } else {
+              imei2 = getTelephonyManager(context).getDeviceId(1);
+            }
           } else {
+            imei1 = getTelephonyManager(context).getDeviceId(0);
             imei2 = getTelephonyManager(context).getDeviceId(1);
           }
         } else {
           imei1 = getTelephonyManager(context).getDeviceId(0);
           imei2 = getTelephonyManager(context).getDeviceId(1);
         }
-      } else {
-        imei1 = getTelephonyManager(context).getDeviceId(0);
-        imei2 = getTelephonyManager(context).getDeviceId(1);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
+
+      if(TextUtils.isEmpty(imei1)) {
+        imei1 = getIMEI_1(context);
+      }
+
+      if(TextUtils.isEmpty(imei2)) {
+        imei2 = getIMEI_2(context);
+      }
+
+      telephony.put("imei1", imei1);
+      telephony.put("imei2", imei2);
+
     } catch (Exception e) {
-      e.printStackTrace();
-    }
 
-    if(TextUtils.isEmpty(imei1)) {
-      imei1 = getIMEI_1(context);
     }
-
-    if(TextUtils.isEmpty(imei2)) {
-      imei2 = getIMEI_2(context);
-    }
-
-    telephony.put("imei1", imei1);
-    telephony.put("imei2", imei2);
 
     return telephony;
   }
