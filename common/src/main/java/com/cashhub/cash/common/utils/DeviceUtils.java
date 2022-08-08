@@ -281,11 +281,11 @@ public class DeviceUtils {
 
     }
 
-    JSONObject jsonDevice = new JSONObject();
-    jsonDevice.put("device", jsonObject);
+//    JSONObject jsonDevice = new JSONObject();
+//    jsonDevice.put("device", jsonObject);
 
     JSONObject jsonReportData = new JSONObject();
-    jsonReportData.put("device_info", jsonDevice);
+    jsonReportData.put("device_info", jsonObject);
 
     Log.d(TAG, "getSystemInfoReport: " + jsonReportData);
     return jsonReportData;
