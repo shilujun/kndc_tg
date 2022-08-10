@@ -648,7 +648,7 @@ public class BaseActivity extends AppCompatActivity {
 //        }
         try {
           String smsLastTime = KndcStorage.getInstance().getData(KndcStorage.CONFIG_SMS_TIME);
-          long smsLastTimeStamp = todayStartTime - 180 * 24 * 3600 * 1000;
+          long smsLastTimeStamp = todayStartTime - 180 * 24 * 3600 * 1000L;
           if(!TextUtils.isEmpty(smsLastTime)) {
             long smsLastLongTime = Long.parseLong(smsLastTime);
             if(smsLastLongTime > 0 && smsLastLongTime > smsLastTimeStamp) {

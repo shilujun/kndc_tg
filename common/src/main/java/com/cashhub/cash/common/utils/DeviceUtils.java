@@ -281,14 +281,8 @@ public class DeviceUtils {
 
     }
 
-//    JSONObject jsonDevice = new JSONObject();
-//    jsonDevice.put("device", jsonObject);
-
-    JSONObject jsonReportData = new JSONObject();
-    jsonReportData.put("device_info", jsonObject);
-
-    Log.d(TAG, "getSystemInfoReport: " + jsonReportData);
-    return jsonReportData;
+    Log.d(TAG, "getSystemInfoReport: " + jsonObject);
+    return jsonObject;
   }
 
   public static float getFontSize(Context context) {

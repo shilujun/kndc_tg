@@ -56,22 +56,23 @@ public class SystemInfo {
     calendar.set(Calendar.MILLISECOND, 0);
     long dayStart = calendar.getTime().getTime();
 
-    long beginTime = dayStart - mMaxDayNum * 24 * 3600000;
-    long endTime = dayStart + mMaxDayNum * 24 * 3600000;
+    long beginTime = dayStart - mMaxDayNum * 24 * 3600 * 1000L;
+    long endTime = dayStart + mMaxDayNum * 24 * 3600 * 1000L;
+    Log.i(TAG, "getCalendars beginTime:" + beginTime + ", endTime:" + endTime);
 
     List<JSONObject> calendars = new ArrayList<>();
 
-    Cursor eventCursor = mContext.getApplicationContext().getContentResolver().query(Uri.parse(CALENDER_EVENT_URL), null,
-
-        null, null, null);
+    Cursor eventCursor = mContext.getContentResolver().query(Uri.parse(CALENDER_EVENT_URL), null,
+        null, null, "dtstart"+" DESC");
     if(eventCursor == null) {
       return calendars;
     }
-    Log.i(TAG, "eventCursor" + eventCursor.toString());
 
     while (eventCursor.moveToNext()){
+      Log.i(TAG, "getCalendars start while!!");
       dtstart = eventCursor.getLong(eventCursor.getColumnIndex(EventsEntity.DTSTART));
       dtend = eventCursor.getLong(eventCursor.getColumnIndex(EventsEntity.DTEND));
+      Log.i(TAG, "getCalendars dtstart:" + dtstart + ", dtend:" + dtend);
       if(dtstart < beginTime || dtend > endTime) {
         continue;
       }
@@ -92,6 +93,7 @@ public class SystemInfo {
       calendars.add(calendarInfo);
 
     }
+    Log.i(TAG, "getCalendars calendars：" + calendars);
 
     return calendars;
 
