@@ -695,7 +695,7 @@ public class BaseActivity extends AppCompatActivity {
         try {
           Log.d(TAG, "collectDataAndUpload BEGIN getAndSendDevice" );
 
-          uploadData.getAndSendDevice();
+          uploadData.getAndSendDevice(this);
           setConfigInfo(KndcStorage.CONFIG_DEVICE_TIME, String.valueOf(nowTimeStamp));
         } catch (Exception e) {
           Log.d(TAG, e.getMessage());

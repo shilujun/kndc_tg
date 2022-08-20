@@ -2,6 +2,7 @@ package com.cashhub.cash.common.utils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -229,7 +230,7 @@ public class DeviceUtils {
   /**
    * 这个方法是耗时的，不能在主线程调用
    */
-  public static JSONObject getSystemInfoReport(Context context) {
+  public static JSONObject getSystemInfoReport(Context context, Activity activity) {
     Log.d(TAG, "getSystemInfoReport  Start!!!");
     String jsonData = KndcStorage.getInstance().getData(KndcStorage.DEVICE_INFO_FROM_JS);
     Log.d(TAG, "getSystemInfoReport  jsonData: " + jsonData);
@@ -252,8 +253,12 @@ public class DeviceUtils {
       jsonObject.put("appId", CommonUtil.getApplicationId(context));
       jsonObject.put("appVersion", CommonUtil.getVersionName(context));
       jsonObject.put("appVersionCode", CommonUtil.getVersionCode(context));
+      jsonObject.put("statusBarHeight", CommonUtil.getStatusBarHeightDp(context));
       jsonObject.put("deviceId", DeviceUtils.getDeviceId(context));
       jsonObject.put("fontSizeSetting", getFontSize(context));
+      jsonObject.put("safeArea", CommonUtil.getSafeArea(activity, jsonObject.getJSONObject(
+          "safeArea")));
+      jsonObject.put("safeAreaInsets", CommonUtil.getSafeAreaInsets(activity));
       //cpu 指定指令集
       jsonObject.put("cpu_abi", getABIs());
       //cpu  核数、cpu 最小频率、cpu 最大频率

@@ -294,7 +294,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     Log.d(TAG, "开始获取设备信息======");
 
     Log.d(TAG, "系统信息:" + String.valueOf(DeviceUtils.getSystemInfo()));
-    Log.d(TAG, "系统信息 Context:" + String.valueOf(DeviceUtils.getSystemInfoReport(this)));
+    Log.d(TAG, "系统信息 Context:" + String.valueOf(DeviceUtils.getSystemInfoReport(this, this)));
     Log.d(TAG, "getApplicationId:" + String.valueOf(CommonUtil.getApplicationId(this)));
 
     Log.d(TAG, "getVersionName:" + String.valueOf(CommonUtil.getVersionName(this)));

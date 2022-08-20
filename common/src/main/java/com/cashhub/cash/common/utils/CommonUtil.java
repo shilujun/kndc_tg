@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.Display;
@@ -20,7 +21,9 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 import android.view.Window;
+import android.view.WindowInsets;
 import androidx.core.app.ActivityCompat;
+import com.alibaba.fastjson.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -156,6 +159,77 @@ public class CommonUtil {
       e.printStackTrace();
     }
     return versionCode;
+  }
+
+  public static JSONObject getSafeAreaInsets(Activity activity) {
+    JSONObject jsonObject = new JSONObject();
+    try {
+      jsonObject.put("top", 0);
+      jsonObject.put("right", 0);
+      jsonObject.put("bottom", 0);
+      jsonObject.put("left", 0);
+      if (activity == null) {
+        return jsonObject;
+      }
+
+      WindowInsets windowInsets = activity.getWindow().getDecorView().getRootWindowInsets();
+      if (Build.VERSION.SDK_INT >= VERSION_CODES.P && windowInsets != null) {
+        int top = windowInsets.getDisplayCutout().getSafeInsetTop();
+        int right = windowInsets.getDisplayCutout().getSafeInsetRight();
+        int bottom = windowInsets.getDisplayCutout().getSafeInsetBottom();
+        int left = windowInsets.getDisplayCutout().getSafeInsetLeft();
+
+        jsonObject.put("top", top);
+        jsonObject.put("right", right);
+        jsonObject.put("bottom", bottom);
+        jsonObject.put("left", left);
+      }
+    } catch (Exception e) {
+
+    }
+    return jsonObject;
+  }
+
+  public static JSONObject getSafeArea(Activity activity, JSONObject oldJsonObject) {
+    JSONObject jsonObject = new JSONObject();
+    try {
+      if(oldJsonObject == null) {
+        jsonObject.put("left", 0);
+        jsonObject.put("right", 0);
+        jsonObject.put("top", 0);
+        jsonObject.put("bottom", 0);
+        jsonObject.put("width", 0);
+        jsonObject.put("height", 0);
+      } else {
+        jsonObject = oldJsonObject;
+      }
+      if (activity == null) {
+        return jsonObject;
+      }
+
+      WindowInsets windowInsets = activity.getWindow().getDecorView().getRootWindowInsets();
+      if (Build.VERSION.SDK_INT >= VERSION_CODES.P && windowInsets != null) {
+        int top = windowInsets.getDisplayCutout().getSafeInsetTop();
+        int right = windowInsets.getDisplayCutout().getSafeInsetRight();
+        int bottom = windowInsets.getDisplayCutout().getSafeInsetBottom();
+        int left = windowInsets.getDisplayCutout().getSafeInsetLeft();
+        if(top > 0) {
+          jsonObject.put("top", top);
+        }
+//        if(right > 0) {
+//          jsonObject.put("right", right);
+//        }
+//        if(bottom > 0) {
+//          jsonObject.put("bottom", bottom);
+//        }
+        if(left > 0) {
+          jsonObject.put("left", left);
+        }
+      }
+    } catch (Exception e) {
+
+    }
+    return jsonObject;
   }
 
   public synchronized static boolean isFastClick() {

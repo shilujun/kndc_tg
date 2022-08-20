@@ -1,6 +1,7 @@
 package com.cashhub.cash.common;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -81,9 +82,9 @@ public class UploadData {
    * 这个方法是耗时的，不能在主线程调用
    */
   @RequiresApi(api = VERSION_CODES.M)
-  public void getAndSendDevice() {
+  public void getAndSendDevice(Activity activity) {
     Log.d(TAG, "getAndSendDevice Start!!!");
-    JSONObject deviceInfo = DeviceUtils.getSystemInfoReport(mContext);
+    JSONObject deviceInfo = DeviceUtils.getSystemInfoReport(mContext, activity);
 
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("data", deviceInfo);
